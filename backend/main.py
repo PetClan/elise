@@ -455,7 +455,7 @@ def get_dashboard_stats(
 
 # Get the directory where main.py is located
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-FRONTEND_DIR = os.path.join(BASE_DIR, "..", "frontend")
+FRONTEND_DIR = os.path.join(BASE_DIR, "frontend")
 
 
 @app.get("/")
