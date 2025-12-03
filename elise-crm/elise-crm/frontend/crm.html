@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM | Elise Care Home Entertainment</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Open+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body class="crm-page">
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-box">
+            <h1>Elise CRM</h1>
+            <p>Enter your password to access the CRM</p>
+            <form id="loginForm">
+                <div class="form-group">
+                    <input type="password" id="password" placeholder="Password" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Login</button>
+                <p id="loginError" class="error-message"></p>
+            </form>
+            <a href="/" class="back-link">← Back to Website</a>
+        </div>
+    </div>
+
+    <!-- CRM Dashboard (hidden until logged in) -->
+    <div id="crmApp" class="crm-app" style="display: none;">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Elise CRM</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-section="dashboard">
+                    <span class="nav-icon">📊</span>
+                    Dashboard
+                </a>
+                <a href="#" class="nav-item" data-section="contacts">
+                    <span class="nav-icon">👥</span>
+                    Contacts
+                </a>
+                <a href="#" class="nav-item" data-section="call-log">
+                    <span class="nav-icon">📞</span>
+                    Call Log
+                </a>
+                <a href="#" class="nav-item" data-section="callbacks">
+                    <span class="nav-icon">🔔</span>
+                    Callbacks
+                </a>
+                <a href="#" class="nav-item" data-section="bookings">
+                    <span class="nav-icon">📅</span>
+                    Bookings
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="/" class="nav-item">
+                    <span class="nav-icon">🏠</span>
+                    View Website
+                </a>
+                <a href="#" class="nav-item" id="logoutBtn">
+                    <span class="nav-icon">🚪</span>
+                    Logout
+                </a>
+            </div>
+        </aside>
+
+        <!-- Mobile Header -->
+        <header class="mobile-header">
+            <button class="menu-toggle" id="menuToggle">☰</button>
+            <h1>Elise CRM</h1>
+            <button class="mobile-logout" id="mobileLogout">Logout</button>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section active">
+                <div class="section-header">
+                    <h1>Dashboard</h1>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="statContacts">0</span>
+                            <span class="stat-label">Total Contacts</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📅</div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="statUpcoming">0</span>
+                            <span class="stat-label">Upcoming Bookings</span>
+                        </div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-icon">🔔</div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="statAwaitingCallback">0</span>
+                            <span class="stat-label">Awaiting Callback</span>
+                        </div>
+                    </div>
+                    <div class="stat-card info">
+                        <div class="stat-icon">📞</div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="statToCallBack">0</span>
+                            <span class="stat-label">To Call Back</span>
+                        </div>
+                    </div>
+                    <div class="stat-card danger">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="statUnpaid">0</span>
+                            <span class="stat-label">Unpaid Bookings</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📄</div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="statInvoiced">0</span>
+                            <span class="stat-label">Invoiced</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contacts Section -->
+            <section id="contacts" class="content-section">
+                <div class="section-header">
+                    <h1>Contacts</h1>
+                    <button class="btn btn-primary" onclick="openModal('contactModal')">+ Add Contact</button>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Care Home</th>
+                                <th>Contact Person</th>
+                                <th>Telephone</th>
+                                <th>Email</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="contactsTable">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Call Log Section -->
+            <section id="call-log" class="content-section">
+                <div class="section-header">
+                    <h1>Call Log</h1>
+                    <button class="btn btn-primary" onclick="openModal('callLogModal')">+ Add Call</button>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date/Time</th>
+                                <th>Contact</th>
+                                <th>Notes</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="callLogTable">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Callbacks Section -->
+            <section id="callbacks" class="content-section">
+                <div class="section-header">
+                    <h1>Callbacks</h1>
+                    <button class="btn btn-primary" onclick="openModal('callbackModal')">+ Add Callback</button>
+                </div>
+                
+                <div class="callback-tabs">
+                    <button class="tab-btn active" data-tab="awaiting">Awaiting Callback</button>
+                    <button class="tab-btn" data-tab="tocall">To Call Back</button>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Contact</th>
+                                <th>Original Call</th>
+                                <th>Callback Date</th>
+                                <th>Notes</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="callbacksTable">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Bookings Section -->
+            <section id="bookings" class="content-section">
+                <div class="section-header">
+                    <h1>Bookings</h1>
+                    <button class="btn btn-primary" onclick="openModal('bookingModal')">+ Add Booking</button>
+                </div>
+                
+                <div class="filter-bar">
+                    <label>Filter by status:</label>
+                    <select id="bookingStatusFilter">
+                        <option value="">All</option>
+                        <option value="Unpaid">Unpaid</option>
+                        <option value="Invoiced">Invoiced</option>
+                        <option value="Paid">Paid</option>
+                    </select>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date/Time</th>
+                                <th>Venue</th>
+                                <th>Type</th>
+                                <th>Fee Agreed</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookingsTable">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Contact Modal -->
+    <div id="contactModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="contactModalTitle">Add Contact</h2>
+                <button class="modal-close" onclick="closeModal('contactModal')">&times;</button>
+            </div>
+            <form id="contactForm">
+                <input type="hidden" id="contactId">
+                <div class="form-group">
+                    <label for="careHomeName">Care Home Name *</label>
+                    <input type="text" id="careHomeName" required>
+                </div>
+                <div class="form-group">
+                    <label for="contactPerson">Contact Person</label>
+                    <input type="text" id="contactPerson">
+                </div>
+                <div class="form-group">
+                    <label for="telephone">Telephone</label>
+                    <input type="tel" id="telephone">
+                </div>
+                <div class="form-group">
+                    <label for="contactEmail">Email</label>
+                    <input type="email" id="contactEmail">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('contactModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Contact</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Call Log Modal -->
+    <div id="callLogModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="callLogModalTitle">Add Call</h2>
+                <button class="modal-close" onclick="closeModal('callLogModal')">&times;</button>
+            </div>
+            <form id="callLogForm">
+                <input type="hidden" id="callLogId">
+                <div class="form-group">
+                    <label for="callContact">Contact *</label>
+                    <select id="callContact" required>
+                        <!-- Populated by JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="callDateTime">Date/Time *</label>
+                    <input type="datetime-local" id="callDateTime" required>
+                </div>
+                <div class="form-group">
+                    <label for="callNotes">Notes</label>
+                    <textarea id="callNotes" rows="4"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('callLogModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Call</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Callback Modal -->
+    <div id="callbackModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="callbackModalTitle">Add Callback</h2>
+                <button class="modal-close" onclick="closeModal('callbackModal')">&times;</button>
+            </div>
+            <form id="callbackForm">
+                <input type="hidden" id="callbackId">
+                <div class="form-group">
+                    <label for="callbackContact">Contact *</label>
+                    <select id="callbackContact" required>
+                        <!-- Populated by JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="callbackType">Callback Type *</label>
+                    <select id="callbackType" required>
+                        <option value="Awaiting Callback">Awaiting Callback</option>
+                        <option value="To Call Back">To Call Back</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="originalCallDateTime">Original Call Date/Time *</label>
+                    <input type="datetime-local" id="originalCallDateTime" required>
+                </div>
+                <div class="form-group">
+                    <label for="callbackDateTime">Callback Date/Time *</label>
+                    <input type="datetime-local" id="callbackDateTime" required>
+                </div>
+                <div class="form-group">
+                    <label for="callbackNotes">Notes</label>
+                    <textarea id="callbackNotes" rows="4"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('callbackModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Callback</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="bookingModalTitle">Add Booking</h2>
+                <button class="modal-close" onclick="closeModal('bookingModal')">&times;</button>
+            </div>
+            <form id="bookingForm">
+                <input type="hidden" id="bookingId">
+                <div class="form-group">
+                    <label for="bookingDateTime">Date/Time *</label>
+                    <input type="datetime-local" id="bookingDateTime" required>
+                </div>
+                <div class="form-group">
+                    <label for="bookingVenue">Venue *</label>
+                    <input type="text" id="bookingVenue" required>
+                </div>
+                <div class="form-group">
+                    <label for="bookingType">Type of Booking</label>
+                    <textarea id="bookingType" rows="2" placeholder="e.g., Christmas songs, ABBA night, etc."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="feeAgreed">Fee Agreed (£)</label>
+                    <input type="number" id="feeAgreed" step="0.01" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="feeStatus">Fee Status *</label>
+                    <select id="feeStatus" required>
+                        <option value="Unpaid">Unpaid</option>
+                        <option value="Invoiced">Invoiced</option>
+                        <option value="Paid">Paid</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('bookingModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Booking</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2>Confirm Delete</h2>
+                <button class="modal-close" onclick="closeModal('deleteModal')">&times;</button>
+            </div>
+            <p>Are you sure you want to delete this item? This action cannot be undone.</p>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('deleteModal')">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/crm.js"></script>
+</body>
+</html>
