@@ -1342,3 +1342,17 @@ img {
     margin: 0 auto;
     display: block;
 }
+.contact-centered {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+
+.contact-centered .contact-info {
+    max-width: 600px;
+}
+
+.contact-centered .contact-details {
+    display: inline-block;
+    text-align: left;
+}
