@@ -1333,3 +1333,12 @@ img {
         transform: none;
     }
 }
+
+.about-photo {
+    width: 100%;
+    max-width: 350px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    margin: 0 auto;
+    display: block;
+}
