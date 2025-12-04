@@ -470,6 +470,7 @@ def serve_crm():
     return FileResponse(os.path.join(FRONTEND_DIR, "crm.html"))
 
 
-# Mount static files (CSS, JS)
+# Mount static files (CSS, JS, Images)
 app.mount("/css", StaticFiles(directory=os.path.join(FRONTEND_DIR, "css")), name="css")
 app.mount("/js", StaticFiles(directory=os.path.join(FRONTEND_DIR, "js")), name="js")
+app.mount("/images", StaticFiles(directory=os.path.join(FRONTEND_DIR, "images")), name="images")
