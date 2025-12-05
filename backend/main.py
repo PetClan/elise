@@ -36,6 +36,10 @@ def startup():
         db.execute(text("ALTER TABLE bookings ADD COLUMN IF NOT EXISTS booking_from TIMESTAMP"))
         # Add booking_to column to bookings if it doesn't exist
         db.execute(text("ALTER TABLE bookings ADD COLUMN IF NOT EXISTS booking_to TIMESTAMP"))
+        # Drop old booking_date column if it exists
+        db.execute(text("ALTER TABLE bookings DROP COLUMN IF EXISTS booking_date"))
+        # Drop old venue column if it exists
+        db.execute(text("ALTER TABLE bookings DROP COLUMN IF EXISTS venue"))
         db.commit()
         print("Database columns updated successfully")
     except Exception as e:
