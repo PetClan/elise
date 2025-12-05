@@ -1356,3 +1356,150 @@ img {
     display: inline-block;
     text-align: left;
 }
+/* ========================================
+   CRM - CALENDAR
+======================================== */
+.calendar-container {
+    background: var(--white);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    padding: var(--spacing-lg);
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.calendar-header h2 {
+    font-size: 1.5rem;
+    color: var(--dark);
+    margin: 0;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    margin-bottom: 2px;
+}
+
+.calendar-day-header {
+    background: var(--light);
+    padding: var(--spacing-sm);
+    text-align: center;
+    font-weight: 600;
+    color: var(--gray-dark);
+    font-size: 0.85rem;
+}
+
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+}
+
+.calendar-day {
+    min-height: 100px;
+    background: var(--light);
+    padding: var(--spacing-xs);
+    position: relative;
+    vertical-align: top;
+}
+
+.calendar-day.empty {
+    background: transparent;
+}
+
+.calendar-day.today {
+    background: var(--primary-light);
+}
+
+.calendar-day.has-booking {
+    background: #e8f5e9;
+}
+
+.day-number {
+    display: block;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--dark);
+    margin-bottom: var(--spacing-xs);
+}
+
+.day-bookings {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.calendar-booking {
+    background: var(--primary);
+    color: var(--white);
+    padding: 4px 6px;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.calendar-booking:hover {
+    background: var(--primary-dark);
+}
+
+.booking-time {
+    font-weight: 600;
+    display: block;
+}
+
+.booking-venue {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.booking-details p {
+    margin-bottom: var(--spacing-sm);
+    color: var(--dark);
+}
+
+.booking-details strong {
+    color: var(--gray-dark);
+}
+
+/* Mobile calendar adjustments */
+@media (max-width: 768px) {
+    .calendar-day {
+        min-height: 60px;
+    }
+
+    .calendar-day-header {
+        font-size: 0.7rem;
+        padding: var(--spacing-xs);
+    }
+
+    .day-number {
+        font-size: 0.8rem;
+    }
+
+    .calendar-booking {
+        font-size: 0.65rem;
+        padding: 2px 4px;
+    }
+
+    .booking-venue {
+        display: none;
+    }
+
+    .calendar-header h2 {
+        font-size: 1.1rem;
+    }
+
+    .calendar-header .btn {
+        padding: var(--spacing-xs) var(--spacing-sm);
+        font-size: 0.85rem;
+    }
+}

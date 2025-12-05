@@ -31,6 +31,9 @@ function setupEventListeners() {
     // Login form
     document.getElementById('loginForm').addEventListener('submit', handleLogin);
 
+    // Initialize calendar
+    initCalendar();
+
     // Logout buttons
     document.getElementById('logoutBtn').addEventListener('click', handleLogout);
     document.getElementById('mobileLogout').addEventListener('click', handleLogout);
@@ -177,9 +180,12 @@ function navigateToSection(section) {
     document.querySelector('.sidebar').classList.remove('active');
 
     // Load data for section
-    switch(section) {
+    switch (section) {
         case 'dashboard':
             loadDashboard();
+            break;
+        case 'calendar':
+            loadCalendar();
             break;
         case 'contacts':
             loadContacts();
@@ -805,4 +811,136 @@ function showToast(message, type = 'success') {
     setTimeout(() => {
         toast.remove();
     }, 3000);
+}
+// ========================================
+// CALENDAR
+// ========================================
+
+let currentCalendarDate = new Date();
+
+function initCalendar() {
+    document.getElementById('prevMonth').addEventListener('click', () => {
+        currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+        renderCalendar();
+    });
+
+    document.getElementById('nextMonth').addEventListener('click', () => {
+        currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+        renderCalendar();
+    });
+}
+
+async function loadCalendar() {
+    await renderCalendar();
+}
+
+async function renderCalendar() {
+    const year = currentCalendarDate.getFullYear();
+    const month = currentCalendarDate.getMonth();
+
+    // Update header
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'];
+    document.getElementById('currentMonth').textContent = `${monthNames[month]} ${year}`;
+
+    // Get bookings for this month
+    let bookings = [];
+    try {
+        const response = await fetch(`${API_URL}/bookings`, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        if (response.ok) {
+            bookings = await response.json();
+        }
+    } catch (error) {
+        console.error('Failed to load bookings for calendar:', error);
+    }
+
+    // Calculate calendar days
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const startingDay = firstDay.getDay();
+    const totalDays = lastDay.getDate();
+
+    // Build calendar HTML
+    const calendarDays = document.getElementById('calendarDays');
+    let html = '';
+
+    // Empty cells before first day
+    for (let i = 0; i < startingDay; i++) {
+        html += '<div class="calendar-day empty"></div>';
+    }
+
+    // Days of the month
+    for (let day = 1; day <= totalDays; day++) {
+        const date = new Date(year, month, day);
+        const dateStr = date.toISOString().split('T')[0];
+        const isToday = isSameDay(date, new Date());
+
+        // Find bookings for this day
+        const dayBookings = bookings.filter(b => {
+            const bookingDate = new Date(b.booking_date);
+            return isSameDay(bookingDate, date);
+        });
+
+        html += `<div class="calendar-day${isToday ? ' today' : ''}${dayBookings.length > 0 ? ' has-booking' : ''}">
+            <span class="day-number">${day}</span>`;
+
+        if (dayBookings.length > 0) {
+            html += '<div class="day-bookings">';
+            dayBookings.forEach(booking => {
+                const time = new Date(booking.booking_date).toLocaleTimeString('en-GB', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                html += `<div class="calendar-booking" onclick="showBookingDetails(${booking.id})">
+                    <span class="booking-time">${time}</span>
+                    <span class="booking-venue">${escapeHtml(booking.venue)}</span>
+                </div>`;
+            });
+            html += '</div>';
+        }
+
+        html += '</div>';
+    }
+
+    calendarDays.innerHTML = html;
+}
+
+function isSameDay(date1, date2) {
+    return date1.getFullYear() === date2.getFullYear() &&
+        date1.getMonth() === date2.getMonth() &&
+        date1.getDate() === date2.getDate();
+}
+
+async function showBookingDetails(bookingId) {
+    try {
+        const response = await fetch(`${API_URL}/bookings/${bookingId}`, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+
+        if (response.ok) {
+            const booking = await response.json();
+            const content = document.getElementById('bookingDetailsContent');
+
+            content.innerHTML = `
+                <div class="booking-details">
+                    <p><strong>Date/Time:</strong> ${formatDateTime(booking.booking_date)}</p>
+                    <p><strong>Venue:</strong> ${escapeHtml(booking.venue)}</p>
+                    <p><strong>Type:</strong> ${escapeHtml(booking.booking_type || 'Not specified')}</p>
+                    <p><strong>Fee Agreed:</strong> £${booking.fee_agreed ? parseFloat(booking.fee_agreed).toFixed(2) : '0.00'}</p>
+                    <p><strong>Status:</strong> <span class="status-badge status-${booking.fee_status.toLowerCase()}">${booking.fee_status}</span></p>
+                </div>
+            `;
+
+            document.getElementById('editBookingBtn').onclick = () => {
+                closeModal('bookingDetailsModal');
+                editBooking(bookingId);
+            };
+
+            openModal('bookingDetailsModal');
+        }
+    } catch (error) {
+        console.error('Error loading booking details:', error);
+    }
 }

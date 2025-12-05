@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,8 +8,11 @@
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Open+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Open+Sans:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
 </head>
+
 <body class="crm-page">
     <!-- Login Screen -->
     <div id="loginScreen" class="login-screen">
@@ -37,6 +41,10 @@
                 <a href="#" class="nav-item active" data-section="dashboard">
                     <span class="nav-icon">📊</span>
                     Dashboard
+                </a>
+                <a href="#" class="nav-item" data-section="calendar">
+                    <span class="nav-icon">🗓️</span>
+                    Calendar
                 </a>
                 <a href="#" class="nav-item" data-section="contacts">
                     <span class="nav-icon">👥</span>
@@ -180,7 +188,7 @@
                     <h1>Callbacks</h1>
                     <button class="btn btn-primary" onclick="openModal('callbackModal')">+ Add Callback</button>
                 </div>
-                
+
                 <div class="callback-tabs">
                     <button class="tab-btn active" data-tab="awaiting">Awaiting Callback</button>
                     <button class="tab-btn" data-tab="tocall">To Call Back</button>
@@ -203,14 +211,56 @@
                     </table>
                 </div>
             </section>
+            <!-- Calendar Section -->
+            <section id="calendar" class="content-section">
+                <div class="section-header">
+                    <h1>Calendar</h1>
+                </div>
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <button class="btn btn-secondary" id="prevMonth">← Previous</button>
+                        <h2 id="currentMonth">December 2025</h2>
+                        <button class="btn btn-secondary" id="nextMonth">Next →</button>
+                    </div>
+                    <div class="calendar-grid">
+                        <div class="calendar-day-header">Sun</div>
+                        <div class="calendar-day-header">Mon</div>
+                        <div class="calendar-day-header">Tue</div>
+                        <div class="calendar-day-header">Wed</div>
+                        <div class="calendar-day-header">Thu</div>
+                        <div class="calendar-day-header">Fri</div>
+                        <div class="calendar-day-header">Sat</div>
+                    </div>
+                    <div class="calendar-days" id="calendarDays">
+                        <!-- Days populated by JavaScript -->
+                    </div>
+                </div>
+            </section>
 
+            <!-- Booking Details Modal -->
+            <div id="bookingDetailsModal" class="modal">
+                <div class="modal-content modal-small">
+                    <div class="modal-header">
+                        <h2>Booking Details</h2>
+                        <button class="modal-close" onclick="closeModal('bookingDetailsModal')">&times;</button>
+                    </div>
+                    <div id="bookingDetailsContent">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary"
+                            onclick="closeModal('bookingDetailsModal')">Close</button>
+                        <button type="button" class="btn btn-primary" id="editBookingBtn">Edit Booking</button>
+                    </div>
+                </div>
+            </div>
             <!-- Bookings Section -->
             <section id="bookings" class="content-section">
                 <div class="section-header">
                     <h1>Bookings</h1>
                     <button class="btn btn-primary" onclick="openModal('bookingModal')">+ Add Booking</button>
                 </div>
-                
+
                 <div class="filter-bar">
                     <label>Filter by status:</label>
                     <select id="bookingStatusFilter">
@@ -341,7 +391,8 @@
                     <textarea id="callbackNotes" rows="4"></textarea>
                 </div>
                 <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('callbackModal')">Cancel</button>
+                    <button type="button" class="btn btn-secondary"
+                        onclick="closeModal('callbackModal')">Cancel</button>
                     <button type="submit" class="btn btn-primary">Save Callback</button>
                 </div>
             </form>
@@ -367,7 +418,8 @@
                 </div>
                 <div class="form-group">
                     <label for="bookingType">Type of Booking</label>
-                    <textarea id="bookingType" rows="2" placeholder="e.g., Christmas songs, ABBA night, etc."></textarea>
+                    <textarea id="bookingType" rows="2"
+                        placeholder="e.g., Christmas songs, ABBA night, etc."></textarea>
                 </div>
                 <div class="form-group">
                     <label for="feeAgreed">Fee Agreed (£)</label>
@@ -406,4 +458,5 @@
 
     <script src="/js/crm.js"></script>
 </body>
+
 </html>
