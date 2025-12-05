@@ -677,8 +677,8 @@ async function editBooking(id) {
 
         if (response.ok) {
             const booking = await response.json();
-            openModal('bookingModal');
 
+            // Set values BEFORE showing modal
             document.getElementById('bookingModalTitle').textContent = 'Edit Booking';
             document.getElementById('bookingId').value = booking.id;
             document.getElementById('bookingContact').value = booking.contact_id;
@@ -687,6 +687,9 @@ async function editBooking(id) {
             document.getElementById('bookingType').value = booking.booking_type || '';
             document.getElementById('feeAgreed').value = booking.fee_agreed || '';
             document.getElementById('feeStatus').value = booking.fee_status;
+
+            // Show modal directly without resetting
+            document.getElementById('bookingModal').classList.add('active');
         }
     } catch (error) {
         console.error('Error loading booking:', error);
