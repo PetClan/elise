@@ -357,8 +357,7 @@ def get_bookings(
     if fee_status:
         query = query.filter(Booking.fee_status == FeeStatus(fee_status))
     
-    return query.order_by(Booking.booking_date).all()
-
+    return query.order_by(Booking.booking_from).all()
 
 @app.get("/api/bookings/{booking_id}", response_model=BookingResponse)
 def get_booking(
@@ -445,8 +444,8 @@ def get_dashboard_stats(
     total_contacts = db.query(Contact).count()
     total_bookings = db.query(Booking).count()
     upcoming_bookings = db.query(Booking).filter(
-        Booking.booking_date >= datetime.now()
-    ).count()
+    Booking.booking_from >= datetime.now()
+).count()
     
     awaiting_callbacks = db.query(Callback).filter(
         Callback.callback_type == CallbackType.AWAITING_CALLBACK
