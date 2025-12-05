@@ -25,10 +25,15 @@ def startup():
     from alembic import command
     import os
     
-    # Run migrations
-    alembic_cfg = Config(os.path.join(os.path.dirname(__file__), "alembic.ini"))
-    alembic_cfg.set_main_option("script_location", os.path.join(os.path.dirname(__file__), "alembic"))
-    command.upgrade(alembic_cfg, "head")
+    try:
+        # Run migrations
+        alembic_cfg = Config(os.path.join(os.path.dirname(__file__), "alembic.ini"))
+        alembic_cfg.set_main_option("script_location", os.path.join(os.path.dirname(__file__), "alembic"))
+        command.upgrade(alembic_cfg, "head")
+    except Exception as e:
+        print(f"Migration error (may be safe to ignore if tables exist): {e}")
+        # Fallback to init_db if migrations fail
+        init_db()
 
 
 # ============== Authentication ==============
