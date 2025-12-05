@@ -21,7 +21,14 @@ app = FastAPI(title="Elise CRM", version="1.0.0")
 # Initialize database on startup
 @app.on_event("startup")
 def startup():
-    init_db()
+    from alembic.config import Config
+    from alembic import command
+    import os
+    
+    # Run migrations
+    alembic_cfg = Config(os.path.join(os.path.dirname(__file__), "alembic.ini"))
+    alembic_cfg.set_main_option("script_location", os.path.join(os.path.dirname(__file__), "alembic"))
+    command.upgrade(alembic_cfg, "head")
 
 
 # ============== Authentication ==============
