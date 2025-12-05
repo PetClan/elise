@@ -102,9 +102,9 @@ class CallbackResponse(CallbackBase):
 
 # Booking Schemas
 class BookingBase(BaseModel):
+    contact_id: int
     booking_from: datetime
     booking_to: datetime
-    venue: str
     booking_type: Optional[str] = None
     fee_agreed: Optional[float] = None
     fee_status: FeeStatusEnum = FeeStatusEnum.UNPAID
@@ -115,9 +115,9 @@ class BookingCreate(BookingBase):
 
 
 class BookingUpdate(BaseModel):
+    contact_id: Optional[int] = None
     booking_from: Optional[datetime] = None
     booking_to: Optional[datetime] = None
-    venue: Optional[str] = None
     booking_type: Optional[str] = None
     fee_agreed: Optional[float] = None
     fee_status: Optional[FeeStatusEnum] = None
@@ -125,6 +125,7 @@ class BookingUpdate(BaseModel):
 
 class BookingResponse(BookingBase):
     id: int
+    contact: Optional[ContactResponse] = None
 
     class Config:
         from_attributes = True

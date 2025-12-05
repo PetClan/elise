@@ -142,16 +142,17 @@
                     <button class="btn btn-primary" onclick="openModal('contactModal')">+ Add Contact</button>
                 </div>
                 <div class="table-container">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Care Home</th>
-                                <th>Contact Person</th>
-                                <th>Telephone</th>
-                                <th>Email</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date/Time</th>
+                            <th>Care Home</th>
+                            <th>Type</th>
+                            <th>Fee Agreed</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
                         <tbody id="contactsTable">
                             <!-- Populated by JavaScript -->
                         </tbody>
@@ -421,16 +422,18 @@
             <form id="bookingForm">
                 <input type="hidden" id="bookingId">
                 <div class="form-group">
+                    <label for="bookingContact">Care Home *</label>
+                    <select id="bookingContact" required>
+                        <!-- Populated by JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
                     <label for="bookingFrom">From *</label>
                     <input type="datetime-local" id="bookingFrom" required>
                 </div>
                 <div class="form-group">
                     <label for="bookingTo">To *</label>
                     <input type="datetime-local" id="bookingTo" required>
-                </div>
-                <div class="form-group">
-                    <label for="bookingVenue">Venue *</label>
-                    <input type="text" id="bookingVenue" required>
                 </div>
                 <div class="form-group">
                     <label for="bookingType">Type of Booking</label>

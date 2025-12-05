@@ -276,12 +276,12 @@ function renderContactsTable() {
 }
 
 function populateContactDropdowns() {
-    const dropdowns = ['callContact', 'callbackContact'];
+    const dropdowns = ['callContact', 'callbackContact', 'bookingContact'];
     const optionsHtml = `
         <option value="">Select a contact</option>
         ${contacts.map(c => `<option value="${c.id}">${escapeHtml(c.care_home_name)}</option>`).join('')}
     `;
-    
+
     dropdowns.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.innerHTML = optionsHtml;
@@ -598,7 +598,7 @@ function renderBookingsTable(bookings) {
     tbody.innerHTML = bookings.map(booking => `
         <tr>
             <td>${formatDateTime(booking.booking_from)} - ${formatDateTime(booking.booking_to)}</td>
-            <td>${escapeHtml(booking.venue)}</td>
+            <td>${escapeHtml(booking.contact?.care_home_name || 'Unknown')}</td>
             <td>${escapeHtml(booking.booking_type || '-')}</td>
             <td>£${booking.fee_agreed ? parseFloat(booking.fee_agreed).toFixed(2) : '0.00'}</td>
             <td><span class="status-badge status-${booking.fee_status.toLowerCase()}">${booking.fee_status}</span></td>
@@ -615,9 +615,9 @@ async function handleBookingSubmit(e) {
 
     const id = document.getElementById('bookingId').value;
     const data = {
+        contact_id: parseInt(document.getElementById('bookingContact').value),
         booking_from: document.getElementById('bookingFrom').value,
         booking_to: document.getElementById('bookingTo').value,
-        venue: document.getElementById('bookingVenue').value,
         booking_type: document.getElementById('bookingType').value,
         fee_agreed: parseFloat(document.getElementById('feeAgreed').value) || 0,
         fee_status: document.getElementById('feeStatus').value
@@ -660,9 +660,9 @@ async function editBooking(id) {
             const booking = await response.json();
             document.getElementById('bookingModalTitle').textContent = 'Edit Booking';
             document.getElementById('bookingId').value = booking.id;
+            document.getElementById('bookingContact').value = booking.contact_id;
             document.getElementById('bookingFrom').value = formatDateTimeForInput(booking.booking_from);
             document.getElementById('bookingTo').value = formatDateTimeForInput(booking.booking_to);
-            document.getElementById('bookingVenue').value = booking.venue;
             document.getElementById('bookingType').value = booking.booking_type || '';
             document.getElementById('feeAgreed').value = booking.fee_agreed || '';
             document.getElementById('feeStatus').value = booking.fee_status;
@@ -911,7 +911,7 @@ function renderCalendar() {
                         });
                         html += `<div class="calendar-booking" onclick="showBookingDetails(${booking.id})">
                             <span class="booking-time">${time}</span>
-                            <span class="booking-venue">${escapeHtml(booking.venue)}</span>
+                            <span class="booking-venue">${escapeHtml(booking.contact?.care_home_name || '')}</span>
                         </div>`;
                     });
                     html += '</div>';
@@ -949,9 +949,9 @@ async function showBookingDetails(bookingId) {
 
             content.innerHTML = `
                 <div class="booking-details">
+                    <p><strong>Care Home:</strong> ${escapeHtml(booking.contact?.care_home_name || 'Unknown')}</p>
                     <p><strong>From:</strong> ${formatDateTime(booking.booking_from)}</p>
                     <p><strong>To:</strong> ${formatDateTime(booking.booking_to)}</p>
-                    <p><strong>Venue:</strong> ${escapeHtml(booking.venue)}</p>
                     <p><strong>Type:</strong> ${escapeHtml(booking.booking_type || 'Not specified')}</p>
                     <p><strong>Fee Agreed:</strong> £${booking.fee_agreed ? parseFloat(booking.fee_agreed).toFixed(2) : '0.00'}</p>
                     <p><strong>Status:</strong> <span class="status-badge status-${booking.fee_status.toLowerCase()}">${booking.fee_status}</span></p>

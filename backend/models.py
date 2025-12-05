@@ -61,9 +61,12 @@ class Booking(Base):
     __tablename__ = "bookings"
 
     id = Column(Integer, primary_key=True, index=True)
+    contact_id = Column(Integer, ForeignKey("contacts.id"), nullable=False)
     booking_from = Column(DateTime, nullable=False)
     booking_to = Column(DateTime, nullable=False)
-    venue = Column(String(255), nullable=False)
     booking_type = Column(Text, nullable=True)
     fee_agreed = Column(Numeric(10, 2), nullable=True)
     fee_status = Column(Enum(FeeStatus), default=FeeStatus.UNPAID, nullable=False)
+
+    # Relationships
+    contact = relationship("Contact")
