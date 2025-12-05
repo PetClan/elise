@@ -21,19 +21,31 @@ app = FastAPI(title="Elise CRM", version="1.0.0")
 # Initialize database on startup
 @app.on_event("startup")
 def startup():
-    from alembic.config import Config
-    from alembic import command
-    import os
+    from sqlalchemy import text
     
+    # Add missing columns to existing tables
+    db = SessionLocal()
     try:
-        # Run migrations
-        alembic_cfg = Config(os.path.join(os.path.dirname(__file__), "alembic.ini"))
-        alembic_cfg.set_main_option("script_location", os.path.join(os.path.dirname(__file__), "alembic"))
-        command.upgrade(alembic_cfg, "head")
+        # Add address column to contacts if it doesn't exist
+        db.execute(text("ALTER TABLE contacts ADD COLUMN IF NOT EXISTS address TEXT"))
+        # Add postcode column to contacts if it doesn't exist
+        db.execute(text("ALTER TABLE contacts ADD COLUMN IF NOT EXISTS postcode VARCHAR(20)"))
+        # Add contact_id column to bookings if it doesn't exist
+        db.execute(text("ALTER TABLE bookings ADD COLUMN IF NOT EXISTS contact_id INTEGER REFERENCES contacts(id)"))
+        # Add booking_from column to bookings if it doesn't exist
+        db.execute(text("ALTER TABLE bookings ADD COLUMN IF NOT EXISTS booking_from TIMESTAMP"))
+        # Add booking_to column to bookings if it doesn't exist
+        db.execute(text("ALTER TABLE bookings ADD COLUMN IF NOT EXISTS booking_to TIMESTAMP"))
+        db.commit()
+        print("Database columns updated successfully")
     except Exception as e:
-        print(f"Migration error (may be safe to ignore if tables exist): {e}")
-        # Fallback to init_db if migrations fail
-        init_db()
+        print(f"Column update error: {e}")
+        db.rollback()
+    finally:
+        db.close()
+    
+    # Ensure all tables exist
+    init_db()
 
 
 # ============== Authentication ==============
