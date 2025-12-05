@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 import os
 
-from database import get_db, init_db
+from database import get_db, init_db, SessionLocal
 from models import Contact, CallLog, Callback, Booking, CallbackType, FeeStatus
 from schemas import (
     ContactCreate, ContactUpdate, ContactResponse,
