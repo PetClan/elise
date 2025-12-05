@@ -290,13 +290,15 @@ function populateContactDropdowns() {
 
 async function handleContactSubmit(e) {
     e.preventDefault();
-    
+
     const id = document.getElementById('contactId').value;
     const data = {
         care_home_name: document.getElementById('careHomeName').value,
         contact_person: document.getElementById('contactPerson').value,
         telephone: document.getElementById('telephone').value,
-        email: document.getElementById('contactEmail').value
+        email: document.getElementById('contactEmail').value,
+        address: document.getElementById('contactAddress').value,
+        postcode: document.getElementById('contactPostcode').value
     };
 
     try {
@@ -336,6 +338,8 @@ function editContact(id) {
     document.getElementById('contactPerson').value = contact.contact_person || '';
     document.getElementById('telephone').value = contact.telephone || '';
     document.getElementById('contactEmail').value = contact.email || '';
+    document.getElementById('contactAddress').value = contact.address || '';
+    document.getElementById('contactPostcode').value = contact.postcode || '';
 
     openModal('contactModal');
 }
@@ -593,7 +597,7 @@ function renderBookingsTable(bookings) {
 
     tbody.innerHTML = bookings.map(booking => `
         <tr>
-            <td>${formatDateTime(booking.booking_date)}</td>
+            <td>${formatDateTime(booking.booking_from)} - ${formatDateTime(booking.booking_to)}</td>
             <td>${escapeHtml(booking.venue)}</td>
             <td>${escapeHtml(booking.booking_type || '-')}</td>
             <td>£${booking.fee_agreed ? parseFloat(booking.fee_agreed).toFixed(2) : '0.00'}</td>
@@ -608,10 +612,11 @@ function renderBookingsTable(bookings) {
 
 async function handleBookingSubmit(e) {
     e.preventDefault();
-    
+
     const id = document.getElementById('bookingId').value;
     const data = {
-        booking_date: document.getElementById('bookingDateTime').value,
+        booking_from: document.getElementById('bookingFrom').value,
+        booking_to: document.getElementById('bookingTo').value,
         venue: document.getElementById('bookingVenue').value,
         booking_type: document.getElementById('bookingType').value,
         fee_agreed: parseFloat(document.getElementById('feeAgreed').value) || 0,
@@ -655,7 +660,8 @@ async function editBooking(id) {
             const booking = await response.json();
             document.getElementById('bookingModalTitle').textContent = 'Edit Booking';
             document.getElementById('bookingId').value = booking.id;
-            document.getElementById('bookingDateTime').value = formatDateTimeForInput(booking.booking_date);
+            document.getElementById('bookingFrom').value = formatDateTimeForInput(booking.booking_from);
+            document.getElementById('bookingTo').value = formatDateTimeForInput(booking.booking_to);
             document.getElementById('bookingVenue').value = booking.venue;
             document.getElementById('bookingType').value = booking.booking_type || '';
             document.getElementById('feeAgreed').value = booking.fee_agreed || '';
@@ -757,6 +763,8 @@ function openModal(modalId) {
         document.getElementById('bookingModalTitle').textContent = 'Add Booking';
         document.getElementById('bookingForm').reset();
         document.getElementById('bookingId').value = '';
+        document.getElementById('bookingFrom').value = formatDateTimeForInput(new Date().toISOString());
+        document.getElementById('bookingTo').value = formatDateTimeForInput(new Date().toISOString());
     }
 
     document.getElementById(modalId).classList.add('active');
@@ -885,7 +893,7 @@ function renderCalendar() {
 
                 // Find bookings for this day
                 const dayBookings = calendarBookings.filter(b => {
-                    const bookingDate = new Date(b.booking_date);
+                    const bookingDate = new Date(b.booking_from);
                     return isSameDay(bookingDate, date);
                 });
 
@@ -897,7 +905,7 @@ function renderCalendar() {
                 if (hasBooking) {
                     html += '<div class="day-bookings">';
                     dayBookings.forEach(booking => {
-                        const time = new Date(booking.booking_date).toLocaleTimeString('en-GB', {
+                        const time = new Date(booking.booking_from).toLocaleTimeString('en-GB', {
                             hour: '2-digit',
                             minute: '2-digit'
                         });
@@ -941,7 +949,8 @@ async function showBookingDetails(bookingId) {
 
             content.innerHTML = `
                 <div class="booking-details">
-                    <p><strong>Date/Time:</strong> ${formatDateTime(booking.booking_date)}</p>
+                    <p><strong>From:</strong> ${formatDateTime(booking.booking_from)}</p>
+                    <p><strong>To:</strong> ${formatDateTime(booking.booking_to)}</p>
                     <p><strong>Venue:</strong> ${escapeHtml(booking.venue)}</p>
                     <p><strong>Type:</strong> ${escapeHtml(booking.booking_type || 'Not specified')}</p>
                     <p><strong>Fee Agreed:</strong> £${booking.fee_agreed ? parseFloat(booking.fee_agreed).toFixed(2) : '0.00'}</p>

@@ -22,6 +22,8 @@ class ContactBase(BaseModel):
     telephone: Optional[str] = None
     contact_person: Optional[str] = None
     email: Optional[str] = None
+    address: Optional[str] = None
+    postcode: Optional[str] = None
 
 
 class ContactCreate(ContactBase):
@@ -33,6 +35,8 @@ class ContactUpdate(BaseModel):
     telephone: Optional[str] = None
     contact_person: Optional[str] = None
     email: Optional[str] = None
+    address: Optional[str] = None
+    postcode: Optional[str] = None
 
 
 class ContactResponse(ContactBase):
@@ -98,7 +102,8 @@ class CallbackResponse(CallbackBase):
 
 # Booking Schemas
 class BookingBase(BaseModel):
-    booking_date: datetime
+    booking_from: datetime
+    booking_to: datetime
     venue: str
     booking_type: Optional[str] = None
     fee_agreed: Optional[float] = None
@@ -110,7 +115,8 @@ class BookingCreate(BookingBase):
 
 
 class BookingUpdate(BaseModel):
-    booking_date: Optional[datetime] = None
+    booking_from: Optional[datetime] = None
+    booking_to: Optional[datetime] = None
     venue: Optional[str] = None
     booking_type: Optional[str] = None
     fee_agreed: Optional[float] = None

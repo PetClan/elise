@@ -23,6 +23,8 @@ class Contact(Base):
     telephone = Column(String(50), nullable=True)
     contact_person = Column(String(255), nullable=True)
     email = Column(String(255), nullable=True)
+    address = Column(Text, nullable=True)
+    postcode = Column(String(20), nullable=True)
 
     # Relationships
     call_logs = relationship("CallLog", back_populates="contact", cascade="all, delete-orphan")
@@ -59,7 +61,8 @@ class Booking(Base):
     __tablename__ = "bookings"
 
     id = Column(Integer, primary_key=True, index=True)
-    booking_date = Column(DateTime, nullable=False)
+    booking_from = Column(DateTime, nullable=False)
+    booking_to = Column(DateTime, nullable=False)
     venue = Column(String(255), nullable=False)
     booking_type = Column(Text, nullable=True)
     fee_agreed = Column(Numeric(10, 2), nullable=True)
