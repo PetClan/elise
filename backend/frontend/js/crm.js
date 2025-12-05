@@ -817,6 +817,7 @@ function showToast(message, type = 'success') {
 // ========================================
 
 let currentCalendarDate = new Date();
+let calendarBookings = [];
 
 function initCalendar() {
     document.getElementById('prevMonth').addEventListener('click', () => {
@@ -831,10 +832,22 @@ function initCalendar() {
 }
 
 async function loadCalendar() {
-    await renderCalendar();
+    // Fetch bookings first
+    try {
+        const response = await fetch(`${API_URL}/bookings`, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        if (response.ok) {
+            calendarBookings = await response.json();
+        }
+    } catch (error) {
+        console.error('Failed to load bookings for calendar:', error);
+    }
+
+    renderCalendar();
 }
 
-async function renderCalendar() {
+function renderCalendar() {
     const year = currentCalendarDate.getFullYear();
     const month = currentCalendarDate.getMonth();
 
@@ -843,68 +856,71 @@ async function renderCalendar() {
         'July', 'August', 'September', 'October', 'November', 'December'];
     document.getElementById('currentMonth').textContent = `${monthNames[month]} ${year}`;
 
-    // Get bookings for this month
-    let bookings = [];
-    try {
-        const response = await fetch(`${API_URL}/bookings`, {
-            headers: { 'Authorization': `Bearer ${authToken}` }
-        });
-        if (response.ok) {
-            bookings = await response.json();
-        }
-    } catch (error) {
-        console.error('Failed to load bookings for calendar:', error);
-    }
-
     // Calculate calendar days
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const startingDay = firstDay.getDay();
     const totalDays = lastDay.getDate();
 
-    // Build calendar HTML
-    const calendarDays = document.getElementById('calendarDays');
+    // Build calendar rows
+    const calendarBody = document.getElementById('calendarBody');
     let html = '';
+    let day = 1;
 
-    // Empty cells before first day
-    for (let i = 0; i < startingDay; i++) {
-        html += '<div class="calendar-day empty"></div>';
-    }
+    // Create 6 rows to cover all possible month layouts
+    for (let row = 0; row < 6; row++) {
+        html += '<tr>';
 
-    // Days of the month
-    for (let day = 1; day <= totalDays; day++) {
-        const date = new Date(year, month, day);
-        const dateStr = date.toISOString().split('T')[0];
-        const isToday = isSameDay(date, new Date());
+        for (let col = 0; col < 7; col++) {
+            if (row === 0 && col < startingDay) {
+                // Empty cells before first day
+                html += '<td class="calendar-day empty"></td>';
+            } else if (day > totalDays) {
+                // Empty cells after last day
+                html += '<td class="calendar-day empty"></td>';
+            } else {
+                // Actual day
+                const date = new Date(year, month, day);
+                const isToday = isSameDay(date, new Date());
 
-        // Find bookings for this day
-        const dayBookings = bookings.filter(b => {
-            const bookingDate = new Date(b.booking_date);
-            return isSameDay(bookingDate, date);
-        });
-
-        html += `<div class="calendar-day${isToday ? ' today' : ''}${dayBookings.length > 0 ? ' has-booking' : ''}">
-            <span class="day-number">${day}</span>`;
-
-        if (dayBookings.length > 0) {
-            html += '<div class="day-bookings">';
-            dayBookings.forEach(booking => {
-                const time = new Date(booking.booking_date).toLocaleTimeString('en-GB', {
-                    hour: '2-digit',
-                    minute: '2-digit'
+                // Find bookings for this day
+                const dayBookings = calendarBookings.filter(b => {
+                    const bookingDate = new Date(b.booking_date);
+                    return isSameDay(bookingDate, date);
                 });
-                html += `<div class="calendar-booking" onclick="showBookingDetails(${booking.id})">
-                    <span class="booking-time">${time}</span>
-                    <span class="booking-venue">${escapeHtml(booking.venue)}</span>
-                </div>`;
-            });
-            html += '</div>';
+
+                const hasBooking = dayBookings.length > 0;
+
+                html += `<td class="calendar-day${isToday ? ' today' : ''}${hasBooking ? ' has-booking' : ''}">`;
+                html += `<span class="day-number">${day}</span>`;
+
+                if (hasBooking) {
+                    html += '<div class="day-bookings">';
+                    dayBookings.forEach(booking => {
+                        const time = new Date(booking.booking_date).toLocaleTimeString('en-GB', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                        html += `<div class="calendar-booking" onclick="showBookingDetails(${booking.id})">
+                            <span class="booking-time">${time}</span>
+                            <span class="booking-venue">${escapeHtml(booking.venue)}</span>
+                        </div>`;
+                    });
+                    html += '</div>';
+                }
+
+                html += '</td>';
+                day++;
+            }
         }
 
-        html += '</div>';
+        html += '</tr>';
+
+        // Stop if we've placed all days
+        if (day > totalDays) break;
     }
 
-    calendarDays.innerHTML = html;
+    calendarBody.innerHTML = html;
 }
 
 function isSameDay(date1, date2) {

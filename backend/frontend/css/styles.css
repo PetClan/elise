@@ -1379,38 +1379,30 @@ img {
     margin: 0;
 }
 
-.calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 2px;
-    margin-bottom: 2px;
+.calendar-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
 }
 
-.calendar-day-header {
-    background: var(--light);
+.calendar-table th {
+    background: var(--primary);
+    color: var(--white);
     padding: var(--spacing-sm);
     text-align: center;
     font-weight: 600;
-    color: var(--gray-dark);
-    font-size: 0.85rem;
+    font-size: 0.9rem;
 }
 
-.calendar-days {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 2px;
-}
-
-.calendar-day {
-    min-height: 100px;
-    background: var(--light);
-    padding: var(--spacing-xs);
-    position: relative;
+.calendar-table td {
+    border: 1px solid var(--gray-light);
     vertical-align: top;
+    height: 100px;
+    padding: var(--spacing-xs);
 }
 
 .calendar-day.empty {
-    background: transparent;
+    background: var(--light);
 }
 
 .calendar-day.today {
@@ -1432,7 +1424,7 @@ img {
 .day-bookings {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 4px;
 }
 
 .calendar-booking {
@@ -1472,21 +1464,22 @@ img {
 
 /* Mobile calendar adjustments */
 @media (max-width: 768px) {
-    .calendar-day {
-        min-height: 60px;
+    .calendar-table td {
+        height: 60px;
+        padding: 2px;
     }
 
-    .calendar-day-header {
+    .calendar-table th {
         font-size: 0.7rem;
         padding: var(--spacing-xs);
     }
 
     .day-number {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
     }
 
     .calendar-booking {
-        font-size: 0.65rem;
+        font-size: 0.6rem;
         padding: 2px 4px;
     }
 
