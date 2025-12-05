@@ -1597,3 +1597,29 @@ img {
         white-space: nowrap;
     }
 }
+/* ========================================
+   SEARCH BAR
+======================================== */
+.search-bar {
+    margin-bottom: var(--spacing-lg);
+}
+
+.search-bar input {
+    width: 100%;
+    max-width: 400px;
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    border: 2px solid var(--gray-light);
+    border-radius: var(--radius-md);
+    transition: border-color 0.3s ease;
+}
+
+.search-bar input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.search-bar input::placeholder {
+    color: var(--gray);
+}

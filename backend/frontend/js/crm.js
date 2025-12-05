@@ -246,22 +246,23 @@ async function loadContacts() {
     }
 }
 
-function renderContactsTable() {
+function renderContactsTable(filteredContacts = null) {
     const tbody = document.getElementById('contactsTable');
-    
-    if (contacts.length === 0) {
+    const displayContacts = filteredContacts || contacts;
+
+    if (displayContacts.length === 0) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="5" class="empty-state">
                     <div class="empty-state-icon">👥</div>
-                    <p>No contacts yet. Add your first contact!</p>
+                    <p>${filteredContacts ? 'No contacts match your search.' : 'No contacts yet. Add your first contact!'}</p>
                 </td>
             </tr>
         `;
         return;
     }
 
-    tbody.innerHTML = contacts.map(contact => `
+    tbody.innerHTML = displayContacts.map(contact => `
         <tr>
             <td>${escapeHtml(contact.care_home_name)}</td>
             <td>${escapeHtml(contact.contact_person || '-')}</td>
@@ -273,6 +274,24 @@ function renderContactsTable() {
             </td>
         </tr>
     `).join('');
+}
+
+function filterContacts() {
+    const searchTerm = document.getElementById('contactSearch').value.toLowerCase();
+
+    if (!searchTerm) {
+        renderContactsTable();
+        return;
+    }
+
+    const filtered = contacts.filter(contact =>
+        contact.care_home_name.toLowerCase().includes(searchTerm) ||
+        (contact.contact_person && contact.contact_person.toLowerCase().includes(searchTerm)) ||
+        (contact.telephone && contact.telephone.includes(searchTerm)) ||
+        (contact.email && contact.email.toLowerCase().includes(searchTerm))
+    );
+
+    renderContactsTable(filtered);
 }
 
 function populateContactDropdowns() {

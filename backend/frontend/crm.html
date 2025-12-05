@@ -137,6 +137,10 @@
                     <h1>Contacts</h1>
                     <button class="btn btn-primary" onclick="openModal('contactModal')">+ Add Contact</button>
                 </div>
+
+                <div class="search-bar">
+                    <input type="text" id="contactSearch" placeholder="Search contacts..." oninput="filterContacts()">
+                </div>
                 <div class="table-container">
                     <table class="data-table">
                         <thead>
