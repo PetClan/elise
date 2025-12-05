@@ -50,10 +50,6 @@
                     <span class="nav-icon">👥</span>
                     Contacts
                 </a>
-                <a href="#" class="nav-item" data-section="call-log">
-                    <span class="nav-icon">📞</span>
-                    Call Log
-                </a>
                 <a href="#" class="nav-item" data-section="callbacks">
                     <span class="nav-icon">🔔</span>
                     Callbacks
@@ -142,40 +138,17 @@
                     <button class="btn btn-primary" onclick="openModal('contactModal')">+ Add Contact</button>
                 </div>
                 <div class="table-container">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Care Home</th>
-                            <th>Contact Person</th>
-                            <th>Telephone</th>
-                            <th>Email</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                        <tbody id="contactsTable">
-                            <!-- Populated by JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- Call Log Section -->
-            <section id="call-log" class="content-section">
-                <div class="section-header">
-                    <h1>Call Log</h1>
-                    <button class="btn btn-primary" onclick="openModal('callLogModal')">+ Add Call</button>
-                </div>
-                <div class="table-container">
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>Date/Time</th>
-                                <th>Contact</th>
-                                <th>Notes</th>
+                                <th>Care Home</th>
+                                <th>Contact Person</th>
+                                <th>Telephone</th>
+                                <th>Email</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="callLogTable">
+                        <tbody id="contactsTable">
                             <!-- Populated by JavaScript -->
                         </tbody>
                     </table>
@@ -332,37 +305,6 @@
                 <div class="form-actions">
                     <button type="button" class="btn btn-secondary" onclick="closeModal('contactModal')">Cancel</button>
                     <button type="submit" class="btn btn-primary">Save Contact</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Call Log Modal -->
-    <div id="callLogModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="callLogModalTitle">Add Call</h2>
-                <button class="modal-close" onclick="closeModal('callLogModal')">&times;</button>
-            </div>
-            <form id="callLogForm">
-                <input type="hidden" id="callLogId">
-                <div class="form-group">
-                    <label for="callContact">Contact *</label>
-                    <select id="callContact" required>
-                        <!-- Populated by JavaScript -->
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="callDateTime">Date/Time *</label>
-                    <input type="datetime-local" id="callDateTime" required>
-                </div>
-                <div class="form-group">
-                    <label for="callNotes">Notes</label>
-                    <textarea id="callNotes" rows="4"></textarea>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('callLogModal')">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Call</button>
                 </div>
             </form>
         </div>
