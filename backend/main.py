@@ -474,7 +474,7 @@ def get_dashboard_stats(
     }
 
 
-# ============== Static Files & Pages ==============
+# ============== Static Files & Page ===============
 
 # Get the directory where main.py is located
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
