@@ -40,6 +40,8 @@ def startup():
         db.execute(text("ALTER TABLE bookings DROP COLUMN IF EXISTS booking_date"))
         # Drop old venue column if it exists
         db.execute(text("ALTER TABLE bookings DROP COLUMN IF EXISTS venue"))
+        # Delete old bookings with NULL values in required fields
+        db.execute(text("DELETE FROM bookings WHERE contact_id IS NULL OR booking_from IS NULL OR booking_to IS NULL"))
         db.commit()
         print("Database columns updated successfully")
     except Exception as e:
