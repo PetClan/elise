@@ -332,6 +332,8 @@ function editContact(id) {
     const contact = contacts.find(c => c.id === id);
     if (!contact) return;
 
+    openModal('contactModal');
+
     document.getElementById('contactModalTitle').textContent = 'Edit Contact';
     document.getElementById('contactId').value = contact.id;
     document.getElementById('careHomeName').value = contact.care_home_name;
@@ -340,8 +342,6 @@ function editContact(id) {
     document.getElementById('contactEmail').value = contact.email || '';
     document.getElementById('contactAddress').value = contact.address || '';
     document.getElementById('contactPostcode').value = contact.postcode || '';
-
-    openModal('contactModal');
 }
 
 // ========================================
@@ -658,6 +658,8 @@ async function editBooking(id) {
 
         if (response.ok) {
             const booking = await response.json();
+            openModal('bookingModal');
+
             document.getElementById('bookingModalTitle').textContent = 'Edit Booking';
             document.getElementById('bookingId').value = booking.id;
             document.getElementById('bookingContact').value = booking.contact_id;
@@ -666,7 +668,6 @@ async function editBooking(id) {
             document.getElementById('bookingType').value = booking.booking_type || '';
             document.getElementById('feeAgreed').value = booking.fee_agreed || '';
             document.getElementById('feeStatus').value = booking.fee_status;
-            openModal('bookingModal');
         }
     } catch (error) {
         console.error('Error loading booking:', error);
