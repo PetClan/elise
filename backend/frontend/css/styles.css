@@ -1559,3 +1559,41 @@ img {
         width: 100%;
     }
 }
+/* ========================================
+   CRM MOBILE TABLE FIXES
+======================================== */
+@media (max-width: 767px) {
+
+    /* Ensure table container scrolls */
+    .table-container {
+        overflow-x: scroll;
+        -webkit-overflow-scrolling: touch;
+        margin-left: -1rem;
+        margin-right: -1rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .data-table {
+        min-width: 550px;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+        white-space: nowrap;
+    }
+
+    .data-table .actions {
+        display: flex;
+        flex-direction: row;
+        gap: 4px;
+    }
+
+    .btn-small {
+        padding: 4px 8px;
+        font-size: 0.7rem;
+        white-space: nowrap;
+    }
+}
