@@ -612,6 +612,12 @@ function openModal(modalId) {
         document.getElementById('callbackDateTime').value = formatDateTimeForInput(new Date().toISOString());
         document.getElementById('callbackNotes').value = '';
     } else if (modalId === 'bookingModal') {
+
+        // 🔹 Hard-reset the form so no old data stays behind
+        const bookingForm = document.getElementById('bookingForm');
+        if (bookingForm) bookingForm.reset();
+
+        // 🔹 Set correct defaults for a NEW booking
         document.getElementById('bookingModalTitle').textContent = 'Add Booking';
         document.getElementById('bookingId').value = '';
         document.getElementById('bookingContact').value = '';
@@ -621,6 +627,7 @@ function openModal(modalId) {
         document.getElementById('feeAgreed').value = '';
         document.getElementById('feeStatus').value = 'Unpaid';
     }
+
     document.getElementById(modalId).classList.add('active');
 }
 
