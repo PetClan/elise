@@ -59,7 +59,6 @@ function setupEventListeners() {
 
     // Forms
     document.getElementById('contactForm').addEventListener('submit', handleContactSubmit);
-    document.getElementById('callLogForm').addEventListener('submit', handleCallLogSubmit);
     document.getElementById('callbackForm').addEventListener('submit', handleCallbackSubmit);
     document.getElementById('bookingForm').addEventListener('submit', handleBookingSubmit);
 
