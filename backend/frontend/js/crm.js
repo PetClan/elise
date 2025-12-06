@@ -365,8 +365,6 @@ function editContact(id) {
     const contact = contacts.find(c => c.id === id);
     if (!contact) return;
 
-    openModal('contactModal');
-
     document.getElementById('contactModalTitle').textContent = 'Edit Contact';
     document.getElementById('contactId').value = contact.id;
     document.getElementById('careHomeName').value = contact.care_home_name;
@@ -375,6 +373,8 @@ function editContact(id) {
     document.getElementById('contactEmail').value = contact.email || '';
     document.getElementById('contactAddress').value = contact.address || '';
     document.getElementById('contactPostcode').value = contact.postcode || '';
+
+    document.getElementById('contactModal').classList.add('active');
 }
 
 // ========================================
@@ -584,7 +584,8 @@ async function editCallback(id) {
             document.getElementById('originalCallDateTime').value = formatDateTimeForInput(cb.original_call_datetime);
             document.getElementById('callbackDateTime').value = formatDateTimeForInput(cb.callback_datetime);
             document.getElementById('callbackNotes').value = cb.notes || '';
-            openModal('callbackModal');
+
+            document.getElementById('callbackModal').classList.add('active');
         }
     } catch (error) {
         console.error('Error loading callback:', error);
