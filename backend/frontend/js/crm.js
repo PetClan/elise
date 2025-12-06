@@ -29,18 +29,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function setupEventListeners() {
     // Login form
-    document.getElementById('loginForm').addEventListener('submit', handleLogin);
-
-    // Initialize calendar
-    initCalendar();
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) loginForm.addEventListener('submit', handleLogin);
 
     // Logout buttons
-    document.getElementById('logoutBtn').addEventListener('click', handleLogout);
-    document.getElementById('mobileLogout').addEventListener('click', handleLogout);
+    const logoutBtn = document.getElementById('logoutBtn');
+    const mobileLogout = document.getElementById('mobileLogout');
+    if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+    if (mobileLogout) mobileLogout.addEventListener('click', handleLogout);
 
     // Navigation
     document.querySelectorAll('.nav-item[data-section]').forEach(item => {
-        item.addEventListener('click', function(e) {
+        item.addEventListener('click', function (e) {
             e.preventDefault();
             const section = this.dataset.section;
             navigateToSection(section);
@@ -48,23 +48,33 @@ function setupEventListeners() {
     });
 
     // Mobile menu toggle
-    document.getElementById('menuToggle').addEventListener('click', function() {
-        document.querySelector('.sidebar').classList.toggle('active');
-    });
+    const menuToggle = document.getElementById('menuToggle');
+    if (menuToggle) {
+        menuToggle.addEventListener('click', function () {
+            document.querySelector('.sidebar').classList.toggle('active');
+        });
+    }
 
     // Close sidebar when clicking outside on mobile
-    document.querySelector('.main-content').addEventListener('click', function() {
-        document.querySelector('.sidebar').classList.remove('active');
-    });
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent) {
+        mainContent.addEventListener('click', function () {
+            document.querySelector('.sidebar').classList.remove('active');
+        });
+    }
 
     // Forms
-    document.getElementById('contactForm').addEventListener('submit', handleContactSubmit);
-    document.getElementById('callbackForm').addEventListener('submit', handleCallbackSubmit);
-    document.getElementById('bookingForm').addEventListener('submit', handleBookingSubmit);
+    const contactForm = document.getElementById('contactForm');
+    const callbackForm = document.getElementById('callbackForm');
+    const bookingForm = document.getElementById('bookingForm');
+
+    if (contactForm) contactForm.addEventListener('submit', handleContactSubmit);
+    if (callbackForm) callbackForm.addEventListener('submit', handleCallbackSubmit);
+    if (bookingForm) bookingForm.addEventListener('submit', handleBookingSubmit);
 
     // Callback tabs
     document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
             currentCallbackTab = this.dataset.tab;
@@ -73,10 +83,15 @@ function setupEventListeners() {
     });
 
     // Booking status filter
-    document.getElementById('bookingStatusFilter').addEventListener('change', loadBookings);
+    const bookingStatusFilter = document.getElementById('bookingStatusFilter');
+    if (bookingStatusFilter) bookingStatusFilter.addEventListener('change', loadBookings);
 
     // Delete confirmation
-    document.getElementById('confirmDeleteBtn').addEventListener('click', confirmDelete);
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+    if (confirmDeleteBtn) confirmDeleteBtn.addEventListener('click', confirmDelete);
+
+    // Initialize calendar (at the end)
+    initCalendar();
 }
 
 // ========================================
