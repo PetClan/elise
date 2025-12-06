@@ -801,8 +801,12 @@ function openModal(modalId) {
         document.getElementById('bookingModalTitle').textContent = 'Add Booking';
         document.getElementById('bookingForm').reset();
         document.getElementById('bookingId').value = '';
+        document.getElementById('bookingContact').value = '';
         document.getElementById('bookingFrom').value = formatDateTimeForInput(new Date().toISOString());
         document.getElementById('bookingTo').value = formatDateTimeForInput(new Date().toISOString());
+        document.getElementById('bookingType').value = '';
+        document.getElementById('feeAgreed').value = '';
+        document.getElementById('feeStatus').value = 'Unpaid';
     }
 
     document.getElementById(modalId).classList.add('active');
