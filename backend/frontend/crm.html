@@ -364,7 +364,7 @@
                 <h2 id="bookingModalTitle">Add Booking</h2>
                 <button class="modal-close" onclick="closeModal('bookingModal')">&times;</button>
             </div>
-            <form id="bookingForm">
+            <form id="bookingForm" onsubmit="handleBookingSubmit(event); return false;"></form>
                 <input type="hidden" id="bookingId">
                 <div class="form-group">
                     <label for="bookingContact">Care Home *</label>
