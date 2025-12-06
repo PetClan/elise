@@ -15,39 +15,31 @@ let deleteTarget = { type: null, id: null };
 // INITIALIZATION
 // ========================================
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Check if already logged in
+document.addEventListener('DOMContentLoaded', function () {
     if (authToken) {
         checkAuth();
     } else {
         showLoginScreen();
     }
-
-    // Setup event listeners
     setupEventListeners();
 });
 
 function setupEventListeners() {
-    // Login form
     const loginForm = document.getElementById('loginForm');
     if (loginForm) loginForm.addEventListener('submit', handleLogin);
 
-    // Logout buttons
     const logoutBtn = document.getElementById('logoutBtn');
     const mobileLogout = document.getElementById('mobileLogout');
     if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
     if (mobileLogout) mobileLogout.addEventListener('click', handleLogout);
 
-    // Navigation
     document.querySelectorAll('.nav-item[data-section]').forEach(item => {
         item.addEventListener('click', function (e) {
             e.preventDefault();
-            const section = this.dataset.section;
-            navigateToSection(section);
+            navigateToSection(this.dataset.section);
         });
     });
 
-    // Mobile menu toggle
     const menuToggle = document.getElementById('menuToggle');
     if (menuToggle) {
         menuToggle.addEventListener('click', function () {
@@ -55,7 +47,6 @@ function setupEventListeners() {
         });
     }
 
-    // Close sidebar when clicking outside on mobile
     const mainContent = document.querySelector('.main-content');
     if (mainContent) {
         mainContent.addEventListener('click', function () {
@@ -63,7 +54,6 @@ function setupEventListeners() {
         });
     }
 
-    // Forms
     const contactForm = document.getElementById('contactForm');
     const callbackForm = document.getElementById('callbackForm');
     const bookingForm = document.getElementById('bookingForm');
@@ -72,7 +62,6 @@ function setupEventListeners() {
     if (callbackForm) callbackForm.addEventListener('submit', handleCallbackSubmit);
     if (bookingForm) bookingForm.addEventListener('submit', handleBookingSubmit);
 
-    // Callback tabs
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', function () {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -82,15 +71,12 @@ function setupEventListeners() {
         });
     });
 
-    // Booking status filter
     const bookingStatusFilter = document.getElementById('bookingStatusFilter');
     if (bookingStatusFilter) bookingStatusFilter.addEventListener('change', loadBookings);
 
-    // Delete confirmation
     const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
     if (confirmDeleteBtn) confirmDeleteBtn.addEventListener('click', confirmDelete);
 
-    // Initialize calendar (at the end)
     initCalendar();
 }
 
@@ -115,7 +101,6 @@ async function checkAuth() {
         const response = await fetch(`${API_URL}/auth/check`, {
             headers: { 'Authorization': `Bearer ${authToken}` }
         });
-        
         if (response.ok) {
             showCRM();
         } else {
@@ -166,7 +151,6 @@ async function handleLogout(e) {
     } catch (error) {
         console.error('Logout error:', error);
     }
-    
     authToken = null;
     localStorage.removeItem('crm_token');
     showLoginScreen();
@@ -178,41 +162,22 @@ async function handleLogout(e) {
 // ========================================
 
 function navigateToSection(section) {
-    // Update nav
-    document.querySelectorAll('.nav-item').forEach(item => {
-        item.classList.remove('active');
-    });
-    document.querySelector(`.nav-item[data-section="${section}"]`).classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+    const navItem = document.querySelector(`.nav-item[data-section="${section}"]`);
+    if (navItem) navItem.classList.add('active');
 
-    // Update content
-    document.querySelectorAll('.content-section').forEach(sec => {
-        sec.classList.remove('active');
-    });
-    document.getElementById(section).classList.add('active');
+    document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
+    const sectionEl = document.getElementById(section);
+    if (sectionEl) sectionEl.classList.add('active');
 
-    // Close mobile menu
     document.querySelector('.sidebar').classList.remove('active');
 
-    // Load data for section
     switch (section) {
-        case 'dashboard':
-            loadDashboard();
-            break;
-        case 'calendar':
-            loadCalendar();
-            break;
-        case 'contacts':
-            loadContacts();
-            break;
-        case 'call-log':
-            loadCallLogs();
-            break;
-        case 'callbacks':
-            loadCallbacks();
-            break;
-        case 'bookings':
-            loadBookings();
-            break;
+        case 'dashboard': loadDashboard(); break;
+        case 'calendar': loadCalendar(); break;
+        case 'contacts': loadContacts(); break;
+        case 'callbacks': loadCallbacks(); break;
+        case 'bookings': loadBookings(); break;
     }
 }
 
@@ -225,7 +190,6 @@ async function loadDashboard() {
         const response = await fetch(`${API_URL}/dashboard/stats`, {
             headers: { 'Authorization': `Bearer ${authToken}` }
         });
-
         if (response.ok) {
             const stats = await response.json();
             document.getElementById('statContacts').textContent = stats.total_contacts;
@@ -249,7 +213,6 @@ async function loadContacts() {
         const response = await fetch(`${API_URL}/contacts`, {
             headers: { 'Authorization': `Bearer ${authToken}` }
         });
-
         if (response.ok) {
             contacts = await response.json();
             renderContactsTable();
@@ -292,29 +255,25 @@ function renderContactsTable(filteredContacts = null) {
 
 function filterContacts() {
     const searchTerm = document.getElementById('contactSearch').value.toLowerCase();
-
     if (!searchTerm) {
         renderContactsTable();
         return;
     }
-
     const filtered = contacts.filter(contact =>
         contact.care_home_name.toLowerCase().includes(searchTerm) ||
         (contact.contact_person && contact.contact_person.toLowerCase().includes(searchTerm)) ||
         (contact.telephone && contact.telephone.includes(searchTerm)) ||
         (contact.email && contact.email.toLowerCase().includes(searchTerm))
     );
-
     renderContactsTable(filtered);
 }
 
 function populateContactDropdowns() {
-    const dropdowns = ['callContact', 'callbackContact', 'bookingContact'];
+    const dropdowns = ['callbackContact', 'bookingContact'];
     const optionsHtml = `
         <option value="">Select a contact</option>
         ${contacts.map(c => `<option value="${c.id}">${escapeHtml(c.care_home_name)}</option>`).join('')}
     `;
-
     dropdowns.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.innerHTML = optionsHtml;
@@ -323,7 +282,6 @@ function populateContactDropdowns() {
 
 async function handleContactSubmit(e) {
     e.preventDefault();
-
     const id = document.getElementById('contactId').value;
     const data = {
         care_home_name: document.getElementById('careHomeName').value,
@@ -337,7 +295,6 @@ async function handleContactSubmit(e) {
     try {
         const url = id ? `${API_URL}/contacts/${id}` : `${API_URL}/contacts`;
         const method = id ? 'PUT' : 'POST';
-
         const response = await fetch(url, {
             method,
             headers: {
@@ -378,120 +335,15 @@ function editContact(id) {
 }
 
 // ========================================
-// CALL LOGS
-// ========================================
-
-async function loadCallLogs() {
-    try {
-        const response = await fetch(`${API_URL}/call-logs`, {
-            headers: { 'Authorization': `Bearer ${authToken}` }
-        });
-
-        if (response.ok) {
-            const logs = await response.json();
-            renderCallLogsTable(logs);
-        }
-    } catch (error) {
-        console.error('Failed to load call logs:', error);
-    }
-}
-
-function renderCallLogsTable(logs) {
-    const tbody = document.getElementById('callLogTable');
-    
-    if (logs.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="4" class="empty-state">
-                    <div class="empty-state-icon">📞</div>
-                    <p>No calls logged yet.</p>
-                </td>
-            </tr>
-        `;
-        return;
-    }
-
-    tbody.innerHTML = logs.map(log => `
-        <tr>
-            <td>${formatDateTime(log.call_datetime)}</td>
-            <td>${escapeHtml(log.contact?.care_home_name || 'Unknown')}</td>
-            <td>${escapeHtml(log.notes || '-')}</td>
-            <td class="actions">
-                <button class="btn btn-small btn-edit" onclick="editCallLog(${log.id})">Edit</button>
-                <button class="btn btn-small btn-delete" onclick="deleteItem('call-log', ${log.id})">Delete</button>
-            </td>
-        </tr>
-    `).join('');
-}
-
-async function handleCallLogSubmit(e) {
-    e.preventDefault();
-    
-    const id = document.getElementById('callLogId').value;
-    const data = {
-        contact_id: parseInt(document.getElementById('callContact').value),
-        call_datetime: document.getElementById('callDateTime').value,
-        notes: document.getElementById('callNotes').value
-    };
-
-    try {
-        const url = id ? `${API_URL}/call-logs/${id}` : `${API_URL}/call-logs`;
-        const method = id ? 'PUT' : 'POST';
-
-        const response = await fetch(url, {
-            method,
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${authToken}`
-            },
-            body: JSON.stringify(data)
-        });
-
-        if (response.ok) {
-            closeModal('callLogModal');
-            loadCallLogs();
-            showToast(id ? 'Call log updated!' : 'Call logged!', 'success');
-        } else {
-            showToast('Failed to save call log', 'error');
-        }
-    } catch (error) {
-        console.error('Error saving call log:', error);
-        showToast('Failed to save call log', 'error');
-    }
-}
-
-async function editCallLog(id) {
-    try {
-        const response = await fetch(`${API_URL}/call-logs/${id}`, {
-            headers: { 'Authorization': `Bearer ${authToken}` }
-        });
-
-        if (response.ok) {
-            const log = await response.json();
-            document.getElementById('callLogModalTitle').textContent = 'Edit Call';
-            document.getElementById('callLogId').value = log.id;
-            document.getElementById('callContact').value = log.contact_id;
-            document.getElementById('callDateTime').value = formatDateTimeForInput(log.call_datetime);
-            document.getElementById('callNotes').value = log.notes || '';
-            openModal('callLogModal');
-        }
-    } catch (error) {
-        console.error('Error loading call log:', error);
-    }
-}
-
-// ========================================
 // CALLBACKS
 // ========================================
 
 async function loadCallbacks() {
     const type = currentCallbackTab === 'awaiting' ? 'Awaiting Callback' : 'To Call Back';
-    
     try {
         const response = await fetch(`${API_URL}/callbacks?callback_type=${encodeURIComponent(type)}`, {
             headers: { 'Authorization': `Bearer ${authToken}` }
         });
-
         if (response.ok) {
             const callbacks = await response.json();
             renderCallbacksTable(callbacks);
@@ -503,7 +355,6 @@ async function loadCallbacks() {
 
 function renderCallbacksTable(callbacks) {
     const tbody = document.getElementById('callbacksTable');
-    
     if (callbacks.length === 0) {
         tbody.innerHTML = `
             <tr>
@@ -532,7 +383,6 @@ function renderCallbacksTable(callbacks) {
 
 async function handleCallbackSubmit(e) {
     e.preventDefault();
-    
     const id = document.getElementById('callbackId').value;
     const data = {
         contact_id: parseInt(document.getElementById('callbackContact').value),
@@ -545,7 +395,6 @@ async function handleCallbackSubmit(e) {
     try {
         const url = id ? `${API_URL}/callbacks/${id}` : `${API_URL}/callbacks`;
         const method = id ? 'PUT' : 'POST';
-
         const response = await fetch(url, {
             method,
             headers: {
@@ -569,14 +418,12 @@ async function handleCallbackSubmit(e) {
     }
 }
 
-async function editCallback(id) {
-    try {
-        const response = await fetch(`${API_URL}/callbacks/${id}`, {
-            headers: { 'Authorization': `Bearer ${authToken}` }
-        });
-
-        if (response.ok) {
-            const cb = await response.json();
+function editCallback(id) {
+    fetch(`${API_URL}/callbacks/${id}`, {
+        headers: { 'Authorization': `Bearer ${authToken}` }
+    })
+        .then(response => response.json())
+        .then(cb => {
             document.getElementById('callbackModalTitle').textContent = 'Edit Callback';
             document.getElementById('callbackId').value = cb.id;
             document.getElementById('callbackContact').value = cb.contact_id;
@@ -584,12 +431,9 @@ async function editCallback(id) {
             document.getElementById('originalCallDateTime').value = formatDateTimeForInput(cb.original_call_datetime);
             document.getElementById('callbackDateTime').value = formatDateTimeForInput(cb.callback_datetime);
             document.getElementById('callbackNotes').value = cb.notes || '';
-
             document.getElementById('callbackModal').classList.add('active');
-        }
-    } catch (error) {
-        console.error('Error loading callback:', error);
-    }
+        })
+        .catch(error => console.error('Error loading callback:', error));
 }
 
 // ========================================
@@ -597,14 +441,14 @@ async function editCallback(id) {
 // ========================================
 
 async function loadBookings() {
-    const status = document.getElementById('bookingStatusFilter').value;
+    const statusFilter = document.getElementById('bookingStatusFilter');
+    const status = statusFilter ? statusFilter.value : '';
     const url = status ? `${API_URL}/bookings?fee_status=${encodeURIComponent(status)}` : `${API_URL}/bookings`;
-    
+
     try {
         const response = await fetch(url, {
             headers: { 'Authorization': `Bearer ${authToken}` }
         });
-
         if (response.ok) {
             const bookings = await response.json();
             renderBookingsTable(bookings);
@@ -616,7 +460,6 @@ async function loadBookings() {
 
 function renderBookingsTable(bookings) {
     const tbody = document.getElementById('bookingsTable');
-    
     if (bookings.length === 0) {
         tbody.innerHTML = `
             <tr>
@@ -646,7 +489,6 @@ function renderBookingsTable(bookings) {
 
 async function handleBookingSubmit(e) {
     e.preventDefault();
-
     const id = document.getElementById('bookingId').value;
     const data = {
         contact_id: parseInt(document.getElementById('bookingContact').value),
@@ -660,7 +502,6 @@ async function handleBookingSubmit(e) {
     try {
         const url = id ? `${API_URL}/bookings/${id}` : `${API_URL}/bookings`;
         const method = id ? 'PUT' : 'POST';
-
         const response = await fetch(url, {
             method,
             headers: {
@@ -673,6 +514,7 @@ async function handleBookingSubmit(e) {
         if (response.ok) {
             closeModal('bookingModal');
             loadBookings();
+            loadCalendar();
             loadDashboard();
             showToast(id ? 'Booking updated!' : 'Booking added!', 'success');
         } else {
@@ -684,16 +526,12 @@ async function handleBookingSubmit(e) {
     }
 }
 
-async function editBooking(id) {
-    try {
-        const response = await fetch(`${API_URL}/bookings/${id}`, {
-            headers: { 'Authorization': `Bearer ${authToken}` }
-        });
-
-        if (response.ok) {
-            const booking = await response.json();
-
-            // Set values BEFORE showing modal
+function editBooking(id) {
+    fetch(`${API_URL}/bookings/${id}`, {
+        headers: { 'Authorization': `Bearer ${authToken}` }
+    })
+        .then(response => response.json())
+        .then(booking => {
             document.getElementById('bookingModalTitle').textContent = 'Edit Booking';
             document.getElementById('bookingId').value = booking.id;
             document.getElementById('bookingContact').value = booking.contact_id;
@@ -702,13 +540,9 @@ async function editBooking(id) {
             document.getElementById('bookingType').value = booking.booking_type || '';
             document.getElementById('feeAgreed').value = booking.fee_agreed || '';
             document.getElementById('feeStatus').value = booking.fee_status;
-
-            // Show modal directly without resetting
             document.getElementById('bookingModal').classList.add('active');
-        }
-    } catch (error) {
-        console.error('Error loading booking:', error);
-    }
+        })
+        .catch(error => console.error('Error loading booking:', error));
 }
 
 // ========================================
@@ -717,26 +551,17 @@ async function editBooking(id) {
 
 function deleteItem(type, id) {
     deleteTarget = { type, id };
-    openModal('deleteModal');
+    document.getElementById('deleteModal').classList.add('active');
 }
 
 async function confirmDelete() {
     const { type, id } = deleteTarget;
     let endpoint;
 
-    switch(type) {
-        case 'contact':
-            endpoint = `${API_URL}/contacts/${id}`;
-            break;
-        case 'call-log':
-            endpoint = `${API_URL}/call-logs/${id}`;
-            break;
-        case 'callback':
-            endpoint = `${API_URL}/callbacks/${id}`;
-            break;
-        case 'booking':
-            endpoint = `${API_URL}/bookings/${id}`;
-            break;
+    switch (type) {
+        case 'contact': endpoint = `${API_URL}/contacts/${id}`; break;
+        case 'callback': endpoint = `${API_URL}/callbacks/${id}`; break;
+        case 'booking': endpoint = `${API_URL}/bookings/${id}`; break;
     }
 
     try {
@@ -748,21 +573,10 @@ async function confirmDelete() {
         if (response.ok) {
             closeModal('deleteModal');
             showToast('Item deleted!', 'success');
-            
-            // Reload the appropriate data
-            switch(type) {
-                case 'contact':
-                    loadContacts();
-                    break;
-                case 'call-log':
-                    loadCallLogs();
-                    break;
-                case 'callback':
-                    loadCallbacks();
-                    break;
-                case 'booking':
-                    loadBookings();
-                    break;
+            switch (type) {
+                case 'contact': loadContacts(); break;
+                case 'callback': loadCallbacks(); break;
+                case 'booking': loadBookings(); loadCalendar(); break;
             }
             loadDashboard();
         } else {
@@ -772,7 +586,6 @@ async function confirmDelete() {
         console.error('Error deleting item:', error);
         showToast('Failed to delete item', 'error');
     }
-
     deleteTarget = { type: null, id: null };
 }
 
@@ -781,25 +594,25 @@ async function confirmDelete() {
 // ========================================
 
 function openModal(modalId) {
-    // Reset form if opening a new item modal
     if (modalId === 'contactModal') {
         document.getElementById('contactModalTitle').textContent = 'Add Contact';
-        document.getElementById('contactForm').reset();
         document.getElementById('contactId').value = '';
-    } else if (modalId === 'callLogModal') {
-        document.getElementById('callLogModalTitle').textContent = 'Add Call';
-        document.getElementById('callLogForm').reset();
-        document.getElementById('callLogId').value = '';
-        // Set default datetime to now
-        document.getElementById('callDateTime').value = formatDateTimeForInput(new Date().toISOString());
+        document.getElementById('careHomeName').value = '';
+        document.getElementById('contactPerson').value = '';
+        document.getElementById('telephone').value = '';
+        document.getElementById('contactEmail').value = '';
+        document.getElementById('contactAddress').value = '';
+        document.getElementById('contactPostcode').value = '';
     } else if (modalId === 'callbackModal') {
         document.getElementById('callbackModalTitle').textContent = 'Add Callback';
-        document.getElementById('callbackForm').reset();
         document.getElementById('callbackId').value = '';
+        document.getElementById('callbackContact').value = '';
+        document.getElementById('callbackType').value = 'Awaiting Callback';
         document.getElementById('originalCallDateTime').value = formatDateTimeForInput(new Date().toISOString());
+        document.getElementById('callbackDateTime').value = formatDateTimeForInput(new Date().toISOString());
+        document.getElementById('callbackNotes').value = '';
     } else if (modalId === 'bookingModal') {
         document.getElementById('bookingModalTitle').textContent = 'Add Booking';
-        document.getElementById('bookingForm').reset();
         document.getElementById('bookingId').value = '';
         document.getElementById('bookingContact').value = '';
         document.getElementById('bookingFrom').value = formatDateTimeForInput(new Date().toISOString());
@@ -808,7 +621,6 @@ function openModal(modalId) {
         document.getElementById('feeAgreed').value = '';
         document.getElementById('feeStatus').value = 'Unpaid';
     }
-
     document.getElementById(modalId).classList.add('active');
 }
 
@@ -816,8 +628,7 @@ function closeModal(modalId) {
     document.getElementById(modalId).classList.remove('active');
 }
 
-// Close modal when clicking outside
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
     if (e.target.classList.contains('modal')) {
         e.target.classList.remove('active');
     }
@@ -857,11 +668,9 @@ function showToast(message, type = 'success') {
     toast.className = `toast ${type}`;
     toast.textContent = message;
     document.body.appendChild(toast);
-
-    setTimeout(() => {
-        toast.remove();
-    }, 3000);
+    setTimeout(() => toast.remove(), 3000);
 }
+
 // ========================================
 // CALENDAR
 // ========================================
@@ -870,19 +679,24 @@ let currentCalendarDate = new Date();
 let calendarBookings = [];
 
 function initCalendar() {
-    document.getElementById('prevMonth').addEventListener('click', () => {
-        currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
-        renderCalendar();
-    });
+    const prevBtn = document.getElementById('prevMonth');
+    const nextBtn = document.getElementById('nextMonth');
 
-    document.getElementById('nextMonth').addEventListener('click', () => {
-        currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
-        renderCalendar();
-    });
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+            renderCalendar();
+        });
+    }
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+            renderCalendar();
+        });
+    }
 }
 
 async function loadCalendar() {
-    // Fetch bookings first
     try {
         const response = await fetch(`${API_URL}/bookings`, {
             headers: { 'Authorization': `Bearer ${authToken}` }
@@ -893,7 +707,6 @@ async function loadCalendar() {
     } catch (error) {
         console.error('Failed to load bookings for calendar:', error);
     }
-
     renderCalendar();
 }
 
@@ -901,44 +714,39 @@ function renderCalendar() {
     const year = currentCalendarDate.getFullYear();
     const month = currentCalendarDate.getMonth();
 
-    // Update header
     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'];
-    document.getElementById('currentMonth').textContent = `${monthNames[month]} ${year}`;
 
-    // Calculate calendar days
+    const currentMonthEl = document.getElementById('currentMonth');
+    if (currentMonthEl) {
+        currentMonthEl.textContent = `${monthNames[month]} ${year}`;
+    }
+
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const startingDay = firstDay.getDay();
     const totalDays = lastDay.getDate();
 
-    // Build calendar rows
     const calendarBody = document.getElementById('calendarBody');
+    if (!calendarBody) return;
+
     let html = '';
     let day = 1;
 
-    // Create 6 rows to cover all possible month layouts
     for (let row = 0; row < 6; row++) {
         html += '<tr>';
-
         for (let col = 0; col < 7; col++) {
             if (row === 0 && col < startingDay) {
-                // Empty cells before first day
                 html += '<td class="calendar-day empty"></td>';
             } else if (day > totalDays) {
-                // Empty cells after last day
                 html += '<td class="calendar-day empty"></td>';
             } else {
-                // Actual day
                 const date = new Date(year, month, day);
                 const isToday = isSameDay(date, new Date());
-
-                // Find bookings for this day
                 const dayBookings = calendarBookings.filter(b => {
                     const bookingDate = new Date(b.booking_from);
                     return isSameDay(bookingDate, date);
                 });
-
                 const hasBooking = dayBookings.length > 0;
 
                 html += `<td class="calendar-day${isToday ? ' today' : ''}${hasBooking ? ' has-booking' : ''}">`;
@@ -958,18 +766,13 @@ function renderCalendar() {
                     });
                     html += '</div>';
                 }
-
                 html += '</td>';
                 day++;
             }
         }
-
         html += '</tr>';
-
-        // Stop if we've placed all days
         if (day > totalDays) break;
     }
-
     calendarBody.innerHTML = html;
 }
 
@@ -979,35 +782,30 @@ function isSameDay(date1, date2) {
         date1.getDate() === date2.getDate();
 }
 
-async function showBookingDetails(bookingId) {
-    try {
-        const response = await fetch(`${API_URL}/bookings/${bookingId}`, {
-            headers: { 'Authorization': `Bearer ${authToken}` }
-        });
-
-        if (response.ok) {
-            const booking = await response.json();
+function showBookingDetails(bookingId) {
+    fetch(`${API_URL}/bookings/${bookingId}`, {
+        headers: { 'Authorization': `Bearer ${authToken}` }
+    })
+        .then(response => response.json())
+        .then(booking => {
             const content = document.getElementById('bookingDetailsContent');
-
             content.innerHTML = `
-                <div class="booking-details">
-                    <p><strong>Care Home:</strong> ${escapeHtml(booking.contact?.care_home_name || 'Unknown')}</p>
-                    <p><strong>From:</strong> ${formatDateTime(booking.booking_from)}</p>
-                    <p><strong>To:</strong> ${formatDateTime(booking.booking_to)}</p>
-                    <p><strong>Type:</strong> ${escapeHtml(booking.booking_type || 'Not specified')}</p>
-                    <p><strong>Fee Agreed:</strong> £${booking.fee_agreed ? parseFloat(booking.fee_agreed).toFixed(2) : '0.00'}</p>
-                    <p><strong>Status:</strong> <span class="status-badge status-${booking.fee_status.toLowerCase()}">${booking.fee_status}</span></p>
-                </div>
-            `;
+            <div class="booking-details">
+                <p><strong>Care Home:</strong> ${escapeHtml(booking.contact?.care_home_name || 'Unknown')}</p>
+                <p><strong>From:</strong> ${formatDateTime(booking.booking_from)}</p>
+                <p><strong>To:</strong> ${formatDateTime(booking.booking_to)}</p>
+                <p><strong>Type:</strong> ${escapeHtml(booking.booking_type || 'Not specified')}</p>
+                <p><strong>Fee Agreed:</strong> £${booking.fee_agreed ? parseFloat(booking.fee_agreed).toFixed(2) : '0.00'}</p>
+                <p><strong>Status:</strong> <span class="status-badge status-${booking.fee_status.toLowerCase()}">${booking.fee_status}</span></p>
+            </div>
+        `;
 
             document.getElementById('editBookingBtn').onclick = () => {
                 closeModal('bookingDetailsModal');
                 editBooking(bookingId);
             };
 
-            openModal('bookingDetailsModal');
-        }
-    } catch (error) {
-        console.error('Error loading booking details:', error);
-    }
+            document.getElementById('bookingDetailsModal').classList.add('active');
+        })
+        .catch(error => console.error('Error loading booking details:', error));
 }
