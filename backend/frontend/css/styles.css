@@ -230,6 +230,75 @@ img {
     background: linear-gradient(135deg, var(--primary-light) 0%, #e1bee7 100%);
     padding: var(--spacing-xl);
     padding-top: 100px;
+    position: relative;
+    overflow: hidden;
+}
+
+.music-note {
+    position: absolute;
+    font-size: 3rem;
+    opacity: 0.15;
+    pointer-events: none;
+}
+
+.note-1 {
+    top: 10%;
+    left: 5%;
+    font-size: 2.5rem;
+}
+
+.note-2 {
+    top: 25%;
+    right: 8%;
+    font-size: 3.5rem;
+}
+
+.note-3 {
+    top: 60%;
+    left: 12%;
+    font-size: 2rem;
+}
+
+.note-4 {
+    bottom: 15%;
+    right: 15%;
+    font-size: 4rem;
+}
+
+.note-5 {
+    top: 15%;
+    left: 45%;
+    font-size: 2rem;
+}
+
+.note-6 {
+    bottom: 30%;
+    left: 3%;
+    font-size: 3rem;
+}
+
+.note-7 {
+    top: 40%;
+    right: 5%;
+    font-size: 2.5rem;
+}
+
+.note-8 {
+    bottom: 10%;
+    left: 35%;
+    font-size: 2rem;
+}
+
+.note-9 {
+    top: 5%;
+    right: 25%;
+    font-size: 2.5rem;
+}
+
+.note-10 {
+    bottom: 25%;
+    right: 30%;
+    font-size: 3rem;
 }
 
 .hero-content {
