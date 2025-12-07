@@ -418,7 +418,6 @@ img {
 
 .gallery-item .placeholder-image {
     background: linear-gradient(135deg, var(--primary-light), #e1bee7);
-    aspect-ratio: 1;
     border-radius: var(--radius-md);
     display: flex;
     align-items: center;
@@ -1342,6 +1341,7 @@ img {
     margin: 0 auto;
     display: block;
 }
+
 .contact-centered {
     display: flex;
     justify-content: center;
@@ -1356,6 +1356,7 @@ img {
     display: inline-block;
     text-align: left;
 }
+
 /* ========================================
    CRM - CALENDAR
 ======================================== */
@@ -1496,6 +1497,7 @@ img {
         font-size: 0.85rem;
     }
 }
+
 /* ========================================
    MOBILE TABLE FIXES
 ======================================== */
@@ -1559,6 +1561,7 @@ img {
         width: 100%;
     }
 }
+
 /* ========================================
    CRM MOBILE TABLE FIXES
 ======================================== */
@@ -1597,6 +1600,7 @@ img {
         white-space: nowrap;
     }
 }
+
 /* ========================================
    SEARCH BAR
 ======================================== */
@@ -1623,6 +1627,7 @@ img {
 .search-bar input::placeholder {
     color: var(--gray);
 }
+
 /* ========================================
    GALLERY POSTER DOWNLOAD
 ======================================== */
@@ -1631,19 +1636,11 @@ img {
 }
 
 .gallery-poster>a:first-child {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, var(--primary-light), #e1bee7);
-    aspect-ratio: 1;
-    border-radius: var(--radius-md);
-    overflow: hidden;
+    display: block;
 }
 
 .poster-image {
-    max-width: 85%;
-    max-height: 85%;
-    object-fit: contain;
+    width: 100%;
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-md);
     transition: transform 0.3s ease;
