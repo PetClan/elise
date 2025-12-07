@@ -434,6 +434,14 @@ def delete_booking(
     db.commit()
     return {"success": True, "message": "Booking deleted"}
 
+# ============== Bookings Backup (Test) ==============
+
+@app.get("/api/bookings/backup-test")
+def bookings_backup_test(token: str = Depends(get_current_session)):
+    """Simple test endpoint to verify backup wiring"""
+    return {"status": "ok", "message": "Backup endpoint is working"}
+
+
 
 # ============== Dashboard Stats ==============
 

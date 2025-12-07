@@ -1623,3 +1623,28 @@ img {
 .search-bar input::placeholder {
     color: var(--gray);
 }
+/* ========================================
+   GALLERY POSTER DOWNLOAD
+======================================== */
+.gallery-poster {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.poster-image {
+    width: 100%;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    transition: transform 0.3s ease;
+}
+
+.poster-image:hover {
+    transform: scale(1.02);
+}
+
+.btn-download {
+    width: 100%;
+    text-align: center;
+}
