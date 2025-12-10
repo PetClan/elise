@@ -485,6 +485,39 @@ img {
     gap: var(--spacing-md);
 }
 
+@media (min-width: 992px) {
+    .gallery-grid {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: var(--spacing-lg);
+        padding-bottom: var(--spacing-md);
+    }
+
+    .gallery-grid .gallery-item {
+        flex: 0 0 calc(33.333% - var(--spacing-lg));
+        scroll-snap-align: start;
+    }
+
+    .gallery-grid::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    .gallery-grid::-webkit-scrollbar-track {
+        background: var(--gray-light);
+        border-radius: 4px;
+    }
+
+    .gallery-grid::-webkit-scrollbar-thumb {
+        background: var(--primary);
+        border-radius: 4px;
+    }
+
+    .gallery-grid::-webkit-scrollbar-thumb:hover {
+        background: var(--primary-dark);
+    }
+}
+
 .gallery-item .placeholder-image {
     background: linear-gradient(135deg, var(--primary-light), #e1bee7);
     border-radius: var(--radius-md);
