@@ -479,9 +479,10 @@ img {
     background: var(--light);
 }
 
-.songbooks .gallery-grid {
-    justify-content: center;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 300px));
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
 }
 
 @media (min-width: 992px) {
