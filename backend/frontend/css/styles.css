@@ -479,10 +479,9 @@ img {
     background: var(--light);
 }
 
-.gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--spacing-md);
+.gallery-grid-centered {
+    justify-content: center;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 300px));
 }
 
 @media (min-width: 992px) {
@@ -1756,6 +1755,7 @@ img {
     margin-top: var(--spacing-md);
     display: inline-block;
 }
+
 /* ========================================
    SECTION HEADER WITH BUTTON
 ======================================== */
