@@ -479,7 +479,7 @@ img {
     background: var(--light);
 }
 
-.gallery-grid-centered {
+.songbooks .gallery-grid {
     justify-content: center;
     grid-template-columns: repeat(auto-fit, minmax(250px, 300px));
 }
@@ -1755,7 +1755,6 @@ img {
     margin-top: var(--spacing-md);
     display: inline-block;
 }
-
 /* ========================================
    SECTION HEADER WITH BUTTON
 ======================================== */
