@@ -30,6 +30,8 @@ def startup():
         db.execute(text("ALTER TABLE contacts ADD COLUMN IF NOT EXISTS address TEXT"))
         # Add postcode column to contacts if it doesn't exist
         db.execute(text("ALTER TABLE contacts ADD COLUMN IF NOT EXISTS postcode VARCHAR(20)"))
+        # Add website column to contacts if it doesn't exist
+        db.execute(text("ALTER TABLE contacts ADD COLUMN IF NOT EXISTS website VARCHAR(255)"))
         # Add contact_id column to bookings if it doesn't exist
         db.execute(text("ALTER TABLE bookings ADD COLUMN IF NOT EXISTS contact_id INTEGER REFERENCES contacts(id)"))
         # Add booking_from column to bookings if it doesn't exist

@@ -24,6 +24,7 @@ class ContactBase(BaseModel):
     email: Optional[str] = None
     address: Optional[str] = None
     postcode: Optional[str] = None
+    website: Optional[str] = None
 
 
 class ContactCreate(ContactBase):
@@ -37,6 +38,7 @@ class ContactUpdate(BaseModel):
     email: Optional[str] = None
     address: Optional[str] = None
     postcode: Optional[str] = None
+    website: Optional[str] = None
 
 
 class ContactResponse(ContactBase):

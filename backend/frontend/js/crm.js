@@ -289,7 +289,8 @@ async function handleContactSubmit(e) {
         telephone: document.getElementById('telephone').value,
         email: document.getElementById('contactEmail').value,
         address: document.getElementById('contactAddress').value,
-        postcode: document.getElementById('contactPostcode').value
+        postcode: document.getElementById('contactPostcode').value,
+        website: document.getElementById('contactWebsite').value
     };
 
     try {
@@ -330,6 +331,7 @@ function editContact(id) {
     document.getElementById('contactEmail').value = contact.email || '';
     document.getElementById('contactAddress').value = contact.address || '';
     document.getElementById('contactPostcode').value = contact.postcode || '';
+    document.getElementById('contactWebsite').value = contact.website || '';
 
     document.getElementById('contactModal').classList.add('active');
 }
@@ -632,6 +634,7 @@ function openModal(modalId) {
         document.getElementById('contactEmail').value = '';
         document.getElementById('contactAddress').value = '';
         document.getElementById('contactPostcode').value = '';
+        document.getElementById('contactWebsite').value = '';
     } else if (modalId === 'callbackModal') {
         document.getElementById('callbackModalTitle').textContent = 'Add Callback';
         document.getElementById('callbackId').value = '';
@@ -641,12 +644,11 @@ function openModal(modalId) {
         document.getElementById('callbackDateTime').value = formatDateTimeForInput(new Date().toISOString());
         document.getElementById('callbackNotes').value = '';
     } else if (modalId === 'bookingModal') {
-
-        // 🔹 Hard-reset the form so no old data stays behind
+        // Hard-reset the form so no old data stays behind
         const bookingForm = document.getElementById('bookingForm');
         if (bookingForm) bookingForm.reset();
 
-        // 🔹 Set correct defaults for a NEW booking
+        // Set correct defaults for a NEW booking
         document.getElementById('bookingModalTitle').textContent = 'Add Booking';
         document.getElementById('bookingId').value = '';
         document.getElementById('bookingContact').value = '';
@@ -665,16 +667,6 @@ function openModal(modalId) {
 
     document.getElementById(modalId).classList.add('active');
 }
-
-function closeModal(modalId) {
-    document.getElementById(modalId).classList.remove('active');
-}
-
-document.addEventListener('click', function (e) {
-    if (e.target.classList.contains('modal')) {
-        e.target.classList.remove('active');
-    }
-});
 
 // ========================================
 // UTILITY FUNCTIONS

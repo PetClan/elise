@@ -306,6 +306,10 @@
                     <label for="contactPostcode">Postcode</label>
                     <input type="text" id="contactPostcode">
                 </div>
+                <div class="form-group">
+                    <label for="contactWebsite">Website</label>
+                    <input type="url" id="contactWebsite" placeholder="https://example.com">
+                </div>
                 <div class="form-actions">
                     <button type="button" class="btn btn-secondary" onclick="closeModal('contactModal')">Cancel</button>
                     <button type="submit" class="btn btn-primary">Save Contact</button>
@@ -436,11 +440,13 @@
                 </div>
                 <div class="form-group">
                     <label for="bookingType">Type of Booking</label>
-                    <textarea id="bookingType" rows="2" placeholder="e.g., Christmas songs, ABBA night, etc."></textarea>
+                    <textarea id="bookingType" rows="2"
+                        placeholder="e.g., Christmas songs, ABBA night, etc."></textarea>
                 </div>
                 <div class="form-group">
                     <label for="bookingMoreInfo">More Info</label>
-                    <textarea id="bookingMoreInfo" rows="3" placeholder="Any additional information about this booking..."></textarea>
+                    <textarea id="bookingMoreInfo" rows="3"
+                        placeholder="Any additional information about this booking..."></textarea>
                 </div>
                 <div class="form-group">
                     <label for="feeAgreed">Fee Agreed (£)</label>
