@@ -1665,45 +1665,6 @@ img {
 }
 
 /* ========================================
-   CRM MOBILE TABLE FIXES
-======================================== */
-@media (max-width: 767px) {
-
-    /* Ensure table container scrolls */
-    .table-container {
-        overflow-x: scroll;
-        -webkit-overflow-scrolling: touch;
-        margin-left: -1rem;
-        margin-right: -1rem;
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
-
-    .data-table {
-        min-width: 550px;
-    }
-
-    .data-table th,
-    .data-table td {
-        padding: 0.5rem;
-        font-size: 0.8rem;
-        white-space: nowrap;
-    }
-
-    .data-table .actions {
-        display: flex;
-        flex-direction: row;
-        gap: 4px;
-    }
-
-    .btn-small {
-        padding: 4px 8px;
-        font-size: 0.7rem;
-        white-space: nowrap;
-    }
-}
-
-/* ========================================
    SEARCH BAR
 ======================================== */
 .search-bar {
@@ -1863,4 +1824,104 @@ img {
 .time-select-group span {
     font-weight: 600;
     color: var(--dark);
+}
+/* ========================================
+   CRM MOBILE CARD VIEW
+======================================== */
+@media (max-width: 767px) {
+
+    /* Center mobile header */
+    .mobile-header {
+        justify-content: center;
+        gap: var(--spacing-md);
+    }
+
+    .mobile-header h1 {
+        flex: none;
+    }
+
+    /* Center section headers */
+    .section-header {
+        align-items: center;
+        text-align: center;
+    }
+
+    .section-header h1 {
+        width: 100%;
+    }
+
+    /* Search bar full width and centered */
+    .search-bar {
+        display: flex;
+        justify-content: center;
+    }
+
+    .search-bar input {
+        max-width: 100%;
+    }
+
+    /* Transform table to cards */
+    .data-table {
+        min-width: unset;
+    }
+
+    .data-table thead {
+        display: none;
+    }
+
+    .data-table tbody {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+
+    .data-table tr {
+        display: flex;
+        flex-direction: column;
+        background: var(--white);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-sm);
+        padding: var(--spacing-md);
+        border: 1px solid var(--gray-light);
+    }
+
+    .data-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: var(--spacing-xs) 0;
+        border-bottom: 1px solid var(--light);
+        font-size: 0.9rem;
+    }
+
+    .data-table td:last-child {
+        border-bottom: none;
+        padding-top: var(--spacing-sm);
+    }
+
+    .data-table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--dark);
+        margin-right: var(--spacing-md);
+    }
+
+    .data-table td.actions {
+        justify-content: center;
+        gap: var(--spacing-sm);
+    }
+
+    .data-table td.actions::before {
+        display: none;
+    }
+
+    /* Empty state styling */
+    .data-table td.empty-state {
+        display: block;
+        text-align: center;
+    }
+
+    .data-table td.empty-state::before {
+        display: none;
+    }
 }

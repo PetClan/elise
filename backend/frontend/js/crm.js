@@ -241,10 +241,10 @@ function renderContactsTable(filteredContacts = null) {
 
     tbody.innerHTML = displayContacts.map(contact => `
         <tr>
-            <td>${escapeHtml(contact.care_home_name)}</td>
-            <td>${escapeHtml(contact.contact_person || '-')}</td>
-            <td>${escapeHtml(contact.telephone || '-')}</td>
-            <td>${escapeHtml(contact.email || '-')}</td>
+            <td data-label="Care Home">${escapeHtml(contact.care_home_name)}</td>
+            <td data-label="Contact Person">${escapeHtml(contact.contact_person || '-')}</td>
+            <td data-label="Telephone">${escapeHtml(contact.telephone || '-')}</td>
+            <td data-label="Email">${escapeHtml(contact.email || '-')}</td>
             <td class="actions">
                 <button class="btn btn-small btn-edit" onclick="editContact(${contact.id})">Edit</button>
                 <button class="btn btn-small btn-delete" onclick="deleteItem('contact', ${contact.id})">Delete</button>
