@@ -273,8 +273,22 @@
         </main>
     </div>
 
-    <!-- Contact Modal -->
-    <div id="contactModal" class="modal">
+    <!-- Contact Details Modal -->
+    <div id="contactDetailsModal" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2>Contact Details</h2>
+                <button class="modal-close" onclick="closeModal('contactDetailsModal')">&times;</button>
+            </div>
+            <div id="contactDetailsContent">
+                <!-- Populated by JavaScript -->
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('contactDetailsModal')">Close</button>
+                <button type="button" class="btn btn-primary" id="editContactBtn">Edit Contact</button>
+            </div>
+        </div>
+    </div>
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="contactModalTitle">Add Contact</h2>

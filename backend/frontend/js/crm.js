@@ -243,9 +243,10 @@ function renderContactsTable(filteredContacts = null) {
         <tr>
             <td data-label="Care Home">${escapeHtml(contact.care_home_name)}</td>
             <td data-label="Contact Person">${escapeHtml(contact.contact_person || '-')}</td>
-            <td data-label="Telephone">${escapeHtml(contact.telephone || '-')}</td>
+            <td data-label="Telephone">${contact.telephone ? `<a href="tel:${contact.telephone}" class="phone-link">${escapeHtml(contact.telephone)}</a>` : '-'}</td>
             <td data-label="Email">${escapeHtml(contact.email || '-')}</td>
             <td class="actions">
+                <button class="btn btn-small btn-view" onclick="viewContact(${contact.id})">View</button>
                 <button class="btn btn-small btn-edit" onclick="editContact(${contact.id})">Edit</button>
                 <button class="btn btn-small btn-delete" onclick="deleteItem('contact', ${contact.id})">Delete</button>
             </td>
@@ -317,6 +318,30 @@ async function handleContactSubmit(e) {
         console.error('Error saving contact:', error);
         showToast('Failed to save contact', 'error');
     }
+}
+function viewContact(id) {
+    const contact = contacts.find(c => c.id === id);
+    if (!contact) return;
+
+    const content = document.getElementById('contactDetailsContent');
+    content.innerHTML = `
+        <div class="contact-details">
+            <p><strong>Care Home:</strong> ${escapeHtml(contact.care_home_name)}</p>
+            <p><strong>Contact Person:</strong> ${escapeHtml(contact.contact_person || '-')}</p>
+            <p><strong>Telephone:</strong> ${contact.telephone ? `<a href="tel:${contact.telephone}" class="phone-link">${escapeHtml(contact.telephone)}</a>` : '-'}</p>
+            <p><strong>Email:</strong> ${contact.email ? `<a href="mailto:${contact.email}">${escapeHtml(contact.email)}</a>` : '-'}</p>
+            <p><strong>Address:</strong> ${escapeHtml(contact.address || '-')}</p>
+            <p><strong>Postcode:</strong> ${escapeHtml(contact.postcode || '-')}</p>
+            <p><strong>Website:</strong> ${contact.website ? `<a href="${contact.website}" target="_blank">${escapeHtml(contact.website)}</a>` : '-'}</p>
+        </div>
+    `;
+
+    document.getElementById('editContactBtn').onclick = () => {
+        closeModal('contactDetailsModal');
+        editContact(id);
+    };
+
+    document.getElementById('contactDetailsModal').classList.add('active');
 }
 
 function editContact(id) {

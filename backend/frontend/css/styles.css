@@ -1925,3 +1925,56 @@ img {
         display: none;
     }
 }
+/* ========================================
+   VIEW BUTTON & CONTACT DETAILS
+======================================== */
+.btn-view {
+    background: var(--secondary);
+    color: var(--white);
+}
+
+.btn-view:hover {
+    background: #7b1fa2;
+}
+
+.contact-details p {
+    margin-bottom: var(--spacing-sm);
+    color: var(--dark);
+    line-height: 1.6;
+}
+
+.contact-details a {
+    color: var(--primary);
+}
+
+.contact-details a:hover {
+    text-decoration: underline;
+}
+
+.phone-link {
+    color: var(--primary);
+    font-weight: 500;
+}
+
+/* ========================================
+   MOBILE TEXT SIZE INCREASE
+======================================== */
+@media (max-width: 767px) {
+    .data-table td {
+        font-size: 1rem;
+        padding: var(--spacing-sm) 0;
+    }
+
+    .data-table td::before {
+        font-size: 0.95rem;
+    }
+
+    .btn-small {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+    }
+
+    .contact-details p {
+        font-size: 1rem;
+    }
+}
