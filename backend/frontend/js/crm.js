@@ -693,6 +693,17 @@ function openModal(modalId) {
     document.getElementById(modalId).classList.add('active');
 }
 
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.remove('active');
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', function (e) {
+    if (e.target.classList.contains('modal')) {
+        e.target.classList.remove('active');
+    }
+});
+
 // ========================================
 // UTILITY FUNCTIONS
 // ========================================
