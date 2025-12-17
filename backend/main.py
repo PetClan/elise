@@ -506,6 +506,11 @@ def serve_crm():
     """Serve the CRM page"""
     return FileResponse(os.path.join(FRONTEND_DIR, "crm.html"))
 
+@app.get("/terms")
+def serve_terms():
+    """Serve the Terms of Booking page"""
+    return FileResponse(os.path.join(FRONTEND_DIR, "terms.html"))
+
 
 # Mount static files (CSS, JS, Images)
 app.mount("/css", StaticFiles(directory=os.path.join(FRONTEND_DIR, "css")), name="css")

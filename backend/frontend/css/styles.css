@@ -1779,3 +1779,60 @@ img {
 #songbooks .gallery-grid-centered .gallery-item {
     max-width: 300px;
 }
+/* ========================================
+   TERMS PAGE
+======================================== */
+.terms-page {
+    padding-top: calc(80px + var(--spacing-xxl));
+}
+
+.terms-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.terms-intro {
+    font-size: 1.1rem;
+    color: var(--gray-dark);
+    margin-bottom: var(--spacing-xl);
+    line-height: 1.7;
+}
+
+.terms-content h2 {
+    font-size: 1.25rem;
+    color: var(--primary);
+    margin-top: var(--spacing-xl);
+    margin-bottom: var(--spacing-md);
+}
+
+.terms-content p {
+    color: var(--gray-dark);
+    margin-bottom: var(--spacing-md);
+    line-height: 1.7;
+}
+
+.terms-content ul {
+    margin-bottom: var(--spacing-md);
+    padding-left: var(--spacing-xl);
+}
+
+.terms-content li {
+    color: var(--gray-dark);
+    margin-bottom: var(--spacing-sm);
+    line-height: 1.7;
+}
+
+.terms-content a {
+    color: var(--primary);
+}
+
+.terms-content a:hover {
+    text-decoration: underline;
+}
+
+.terms-footer {
+    margin-top: var(--spacing-xxl);
+    font-size: 0.9rem;
+    color: var(--gray);
+    text-align: center;
+}
