@@ -106,6 +106,7 @@ class BookingBase(BaseModel):
     booking_from: datetime
     booking_to: datetime
     booking_type: Optional[str] = None
+    more_info: Optional[str] = None
     fee_agreed: Optional[float] = None
     fee_status: FeeStatusEnum = FeeStatusEnum.UNPAID
 
@@ -119,6 +120,7 @@ class BookingUpdate(BaseModel):
     booking_from: Optional[datetime] = None
     booking_to: Optional[datetime] = None
     booking_type: Optional[str] = None
+    more_info: Optional[str] = None
     fee_agreed: Optional[float] = None
     fee_status: Optional[FeeStatusEnum] = None
 

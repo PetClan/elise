@@ -65,6 +65,7 @@ class Booking(Base):
     booking_from = Column(DateTime, nullable=False)
     booking_to = Column(DateTime, nullable=False)
     booking_type = Column(Text, nullable=True)
+    more_info = Column(Text, nullable=True)
     fee_agreed = Column(Numeric(10, 2), nullable=True)
     fee_status = Column(Enum(FeeStatus), default=FeeStatus.UNPAID, nullable=False)
 

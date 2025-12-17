@@ -373,17 +373,74 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="bookingFrom">From *</label>
-                    <input type="datetime-local" id="bookingFrom" required>
+                    <label for="bookingDate">Date *</label>
+                    <input type="date" id="bookingDate" required>
                 </div>
                 <div class="form-group">
-                    <label for="bookingTo">To *</label>
-                    <input type="datetime-local" id="bookingTo" required>
+                    <label>From *</label>
+                    <div class="time-select-group">
+                        <select id="bookingFromHour" required>
+                            <option value="">Hour</option>
+                            <option value="09">09</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                            <option value="13">13</option>
+                            <option value="14">14</option>
+                            <option value="15">15</option>
+                            <option value="16">16</option>
+                            <option value="17">17</option>
+                            <option value="18">18</option>
+                            <option value="19">19</option>
+                            <option value="20">20</option>
+                            <option value="21">21</option>
+                        </select>
+                        <span>:</span>
+                        <select id="bookingFromMinute" required>
+                            <option value="">Min</option>
+                            <option value="00">00</option>
+                            <option value="15">15</option>
+                            <option value="30">30</option>
+                            <option value="45">45</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>To *</label>
+                    <div class="time-select-group">
+                        <select id="bookingToHour" required>
+                            <option value="">Hour</option>
+                            <option value="09">09</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                            <option value="13">13</option>
+                            <option value="14">14</option>
+                            <option value="15">15</option>
+                            <option value="16">16</option>
+                            <option value="17">17</option>
+                            <option value="18">18</option>
+                            <option value="19">19</option>
+                            <option value="20">20</option>
+                            <option value="21">21</option>
+                        </select>
+                        <span>:</span>
+                        <select id="bookingToMinute" required>
+                            <option value="">Min</option>
+                            <option value="00">00</option>
+                            <option value="15">15</option>
+                            <option value="30">30</option>
+                            <option value="45">45</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="bookingType">Type of Booking</label>
-                    <textarea id="bookingType" rows="2"
-                        placeholder="e.g., Christmas songs, ABBA night, etc."></textarea>
+                    <textarea id="bookingType" rows="2" placeholder="e.g., Christmas songs, ABBA night, etc."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="bookingMoreInfo">More Info</label>
+                    <textarea id="bookingMoreInfo" rows="3" placeholder="Any additional information about this booking..."></textarea>
                 </div>
                 <div class="form-group">
                     <label for="feeAgreed">Fee Agreed (£)</label>

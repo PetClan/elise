@@ -489,11 +489,23 @@ function renderBookingsTable(bookings) {
 
 async function handleBookingSubmit(e) {
     e.preventDefault();
+
     const id = document.getElementById('bookingId').value;
+
+    // Combine date and time fields
+    const bookingDate = document.getElementById('bookingDate').value;
+    const fromHour = document.getElementById('bookingFromHour').value;
+    const fromMinute = document.getElementById('bookingFromMinute').value;
+    const toHour = document.getElementById('bookingToHour').value;
+    const toMinute = document.getElementById('bookingToMinute').value;
+
+    const booking_from = `${bookingDate}T${fromHour}:${fromMinute}`;
+    const booking_to = `${bookingDate}T${toHour}:${toMinute}`;
+
     const data = {
         contact_id: parseInt(document.getElementById('bookingContact').value),
-        booking_from: document.getElementById('bookingFrom').value,
-        booking_to: document.getElementById('bookingTo').value,
+        booking_from: booking_from,
+        booking_to: booking_to,
         booking_type: document.getElementById('bookingType').value,
         fee_agreed: parseFloat(document.getElementById('feeAgreed').value) || 0,
         fee_status: document.getElementById('feeStatus').value
@@ -532,12 +544,29 @@ function editBooking(id) {
     })
         .then(response => response.json())
         .then(booking => {
+            // Parse the datetime values
+            const fromDate = new Date(booking.booking_from);
+            const toDate = new Date(booking.booking_to);
+
+            // Format date as YYYY-MM-DD
+            const dateStr = fromDate.toISOString().slice(0, 10);
+
+            // Get hours and minutes with leading zeros
+            const fromHour = String(fromDate.getHours()).padStart(2, '0');
+            const fromMinute = String(fromDate.getMinutes()).padStart(2, '0');
+            const toHour = String(toDate.getHours()).padStart(2, '0');
+            const toMinute = String(toDate.getMinutes()).padStart(2, '0');
+
             document.getElementById('bookingModalTitle').textContent = 'Edit Booking';
             document.getElementById('bookingId').value = booking.id;
             document.getElementById('bookingContact').value = booking.contact_id;
-            document.getElementById('bookingFrom').value = formatDateTimeForInput(booking.booking_from);
-            document.getElementById('bookingTo').value = formatDateTimeForInput(booking.booking_to);
+            document.getElementById('bookingDate').value = dateStr;
+            document.getElementById('bookingFromHour').value = fromHour;
+            document.getElementById('bookingFromMinute').value = fromMinute;
+            document.getElementById('bookingToHour').value = toHour;
+            document.getElementById('bookingToMinute').value = toMinute;
             document.getElementById('bookingType').value = booking.booking_type || '';
+            document.getElementById('bookingMoreInfo').value = booking.more_info || '';
             document.getElementById('feeAgreed').value = booking.fee_agreed || '';
             document.getElementById('feeStatus').value = booking.fee_status;
             document.getElementById('bookingModal').classList.add('active');
@@ -621,9 +650,15 @@ function openModal(modalId) {
         document.getElementById('bookingModalTitle').textContent = 'Add Booking';
         document.getElementById('bookingId').value = '';
         document.getElementById('bookingContact').value = '';
-        document.getElementById('bookingFrom').value = formatDateTimeForInput(new Date().toISOString());
-        document.getElementById('bookingTo').value = formatDateTimeForInput(new Date().toISOString());
+        // Set default date to today
+        const today = new Date().toISOString().slice(0, 10);
+        document.getElementById('bookingDate').value = today;
+        document.getElementById('bookingFromHour').value = '14';
+        document.getElementById('bookingFromMinute').value = '00';
+        document.getElementById('bookingToHour').value = '15';
+        document.getElementById('bookingToMinute').value = '00';
         document.getElementById('bookingType').value = '';
+        document.getElementById('bookingMoreInfo').value = '';
         document.getElementById('feeAgreed').value = '';
         document.getElementById('feeStatus').value = 'Unpaid';
     }
