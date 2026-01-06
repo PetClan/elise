@@ -1006,7 +1006,6 @@ async function generateInvoice(bookingId) {
     </div>
     
     <div class="footer">
-        <p>Thank you for your business!</p>
         <p>Elise Care Home Entertainment | 07513 049520 | elisethecarehomesinger.co.uk</p>
     </div>
 </body>
