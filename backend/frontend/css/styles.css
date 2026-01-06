@@ -950,6 +950,20 @@ img {
     color: var(--gray);
 }
 
+.stat-card.clickable {
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card.clickable:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+.stat-card.clickable:active {
+    transform: translateY(-1px);
+}
+
 /* ========================================
    CRM - TABLES
 ======================================== */

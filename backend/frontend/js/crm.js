@@ -181,6 +181,60 @@ function navigateToSection(section) {
     }
 }
 
+function navigateToCallbacks(tab) {
+    // Set the tab before navigating
+    currentCallbackTab = tab;
+
+    // Update tab button states
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.tab === tab) {
+            btn.classList.add('active');
+        }
+    });
+
+    // Navigate to callbacks section
+    navigateToSection('callbacks');
+}
+
+function navigateToBookings(status) {
+    // Set the filter before navigating
+    const statusFilter = document.getElementById('bookingStatusFilter');
+    if (statusFilter) {
+        statusFilter.value = status;
+    }
+
+    // Navigate to bookings section
+    navigateToSection('bookings');
+}
+
+function navigateToCallbacks(tab) {
+    // Set the tab before navigating
+    currentCallbackTab = tab;
+
+    // Update tab button states
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.tab === tab) {
+            btn.classList.add('active');
+        }
+    });
+
+    // Navigate to callbacks section
+    navigateToSection('callbacks');
+}
+
+function navigateToBookings(status) {
+    // Set the filter before navigating
+    const statusFilter = document.getElementById('bookingStatusFilter');
+    if (statusFilter) {
+        statusFilter.value = status;
+    }
+
+    // Navigate to bookings section
+    navigateToSection('bookings');
+}
+
 // ========================================
 // DASHBOARD
 // ========================================

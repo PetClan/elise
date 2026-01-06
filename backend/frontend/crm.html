@@ -86,42 +86,42 @@
                     <h1>Dashboard</h1>
                 </div>
                 <div class="stats-grid">
-                    <div class="stat-card">
+                    <div class="stat-card clickable" onclick="navigateToSection('contacts')">
                         <div class="stat-icon">👥</div>
                         <div class="stat-info">
                             <span class="stat-value" id="statContacts">0</span>
                             <span class="stat-label">Total Contacts</span>
                         </div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-card clickable" onclick="navigateToSection('calendar')">
                         <div class="stat-icon">📅</div>
                         <div class="stat-info">
                             <span class="stat-value" id="statUpcoming">0</span>
                             <span class="stat-label">Upcoming Bookings</span>
                         </div>
                     </div>
-                    <div class="stat-card warning">
+                    <div class="stat-card warning clickable" onclick="navigateToCallbacks('awaiting')">
                         <div class="stat-icon">🔔</div>
                         <div class="stat-info">
                             <span class="stat-value" id="statAwaitingCallback">0</span>
                             <span class="stat-label">Awaiting Callback</span>
                         </div>
                     </div>
-                    <div class="stat-card info">
+                    <div class="stat-card info clickable" onclick="navigateToCallbacks('tocall')">
                         <div class="stat-icon">📞</div>
                         <div class="stat-info">
                             <span class="stat-value" id="statToCallBack">0</span>
                             <span class="stat-label">To Call Back</span>
                         </div>
                     </div>
-                    <div class="stat-card danger">
+                    <div class="stat-card danger clickable" onclick="navigateToBookings('Unpaid')">
                         <div class="stat-icon">💰</div>
                         <div class="stat-info">
                             <span class="stat-value" id="statUnpaid">0</span>
                             <span class="stat-label">Unpaid Bookings</span>
                         </div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-card clickable" onclick="navigateToBookings('Invoiced')">
                         <div class="stat-icon">📄</div>
                         <div class="stat-info">
                             <span class="stat-value" id="statInvoiced">0</span>
@@ -284,11 +284,15 @@
                 <!-- Populated by JavaScript -->
             </div>
             <div class="form-actions">
-                <button type="button" class="btn btn-secondary" onclick="closeModal('contactDetailsModal')">Close</button>
+                <button type="button" class="btn btn-secondary"
+                    onclick="closeModal('contactDetailsModal')">Close</button>
                 <button type="button" class="btn btn-primary" id="editContactBtn">Edit Contact</button>
             </div>
         </div>
     </div>
+
+    <!-- Contact Modal -->
+    <div id="contactModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="contactModalTitle">Add Contact</h2>
