@@ -135,7 +135,10 @@
             <section id="contacts" class="content-section">
                 <div class="section-header">
                     <h1>Contacts</h1>
-                    <button class="btn btn-primary" onclick="openModal('contactModal')">+ Add Contact</button>
+                    <div class="header-buttons">
+                        <button class="btn btn-secondary" onclick="exportContactsCSV()">Export CSV</button>
+                        <button class="btn btn-primary" onclick="openModal('contactModal')">+ Add Contact</button>
+                    </div>
                 </div>
 
                 <div class="search-bar">
@@ -239,7 +242,10 @@
             <section id="bookings" class="content-section">
                 <div class="section-header">
                     <h1>Bookings</h1>
-                    <button class="btn btn-primary" onclick="openModal('bookingModal')">+ Add Booking</button>
+                    <div class="header-buttons">
+                        <button class="btn btn-secondary" onclick="exportBookingsCSV()">Export CSV</button>
+                        <button class="btn btn-primary" onclick="openModal('bookingModal')">+ Add Booking</button>
+                    </div>
                 </div>
 
                 <div class="filter-bar">

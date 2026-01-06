@@ -903,6 +903,11 @@ img {
     color: var(--dark);
 }
 
+.header-buttons {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
 /* ========================================
    CRM - STATS GRID
 ======================================== */

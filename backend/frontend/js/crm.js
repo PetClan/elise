@@ -787,6 +787,79 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+// ========================================
+// CSV EXPORT FUNCTIONS
+// ========================================
+
+function exportContactsCSV() {
+    if (contacts.length === 0) {
+        showToast('No contacts to export', 'error');
+        return;
+    }
+
+    const headers = ['Care Home', 'Contact Person', 'Telephone', 'Email', 'Address', 'Postcode', 'Website'];
+    const rows = contacts.map(c => [
+        c.care_home_name || '',
+        c.contact_person || '',
+        c.telephone || '',
+        c.email || '',
+        c.address || '',
+        c.postcode || '',
+        c.website || ''
+    ]);
+
+    downloadCSV(headers, rows, 'contacts_export.csv');
+    showToast('Contacts exported successfully!', 'success');
+}
+
+async function exportBookingsCSV() {
+    try {
+        const response = await fetch(`${API_URL}/bookings`, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        if (!response.ok) {
+            showToast('Failed to load bookings', 'error');
+            return;
+        }
+        const bookings = await response.json();
+
+        if (bookings.length === 0) {
+            showToast('No bookings to export', 'error');
+            return;
+        }
+
+        const headers = ['Date From', 'Date To', 'Care Home', 'Type', 'Fee Agreed', 'Fee Status'];
+        const rows = bookings.map(b => [
+            formatDateTime(b.booking_from),
+            formatDateTime(b.booking_to),
+            b.contact?.care_home_name || '',
+            b.booking_type || '',
+            b.fee_agreed ? `£${parseFloat(b.fee_agreed).toFixed(2)}` : '',
+            b.fee_status || ''
+        ]);
+
+        downloadCSV(headers, rows, 'bookings_export.csv');
+        showToast('Bookings exported successfully!', 'success');
+    } catch (error) {
+        console.error('Export failed:', error);
+        showToast('Failed to export bookings', 'error');
+    }
+}
+
+function downloadCSV(headers, rows, filename) {
+    const csvContent = [
+        headers.join(','),
+        ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(link.href);
+}
+
 function showToast(message, type = 'success') {
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
