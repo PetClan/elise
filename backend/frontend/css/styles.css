@@ -1731,15 +1731,6 @@ img {
 .section-header-with-btn .section-title {
     margin-bottom: 0;
 }
-/* Centered songbooks grid */
-#songbooks .gallery-grid-centered {
-    display: flex;
-    justify-content: center;
-}
-
-#songbooks .gallery-grid-centered .gallery-item {
-    max-width: 300px;
-}
 /* ========================================
    TERMS PAGE
 ======================================== */
