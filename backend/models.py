@@ -30,6 +30,7 @@ class Contact(Base):
     # Relationships
     call_logs = relationship("CallLog", back_populates="contact", cascade="all, delete-orphan")
     callbacks = relationship("Callback", back_populates="contact", cascade="all, delete-orphan")
+    bookings = relationship("Booking", back_populates="contact", cascade="all, delete-orphan")
 
 
 class CallLog(Base):
@@ -71,4 +72,4 @@ class Booking(Base):
     fee_status = Column(Enum(FeeStatus), default=FeeStatus.UNPAID, nullable=False)
 
     # Relationships
-    contact = relationship("Contact")
+    contact = relationship("Contact", back_populates="bookings")
