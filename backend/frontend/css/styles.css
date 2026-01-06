@@ -1021,6 +1021,15 @@ img {
     color: var(--white);
 }
 
+.btn-invoice {
+    background: var(--success);
+    color: var(--white);
+}
+
+.btn-invoice:hover {
+    background: #43a047;
+}
+
 .status-badge {
     display: inline-block;
     padding: var(--spacing-xs) var(--spacing-sm);

@@ -561,6 +561,7 @@ function renderBookingsTable(bookings) {
             <td>£${booking.fee_agreed ? parseFloat(booking.fee_agreed).toFixed(2) : '0.00'}</td>
             <td><span class="status-badge status-${booking.fee_status.toLowerCase()}">${booking.fee_status}</span></td>
             <td class="actions">
+                <button class="btn btn-small btn-invoice" onclick="generateInvoice(${booking.id})">Invoice</button>
                 <button class="btn btn-small btn-edit" onclick="editBooking(${booking.id})">Edit</button>
                 <button class="btn btn-small btn-delete" onclick="deleteItem('booking', ${booking.id})">Delete</button>
             </td>
@@ -860,6 +861,168 @@ function downloadCSV(headers, rows, filename) {
     URL.revokeObjectURL(link.href);
 }
 
+// ========================================
+// INVOICE GENERATION
+// ========================================
+
+async function generateInvoice(bookingId) {
+    try {
+        const response = await fetch(`${API_URL}/bookings/${bookingId}`, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        if (!response.ok) {
+            showToast('Failed to load booking details', 'error');
+            return;
+        }
+        const booking = await response.json();
+
+        const invoiceNumber = `INV-${new Date().getFullYear()}-${String(bookingId).padStart(4, '0')}`;
+        const invoiceDate = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+        const dueDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+
+        const bookingDate = new Date(booking.booking_from).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+        const bookingTimeFrom = new Date(booking.booking_from).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+        const bookingTimeTo = new Date(booking.booking_to).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+
+        const fee = booking.fee_agreed ? parseFloat(booking.fee_agreed).toFixed(2) : '0.00';
+
+        const invoiceHTML = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice ${invoiceNumber}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 14px; line-height: 1.6; color: #333; padding: 40px; max-width: 800px; margin: 0 auto; }
+        .invoice-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 3px solid #e91e63; }
+        .business-info h1 { font-size: 24px; color: #e91e63; margin-bottom: 5px; }
+        .business-info p { color: #666; font-size: 13px; }
+        .invoice-title { text-align: right; }
+        .invoice-title h2 { font-size: 32px; color: #333; margin-bottom: 5px; }
+        .invoice-title p { color: #666; }
+        .invoice-details { display: flex; justify-content: space-between; margin-bottom: 40px; }
+        .bill-to, .invoice-info { width: 48%; }
+        .bill-to h3, .invoice-info h3 { font-size: 12px; text-transform: uppercase; color: #999; margin-bottom: 10px; letter-spacing: 1px; }
+        .bill-to p, .invoice-info p { margin-bottom: 3px; }
+        .invoice-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        .invoice-table th { background: #f8f8f8; padding: 12px 15px; text-align: left; font-weight: 600; border-bottom: 2px solid #e91e63; }
+        .invoice-table td { padding: 15px; border-bottom: 1px solid #eee; }
+        .invoice-table .amount { text-align: right; }
+        .totals { margin-left: auto; width: 300px; }
+        .totals .row { display: flex; justify-content: space-between; padding: 8px 0; }
+        .totals .total { font-size: 18px; font-weight: 700; border-top: 2px solid #333; padding-top: 10px; margin-top: 5px; }
+        .payment-info { margin-top: 40px; padding: 20px; background: #f9f9f9; border-radius: 8px; }
+        .payment-info h3 { font-size: 14px; margin-bottom: 15px; color: #333; }
+        .payment-info p { margin-bottom: 5px; font-size: 13px; }
+        .payment-info .bank-details { margin-top: 10px; }
+        .footer { margin-top: 40px; text-align: center; color: #999; font-size: 12px; }
+        .btn-container { margin-bottom: 20px; text-align: center; }
+        .btn { padding: 10px 25px; font-size: 14px; cursor: pointer; border: none; border-radius: 5px; margin: 0 5px; }
+        .btn-print { background: #e91e63; color: white; }
+        .btn-download { background: #333; color: white; }
+        @media print { .btn-container { display: none; } body { padding: 20px; } }
+    </style>
+</head>
+<body>
+    <div class="btn-container">
+        <button class="btn btn-print" onclick="window.print()">Print Invoice</button>
+        <button class="btn btn-download" onclick="window.print()">Save as PDF</button>
+    </div>
+    
+    <div class="invoice-header">
+        <div class="business-info">
+            <h1>Elise Care Home Entertainment</h1>
+            <p>Mosswater Wynd, Cumbernauld</p>
+            <p>07513 049520</p>
+            <p>elisethecarehomesinger@gmail.com</p>
+        </div>
+        <div class="invoice-title">
+            <h2>INVOICE</h2>
+            <p>${invoiceNumber}</p>
+        </div>
+    </div>
+    
+    <div class="invoice-details">
+        <div class="bill-to">
+            <h3>Bill To</h3>
+            <p><strong>${booking.contact?.care_home_name || 'Unknown'}</strong></p>
+            <p>${booking.contact?.address || ''}</p>
+            <p>${booking.contact?.postcode || ''}</p>
+            <p>${booking.contact?.email || ''}</p>
+            <p>${booking.contact?.telephone || ''}</p>
+        </div>
+        <div class="invoice-info">
+            <h3>Invoice Details</h3>
+            <p><strong>Invoice Date:</strong> ${invoiceDate}</p>
+            <p><strong>Due Date:</strong> ${dueDate}</p>
+            <p><strong>Performance Date:</strong> ${bookingDate}</p>
+        </div>
+    </div>
+    
+    <table class="invoice-table">
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th class="amount">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <strong>Live Entertainment Performance</strong><br>
+                    ${booking.booking_type || 'Musical Entertainment'}
+                </td>
+                <td>${bookingDate}</td>
+                <td>${bookingTimeFrom} - ${bookingTimeTo}</td>
+                <td class="amount">£${fee}</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div class="totals">
+        <div class="row">
+            <span>Subtotal:</span>
+            <span>£${fee}</span>
+        </div>
+        <div class="row total">
+            <span>Total Due:</span>
+            <span>£${fee}</span>
+        </div>
+    </div>
+    
+    <div class="payment-info">
+        <h3>Payment Information</h3>
+        <p><strong>Payment Terms:</strong> 7 days from date of invoice</p>
+        <div class="bank-details">
+            <p><strong>Bank:</strong> Bank of Scotland</p>
+            <p><strong>Account Name:</strong> Elise Fitzsimons</p>
+            <p><strong>Sort Code:</strong> 80-45-87</p>
+            <p><strong>Account Number:</strong> 13889463</p>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>Thank you for your business!</p>
+        <p>Elise Care Home Entertainment | 07516 049520 | elisethecarehomesinger@gmail.com</p>
+    </div>
+</body>
+</html>
+        `;
+
+        const invoiceWindow = window.open('', '_blank');
+        invoiceWindow.document.write(invoiceHTML);
+        invoiceWindow.document.close();
+
+    } catch (error) {
+        console.error('Invoice generation failed:', error);
+        showToast('Failed to generate invoice', 'error');
+    }
+}
+
 function showToast(message, type = 'success') {
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
@@ -978,7 +1141,6 @@ function isSameDay(date1, date2) {
         date1.getMonth() === date2.getMonth() &&
         date1.getDate() === date2.getDate();
 }
-
 function showBookingDetails(bookingId) {
     fetch(`${API_URL}/bookings/${bookingId}`, {
         headers: { 'Authorization': `Bearer ${authToken}` }
@@ -1000,6 +1162,11 @@ function showBookingDetails(bookingId) {
             document.getElementById('editBookingBtn').onclick = () => {
                 closeModal('bookingDetailsModal');
                 editBooking(bookingId);
+            };
+
+            document.getElementById('invoiceBookingBtn').onclick = () => {
+                closeModal('bookingDetailsModal');
+                generateInvoice(bookingId);
             };
 
             document.getElementById('bookingDetailsModal').classList.add('active');
