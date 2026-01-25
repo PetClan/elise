@@ -77,6 +77,9 @@ function setupEventListeners() {
     const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
     if (confirmDeleteBtn) confirmDeleteBtn.addEventListener('click', confirmDelete);
 
+    const receiptForm = document.getElementById('receiptForm');
+    if (receiptForm) receiptForm.addEventListener('submit', handleReceiptSubmit);
+
     initCalendar();
 }
 
@@ -182,56 +185,21 @@ function navigateToSection(section) {
 }
 
 function navigateToCallbacks(tab) {
-    // Set the tab before navigating
     currentCallbackTab = tab;
-
-    // Update tab button states
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.remove('active');
         if (btn.dataset.tab === tab) {
             btn.classList.add('active');
         }
     });
-
-    // Navigate to callbacks section
     navigateToSection('callbacks');
 }
 
 function navigateToBookings(status) {
-    // Set the filter before navigating
     const statusFilter = document.getElementById('bookingStatusFilter');
     if (statusFilter) {
         statusFilter.value = status;
     }
-
-    // Navigate to bookings section
-    navigateToSection('bookings');
-}
-
-function navigateToCallbacks(tab) {
-    // Set the tab before navigating
-    currentCallbackTab = tab;
-
-    // Update tab button states
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.dataset.tab === tab) {
-            btn.classList.add('active');
-        }
-    });
-
-    // Navigate to callbacks section
-    navigateToSection('callbacks');
-}
-
-function navigateToBookings(status) {
-    // Set the filter before navigating
-    const statusFilter = document.getElementById('bookingStatusFilter');
-    if (statusFilter) {
-        statusFilter.value = status;
-    }
-
-    // Navigate to bookings section
     navigateToSection('bookings');
 }
 
@@ -373,6 +341,7 @@ async function handleContactSubmit(e) {
         showToast('Failed to save contact', 'error');
     }
 }
+
 function viewContact(id) {
     const contact = contacts.find(c => c.id === id);
     if (!contact) return;
@@ -575,7 +544,6 @@ async function handleBookingSubmit(e) {
 
     const id = document.getElementById('bookingId').value;
 
-    // Combine date and time fields
     const bookingDate = document.getElementById('bookingDate').value;
     const fromHour = document.getElementById('bookingFromHour').value;
     const fromMinute = document.getElementById('bookingFromMinute').value;
@@ -627,14 +595,11 @@ function editBooking(id) {
     })
         .then(response => response.json())
         .then(booking => {
-            // Parse the datetime values
             const fromDate = new Date(booking.booking_from);
             const toDate = new Date(booking.booking_to);
 
-            // Format date as YYYY-MM-DD
             const dateStr = fromDate.toISOString().slice(0, 10);
 
-            // Get hours and minutes with leading zeros
             const fromHour = String(fromDate.getHours()).padStart(2, '0');
             const fromMinute = String(fromDate.getMinutes()).padStart(2, '0');
             const toHour = String(toDate.getHours()).padStart(2, '0');
@@ -725,15 +690,12 @@ function openModal(modalId) {
         document.getElementById('callbackDateTime').value = formatDateTimeForInput(new Date().toISOString());
         document.getElementById('callbackNotes').value = '';
     } else if (modalId === 'bookingModal') {
-        // Hard-reset the form so no old data stays behind
         const bookingForm = document.getElementById('bookingForm');
         if (bookingForm) bookingForm.reset();
 
-        // Set correct defaults for a NEW booking
         document.getElementById('bookingModalTitle').textContent = 'Add Booking';
         document.getElementById('bookingId').value = '';
         document.getElementById('bookingContact').value = '';
-        // Set default date to today
         const today = new Date().toISOString().slice(0, 10);
         document.getElementById('bookingDate').value = today;
         document.getElementById('bookingFromHour').value = '14';
@@ -1023,6 +985,199 @@ async function generateInvoice(bookingId) {
     }
 }
 
+// ========================================
+// RECEIPT GENERATION
+// ========================================
+
+function openReceiptModal(bookingId) {
+    document.getElementById('receiptBookingId').value = bookingId;
+    document.getElementById('receiptDate').value = new Date().toISOString().slice(0, 10);
+    document.getElementById('paymentMethod').value = 'Cash';
+    document.getElementById('chequeNumber').value = '';
+    document.getElementById('chequeNumberGroup').style.display = 'none';
+    document.getElementById('receiptModal').classList.add('active');
+}
+
+function toggleChequeNumber() {
+    const paymentMethod = document.getElementById('paymentMethod').value;
+    const chequeNumberGroup = document.getElementById('chequeNumberGroup');
+    if (paymentMethod === 'Cheque') {
+        chequeNumberGroup.style.display = 'block';
+    } else {
+        chequeNumberGroup.style.display = 'none';
+        document.getElementById('chequeNumber').value = '';
+    }
+}
+
+async function handleReceiptSubmit(e) {
+    e.preventDefault();
+    const bookingId = document.getElementById('receiptBookingId').value;
+    const receiptDate = document.getElementById('receiptDate').value;
+    const paymentMethod = document.getElementById('paymentMethod').value;
+    const chequeNumber = document.getElementById('chequeNumber').value;
+
+    closeModal('receiptModal');
+    await generateReceipt(bookingId, receiptDate, paymentMethod, chequeNumber);
+}
+
+async function generateReceipt(bookingId, receiptDate, paymentMethod, chequeNumber) {
+    try {
+        const response = await fetch(`${API_URL}/bookings/${bookingId}`, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        if (!response.ok) {
+            showToast('Failed to load booking details', 'error');
+            return;
+        }
+        const booking = await response.json();
+
+        const receiptNumber = `REC-${new Date().getFullYear()}-${String(bookingId).padStart(4, '0')}`;
+        const receiptDateFormatted = new Date(receiptDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+
+        const bookingDate = new Date(booking.booking_from).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+        const bookingTimeFrom = new Date(booking.booking_from).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+        const bookingTimeTo = new Date(booking.booking_to).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+
+        const fee = booking.fee_agreed ? parseFloat(booking.fee_agreed).toFixed(2) : '0.00';
+
+        const chequeInfo = paymentMethod === 'Cheque' && chequeNumber ? `<p><strong>Cheque Number:</strong> ${chequeNumber}</p>` : '';
+
+        const receiptHTML = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipt ${receiptNumber}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 14px; line-height: 1.6; color: #333; padding: 40px; max-width: 800px; margin: 0 auto; }
+        .receipt-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 3px solid #4caf50; }
+        .business-info h1 { font-size: 24px; color: #4caf50; margin-bottom: 5px; }
+        .business-info p { color: #666; font-size: 13px; }
+        .receipt-title { text-align: right; }
+        .receipt-title h2 { font-size: 32px; color: #333; margin-bottom: 5px; }
+        .receipt-title p { color: #666; }
+        .paid-stamp { background: #4caf50; color: white; padding: 8px 20px; font-size: 18px; font-weight: bold; border-radius: 5px; display: inline-block; margin-top: 10px; }
+        .receipt-details { display: flex; justify-content: space-between; margin-bottom: 40px; }
+        .received-from, .receipt-info { width: 48%; }
+        .received-from h3, .receipt-info h3 { font-size: 12px; text-transform: uppercase; color: #999; margin-bottom: 10px; letter-spacing: 1px; }
+        .received-from p, .receipt-info p { margin-bottom: 3px; }
+        .receipt-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        .receipt-table th { background: #f8f8f8; padding: 12px 15px; text-align: left; font-weight: 600; border-bottom: 2px solid #4caf50; }
+        .receipt-table td { padding: 15px; border-bottom: 1px solid #eee; }
+        .receipt-table .amount { text-align: right; }
+        .totals { margin-left: auto; width: 300px; }
+        .totals .row { display: flex; justify-content: space-between; padding: 8px 0; }
+        .totals .total { font-size: 18px; font-weight: 700; border-top: 2px solid #333; padding-top: 10px; margin-top: 5px; }
+        .payment-info { margin-top: 40px; padding: 20px; background: #e8f5e9; border-radius: 8px; }
+        .payment-info h3 { font-size: 14px; margin-bottom: 15px; color: #333; }
+        .payment-info p { margin-bottom: 5px; font-size: 13px; }
+        .footer { margin-top: 40px; text-align: center; color: #999; font-size: 12px; }
+        .btn-container { margin-bottom: 20px; text-align: center; }
+        .btn { padding: 10px 25px; font-size: 14px; cursor: pointer; border: none; border-radius: 5px; margin: 0 5px; }
+        .btn-print { background: #4caf50; color: white; }
+        .btn-download { background: #333; color: white; }
+        @media print { .btn-container { display: none; } body { padding: 20px; } }
+    </style>
+</head>
+<body>
+    <div class="btn-container">
+        <button class="btn btn-print" onclick="window.print()">Print Receipt</button>
+        <button class="btn btn-download" onclick="window.print()">Save as PDF</button>
+    </div>
+    
+    <div class="receipt-header">
+        <div class="business-info">
+            <h1>Elise Care Home Entertainment</h1>
+            <p>Mosswater Wynd, Cumbernauld</p>
+            <p>07513 049520</p>
+            <p>elisethecarehomesinger@gmail.com</p>
+        </div>
+        <div class="receipt-title">
+            <h2>RECEIPT</h2>
+            <p>${receiptNumber}</p>
+            <div class="paid-stamp">PAID</div>
+        </div>
+    </div>
+    
+    <div class="receipt-details">
+        <div class="received-from">
+            <h3>Received From</h3>
+            <p><strong>${booking.contact?.care_home_name || 'Unknown'}</strong></p>
+            <p>${booking.contact?.address || ''}</p>
+            <p>${booking.contact?.postcode || ''}</p>
+            <p>${booking.contact?.email || ''}</p>
+            <p>${booking.contact?.telephone || ''}</p>
+        </div>
+        <div class="receipt-info">
+            <h3>Receipt Details</h3>
+            <p><strong>Receipt Date:</strong> ${receiptDateFormatted}</p>
+            <p><strong>Payment Method:</strong> ${paymentMethod}</p>
+            ${chequeInfo}
+            <p><strong>Performance Date:</strong> ${bookingDate}</p>
+        </div>
+    </div>
+    
+    <table class="receipt-table">
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th class="amount">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <strong>Live Entertainment Performance</strong><br>
+                    ${booking.booking_type || 'Musical Entertainment'}
+                </td>
+                <td>${bookingDate}</td>
+                <td>${bookingTimeFrom} - ${bookingTimeTo}</td>
+                <td class="amount">£${fee}</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div class="totals">
+        <div class="row">
+            <span>Subtotal:</span>
+            <span>£${fee}</span>
+        </div>
+        <div class="row total">
+            <span>Total Paid:</span>
+            <span>£${fee}</span>
+        </div>
+    </div>
+    
+    <div class="payment-info">
+        <h3>Payment Confirmation</h3>
+        <p>Thank you for your payment. This receipt confirms that payment has been received in full.</p>
+        <p><strong>Amount Received:</strong> £${fee}</p>
+        <p><strong>Payment Method:</strong> ${paymentMethod}</p>
+        ${chequeInfo}
+    </div>
+    
+    <div class="footer">
+        <p>Thank you for your business!</p>
+        <p>Elise Care Home Entertainment | 07513 049520 | elisethecarehomesinger.co.uk</p>
+    </div>
+</body>
+</html>
+        `;
+
+        const receiptWindow = window.open('', '_blank');
+        receiptWindow.document.write(receiptHTML);
+        receiptWindow.document.close();
+
+    } catch (error) {
+        console.error('Receipt generation failed:', error);
+        showToast('Failed to generate receipt', 'error');
+    }
+}
+
 function showToast(message, type = 'success') {
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
@@ -1141,6 +1296,7 @@ function isSameDay(date1, date2) {
         date1.getMonth() === date2.getMonth() &&
         date1.getDate() === date2.getDate();
 }
+
 function showBookingDetails(bookingId) {
     fetch(`${API_URL}/bookings/${bookingId}`, {
         headers: { 'Authorization': `Bearer ${authToken}` }
@@ -1167,6 +1323,11 @@ function showBookingDetails(bookingId) {
             document.getElementById('invoiceBookingBtn').onclick = () => {
                 closeModal('bookingDetailsModal');
                 generateInvoice(bookingId);
+            };
+
+            document.getElementById('receiptBookingBtn').onclick = () => {
+                closeModal('bookingDetailsModal');
+                openReceiptModal(bookingId);
             };
 
             document.getElementById('bookingDetailsModal').classList.add('active');
