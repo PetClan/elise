@@ -1021,6 +1021,15 @@ img {
     color: var(--white);
 }
 
+.btn-receipt {
+    background: var(--success);
+    color: var(--white);
+}
+
+.btn-receipt:hover {
+    background: #388e3c;
+}
+
 .btn-invoice {
     background: var(--success);
     color: var(--white);
