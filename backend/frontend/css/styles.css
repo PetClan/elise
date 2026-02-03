@@ -1029,6 +1029,14 @@ img {
 .btn-receipt:hover {
     background: #388e3c;
 }
+.btn-overdue {
+    background: #ff5722;
+    color: var(--white);
+}
+
+.btn-overdue:hover {
+    background: #e64a19;
+}
 
 .btn-invoice {
     background: var(--success);

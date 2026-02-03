@@ -531,6 +531,7 @@ function renderBookingsTable(bookings) {
             <td><span class="status-badge status-${booking.fee_status.toLowerCase()}">${booking.fee_status}</span></td>
             <td class="actions">
                 <button class="btn btn-small btn-invoice" onclick="generateInvoice(${booking.id})">Invoice</button>
+                <button class="btn btn-small btn-overdue" onclick="generateOverdueInvoice(${booking.id})">Overdue</button>
                 <button class="btn btn-small btn-receipt" onclick="openReceiptModal(${booking.id})">Receipt</button>
                 <button class="btn btn-small btn-edit" onclick="editBooking(${booking.id})">Edit</button>
                 <button class="btn btn-small btn-delete" onclick="deleteItem('booking', ${booking.id})">Delete</button>
@@ -1323,6 +1324,11 @@ function showBookingDetails(bookingId) {
             document.getElementById('invoiceBookingBtn').onclick = () => {
                 closeModal('bookingDetailsModal');
                 generateInvoice(bookingId);
+            };
+
+            document.getElementById('overdueBookingBtn').onclick = () => {
+                closeModal('bookingDetailsModal');
+                generateOverdueInvoice(bookingId);
             };
 
             document.getElementById('receiptBookingBtn').onclick = () => {
