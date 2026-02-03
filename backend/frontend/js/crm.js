@@ -253,7 +253,7 @@ function renderContactsTable(filteredContacts = null) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="5" class="empty-state">
-                    <div class="empty-state-icon">👥</div>
+                    <div class="empty-state-icon">ðŸ‘¥</div>
                     <p>${filteredContacts ? 'No contacts match your search.' : 'No contacts yet. Add your first contact!'}</p>
                 </td>
             </tr>
@@ -409,7 +409,7 @@ function renderCallbacksTable(callbacks) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="5" class="empty-state">
-                    <div class="empty-state-icon">🔔</div>
+                    <div class="empty-state-icon">ðŸ””</div>
                     <p>No callbacks in this category.</p>
                 </td>
             </tr>
@@ -514,7 +514,7 @@ function renderBookingsTable(bookings) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="6" class="empty-state">
-                    <div class="empty-state-icon">📅</div>
+                    <div class="empty-state-icon">ðŸ“…</div>
                     <p>No bookings found.</p>
                 </td>
             </tr>
@@ -527,7 +527,7 @@ function renderBookingsTable(bookings) {
             <td>${formatDateTime(booking.booking_from)} - ${formatDateTime(booking.booking_to)}</td>
             <td>${escapeHtml(booking.contact?.care_home_name || 'Unknown')}</td>
             <td>${escapeHtml(booking.booking_type || '-')}</td>
-            <td>£${booking.fee_agreed ? parseFloat(booking.fee_agreed).toFixed(2) : '0.00'}</td>
+            <td>Â£${booking.fee_agreed ? parseFloat(booking.fee_agreed).toFixed(2) : '0.00'}</td>
             <td><span class="status-badge status-${booking.fee_status.toLowerCase()}">${booking.fee_status}</span></td>
             <td class="actions">
                 <button class="btn btn-small btn-invoice" onclick="generateInvoice(${booking.id})">Invoice</button>
@@ -799,7 +799,7 @@ async function exportBookingsCSV() {
             formatDateTime(b.booking_to),
             b.contact?.care_home_name || '',
             b.booking_type || '',
-            b.fee_agreed ? `£${parseFloat(b.fee_agreed).toFixed(2)}` : '',
+            b.fee_agreed ? `Â£${parseFloat(b.fee_agreed).toFixed(2)}` : '',
             b.fee_status || ''
         ]);
 
@@ -942,7 +942,7 @@ async function generateInvoice(bookingId) {
                 </td>
                 <td>${bookingDate}</td>
                 <td>${bookingTimeFrom} - ${bookingTimeTo}</td>
-                <td class="amount">£${fee}</td>
+                <td class="amount">Â£${fee}</td>
             </tr>
         </tbody>
     </table>
@@ -950,11 +950,11 @@ async function generateInvoice(bookingId) {
     <div class="totals">
         <div class="row">
             <span>Subtotal:</span>
-            <span>£${fee}</span>
+            <span>Â£${fee}</span>
         </div>
         <div class="row total">
             <span>Total Due:</span>
-            <span>£${fee}</span>
+            <span>Â£${fee}</span>
         </div>
     </div>
     
@@ -983,6 +983,174 @@ async function generateInvoice(bookingId) {
     } catch (error) {
         console.error('Invoice generation failed:', error);
         showToast('Failed to generate invoice', 'error');
+    }
+}
+
+// ========================================
+// OVERDUE INVOICE GENERATION
+// ========================================
+
+async function generateOverdueInvoice(bookingId) {
+    try {
+        const response = await fetch(`${API_URL}/bookings/${bookingId}`, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        if (!response.ok) {
+            showToast('Failed to load booking details', 'error');
+            return;
+        }
+        const booking = await response.json();
+
+        const invoiceNumber = `INV-${new Date().getFullYear()}-${String(bookingId).padStart(4, '0')}`;
+        const invoiceDate = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+
+        const bookingDate = new Date(booking.booking_from).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+        const bookingTimeFrom = new Date(booking.booking_from).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+        const bookingTimeTo = new Date(booking.booking_to).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+
+        const fee = booking.fee_agreed ? parseFloat(booking.fee_agreed).toFixed(2) : '0.00';
+
+        const overdueHTML = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OVERDUE Invoice ${invoiceNumber}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 14px; line-height: 1.6; color: #333; padding: 40px; max-width: 800px; margin: 0 auto; position: relative; }
+        .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); font-size: 80px; font-weight: bold; color: rgba(244, 67, 54, 0.25); white-space: nowrap; pointer-events: none; z-index: 1000; }
+        .urgent-notice { background: #f44336; color: white; padding: 15px; text-align: center; margin-bottom: 30px; border-radius: 5px; font-weight: bold; font-size: 16px; }
+        .invoice-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 3px solid #f44336; }
+        .business-info h1 { font-size: 24px; color: #f44336; margin-bottom: 5px; }
+        .business-info p { color: #666; font-size: 13px; }
+        .invoice-title { text-align: right; }
+        .invoice-title h2 { font-size: 32px; color: #333; margin-bottom: 5px; }
+        .invoice-title p { color: #666; }
+        .overdue-stamp { background: #f44336; color: white; padding: 8px 20px; font-size: 18px; font-weight: bold; border-radius: 5px; display: inline-block; margin-top: 10px; }
+        .invoice-details { display: flex; justify-content: space-between; margin-bottom: 40px; }
+        .bill-to, .invoice-info { width: 48%; }
+        .bill-to h3, .invoice-info h3 { font-size: 12px; text-transform: uppercase; color: #999; margin-bottom: 10px; letter-spacing: 1px; }
+        .bill-to p, .invoice-info p { margin-bottom: 3px; }
+        .invoice-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        .invoice-table th { background: #ffebee; padding: 12px 15px; text-align: left; font-weight: 600; border-bottom: 2px solid #f44336; }
+        .invoice-table td { padding: 15px; border-bottom: 1px solid #eee; }
+        .invoice-table .amount { text-align: right; }
+        .totals { margin-left: auto; width: 300px; }
+        .totals .row { display: flex; justify-content: space-between; padding: 8px 0; }
+        .totals .total { font-size: 18px; font-weight: 700; border-top: 2px solid #f44336; padding-top: 10px; margin-top: 5px; color: #f44336; }
+        .payment-info { margin-top: 40px; padding: 20px; background: #ffebee; border-radius: 8px; border: 2px solid #f44336; }
+        .payment-info h3 { font-size: 14px; margin-bottom: 15px; color: #c62828; }
+        .payment-info p { margin-bottom: 5px; font-size: 13px; }
+        .payment-info .bank-details { margin-top: 10px; }
+        .footer { margin-top: 40px; text-align: center; color: #999; font-size: 12px; }
+        .btn-container { margin-bottom: 20px; text-align: center; }
+        .btn { padding: 10px 25px; font-size: 14px; cursor: pointer; border: none; border-radius: 5px; margin: 0 5px; }
+        .btn-print { background: #f44336; color: white; }
+        .btn-download { background: #333; color: white; }
+        @media print { .btn-container { display: none; } body { padding: 20px; } .watermark { position: fixed; } }
+    </style>
+</head>
+<body>
+    <div class="watermark">OVERDUE FOR PAYMENT</div>
+    
+    <div class="btn-container">
+        <button class="btn btn-print" onclick="window.print()">Print Invoice</button>
+        <button class="btn btn-download" onclick="window.print()">Save as PDF</button>
+    </div>
+    
+    <div class="urgent-notice">⚠️ URGENT: This invoice is now overdue for payment. Please remit immediately.</div>
+    
+    <div class="invoice-header">
+        <div class="business-info">
+            <h1>Elise Care Home Entertainment</h1>
+            <p>Mosswater Wynd, Cumbernauld</p>
+            <p>07513 049520</p>
+            <p>elisethecarehomesinger@gmail.com</p>
+        </div>
+        <div class="invoice-title">
+            <h2>INVOICE</h2>
+            <p>${invoiceNumber}</p>
+            <div class="overdue-stamp">OVERDUE</div>
+        </div>
+    </div>
+    
+    <div class="invoice-details">
+        <div class="bill-to">
+            <h3>Bill To</h3>
+            <p><strong>${booking.contact?.care_home_name || 'Unknown'}</strong></p>
+            <p>${booking.contact?.address || ''}</p>
+            <p>${booking.contact?.postcode || ''}</p>
+            <p>${booking.contact?.email || ''}</p>
+            <p>${booking.contact?.telephone || ''}</p>
+        </div>
+        <div class="invoice-info">
+            <h3>Invoice Details</h3>
+            <p><strong>Invoice Date:</strong> ${invoiceDate}</p>
+            <p><strong>Status:</strong> <span style="color: #f44336; font-weight: bold;">OVERDUE</span></p>
+            <p><strong>Performance Date:</strong> ${bookingDate}</p>
+        </div>
+    </div>
+    
+    <table class="invoice-table">
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th class="amount">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <strong>Live Entertainment Performance</strong><br>
+                    ${booking.booking_type || 'Musical Entertainment'}
+                </td>
+                <td>${bookingDate}</td>
+                <td>${bookingTimeFrom} - ${bookingTimeTo}</td>
+                <td class="amount">£${fee}</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div class="totals">
+        <div class="row">
+            <span>Subtotal:</span>
+            <span>£${fee}</span>
+        </div>
+        <div class="row total">
+            <span>TOTAL OVERDUE:</span>
+            <span>£${fee}</span>
+        </div>
+    </div>
+    
+    <div class="payment-info">
+        <h3>⚠️ Immediate Payment Required</h3>
+        <p>This invoice is now overdue. Please arrange payment immediately to avoid any further action.</p>
+        <div class="bank-details">
+            <p><strong>Bank:</strong> Bank of Scotland</p>
+            <p><strong>Account Name:</strong> Elise Fitzsimons</p>
+            <p><strong>Sort Code:</strong> 80-45-87</p>
+            <p><strong>Account Number:</strong> 13889463</p>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>Elise Care Home Entertainment | 07513 049520 | elisethecarehomesinger.co.uk</p>
+    </div>
+</body>
+</html>
+        `;
+
+        const overdueWindow = window.open('', '_blank');
+        overdueWindow.document.write(overdueHTML);
+        overdueWindow.document.close();
+
+    } catch (error) {
+        console.error('Overdue invoice generation failed:', error);
+        showToast('Failed to generate overdue invoice', 'error');
     }
 }
 
@@ -1137,7 +1305,7 @@ async function generateReceipt(bookingId, receiptDate, paymentMethod, chequeNumb
                 </td>
                 <td>${bookingDate}</td>
                 <td>${bookingTimeFrom} - ${bookingTimeTo}</td>
-                <td class="amount">£${fee}</td>
+                <td class="amount">Â£${fee}</td>
             </tr>
         </tbody>
     </table>
@@ -1145,18 +1313,18 @@ async function generateReceipt(bookingId, receiptDate, paymentMethod, chequeNumb
     <div class="totals">
         <div class="row">
             <span>Subtotal:</span>
-            <span>£${fee}</span>
+            <span>Â£${fee}</span>
         </div>
         <div class="row total">
             <span>Total Paid:</span>
-            <span>£${fee}</span>
+            <span>Â£${fee}</span>
         </div>
     </div>
     
     <div class="payment-info">
         <h3>Payment Confirmation</h3>
         <p>Thank you for your payment. This receipt confirms that payment has been received in full.</p>
-        <p><strong>Amount Received:</strong> £${fee}</p>
+        <p><strong>Amount Received:</strong> Â£${fee}</p>
         <p><strong>Payment Method:</strong> ${paymentMethod}</p>
         ${chequeInfo}
     </div>
@@ -1311,7 +1479,7 @@ function showBookingDetails(bookingId) {
                 <p><strong>From:</strong> ${formatDateTime(booking.booking_from)}</p>
                 <p><strong>To:</strong> ${formatDateTime(booking.booking_to)}</p>
                 <p><strong>Type:</strong> ${escapeHtml(booking.booking_type || 'Not specified')}</p>
-                <p><strong>Fee Agreed:</strong> £${booking.fee_agreed ? parseFloat(booking.fee_agreed).toFixed(2) : '0.00'}</p>
+                <p><strong>Fee Agreed:</strong> Â£${booking.fee_agreed ? parseFloat(booking.fee_agreed).toFixed(2) : '0.00'}</p>
                 <p><strong>Status:</strong> <span class="status-badge status-${booking.fee_status.toLowerCase()}">${booking.fee_status}</span></p>
             </div>
         `;
