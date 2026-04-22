@@ -382,9 +382,14 @@ function renderContactsTable(filtered = null) {
             <td data-label="Telephone">${contact.telephone ? `<a href="tel:${contact.telephone}" class="phone-link">${escapeHtml(contact.telephone)}</a>` : '-'}</td>
             <td data-label="Email">${escapeHtml(contact.email || '-')}</td>
             <td class="actions">
-                <button class="btn btn-small btn-view" onclick="viewContact(${contact.id})">View</button>
-                <button class="btn btn-small btn-edit" onclick="editContact(${contact.id})">Edit</button>
-                <button class="btn btn-small btn-delete" onclick="deleteItem('contact', ${contact.id})">Delete</button>
+                <div class="action-dropdown">
+                    <button class="action-dropdown-toggle" onclick="toggleActionDropdown(event, this)" title="Actions">⋮</button>
+                    <div class="action-dropdown-menu">
+                        <button class="action-dropdown-item" onclick="viewContact(${contact.id})">View</button>
+                        <button class="action-dropdown-item" onclick="editContact(${contact.id})">Edit</button>
+                        <button class="action-dropdown-item danger" onclick="deleteItem('contact', ${contact.id})">Delete</button>
+                    </div>
+                </div>
             </td>
         </tr>
     `).join('');
