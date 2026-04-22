@@ -44,7 +44,7 @@
                 </a>
                 <a href="#" class="nav-item" data-section="calendar">
                     <span class="nav-icon">🗓️</span>
-                    Calendar
+                    Booking Calendar
                 </a>
                 <a href="#" class="nav-item" data-section="contacts">
                     <span class="nav-icon">👥</span>
@@ -60,7 +60,7 @@
                 </a>
                 <a href="#" class="nav-item" data-section="bookings">
                     <span class="nav-icon">📅</span>
-                    Bookings
+                    Accounts
                 </a>
             </nav>
             <div class="sidebar-footer">
@@ -101,7 +101,7 @@
                         <div class="stat-icon">📅</div>
                         <div class="stat-info">
                             <span class="stat-value" id="statUpcoming">0</span>
-                            <span class="stat-label">Upcoming Bookings</span>
+                            <span class="stat-label">Upcoming Accounts</span>
                         </div>
                     </div>
                     <div class="stat-card warning clickable" onclick="navigateToCallbacks('awaiting')">
@@ -122,7 +122,7 @@
                         <div class="stat-icon">💰</div>
                         <div class="stat-info">
                             <span class="stat-value" id="statUnpaid">0</span>
-                            <span class="stat-label">Unpaid Bookings</span>
+                            <span class="stat-label">Unpaid Accounts</span>
                         </div>
                     </div>
                     <div class="stat-card clickable" onclick="navigateToBookings('Invoiced')">
@@ -285,7 +285,7 @@
             <!-- Bookings Section -->
             <section id="bookings" class="content-section">
                 <div class="section-header">
-                    <h1>Bookings</h1>
+                    <h1>Accounts</h1>
                     <div class="header-buttons">
                         <button class="btn btn-secondary" onclick="exportBookingsCSV()">Export CSV</button>
                         <button class="btn btn-primary" onclick="openModal('bookingModal')">+ Add Booking</button>

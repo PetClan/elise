@@ -977,6 +977,7 @@ img {
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-sm);
     overflow-x: auto;
+    overflow-y: visible;
     -webkit-overflow-scrolling: touch;
 }
 
