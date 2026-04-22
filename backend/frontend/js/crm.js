@@ -357,6 +357,27 @@ function viewContact(id) {
             <p><strong>Postcode:</strong> ${escapeHtml(contact.postcode || '-')}</p>
             <p><strong>Website:</strong> ${contact.website ? `<a href="${contact.website}" target="_blank">${escapeHtml(contact.website)}</a>` : '-'}</p>
         </div>
+
+        <hr style="margin: 20px 0;">
+
+        <div class="contact-history-section">
+            <h3 style="margin-bottom: 10px;">Callbacks</h3>
+            <div id="contactCallbacksList">Loading...</div>
+        </div>
+
+        <hr style="margin: 20px 0;">
+
+        <div class="contact-history-section">
+            <h3 style="margin-bottom: 10px;">Bookings</h3>
+            <div id="contactBookingsList">Loading...</div>
+        </div>
+
+        <hr style="margin: 20px 0;">
+
+        <div class="contact-history-section">
+            <h3 style="margin-bottom: 10px;">Call Logs</h3>
+            <div id="contactCallLogsList">Loading...</div>
+        </div>
     `;
 
     document.getElementById('editContactBtn').onclick = () => {
