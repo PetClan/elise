@@ -1028,8 +1028,16 @@ function renderBookingsTable(bookings) {
 
     const pageBookings = paginate(bookings, bookingsPage);
 
-    tbody.innerHTML = pageBookings.map(booking => `
-        <tr>
+    const now = new Date();
+    tbody.innerHTML = pageBookings.map(booking => {
+        const bookingDate = new Date(booking.booking_from);
+        const isPast = bookingDate < now;
+        let rowClass = '';
+        if (booking.fee_status !== 'Paid') {
+            rowClass = isPast ? 'booking-row-overdue' : 'booking-row-future';
+        }
+        return `
+        <tr class="${rowClass}">
             <td>${formatBookingDateRange(booking.booking_from, booking.booking_to)}</td>
             <td>${escapeHtml(booking.contact?.care_home_name || 'Unknown')}</td>
             <td>${escapeHtml(booking.booking_type || '-')}</td>
@@ -1049,7 +1057,8 @@ function renderBookingsTable(bookings) {
                 </div>
             </td>
         </tr>
-    `).join('');
+        `;
+    }).join('');
 
     renderPagination('bookingsPagination', bookings.length, bookingsPage, 'goToBookingsPage');
 }

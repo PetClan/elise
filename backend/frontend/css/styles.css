@@ -2293,3 +2293,21 @@ img {
     border-color: var(--primary);
     font-weight: 600;
 }
+/* ========================================
+   BOOKING ROW STATES
+   ======================================== */
+.booking-row-overdue {
+    background: #ffebee;
+}
+
+.booking-row-overdue:hover {
+    background: #ffcdd2;
+}
+
+.booking-row-future {
+    background: #e8f5e9;
+}
+
+.booking-row-future:hover {
+    background: #c8e6c9;
+}
