@@ -1011,7 +1011,7 @@ function renderBookingsTable(bookings) {
     if (bookings.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="6" class="empty-state">
+                <td colspan="7" class="empty-state">
                     <div class="empty-state-icon">📅</div>
                     <p>No bookings found.</p>
                 </td>
@@ -1034,7 +1034,8 @@ function renderBookingsTable(bookings) {
             <td>${escapeHtml(booking.contact?.care_home_name || 'Unknown')}</td>
             <td>${escapeHtml(booking.booking_type || '-')}</td>
             <td>£${booking.fee_agreed ? parseFloat(booking.fee_agreed).toFixed(2) : '0.00'}</td>
-            <td><span class="status-badge status-${booking.fee_status.toLowerCase()}">${booking.fee_status}</span></td>
+            <td style="text-align: center; font-size: 1.2rem;">${booking.fee_status === 'Paid' || booking.fee_status === 'Invoiced' ? '<span style="color: #2e7d32;">✓</span>' : '<span style="color: #c62828;">✗</span>'}</td>
+            <td><span class="status-badge status-${booking.fee_status === 'Invoiced' ? 'unpaid' : booking.fee_status.toLowerCase()}">${booking.fee_status === 'Invoiced' ? 'Unpaid' : booking.fee_status}</span></td>
             <td class="actions">
                 <div class="action-dropdown">
                     <button class="action-dropdown-toggle" onclick="toggleActionDropdown(event, this)" title="Actions">⋮</button>
@@ -2064,7 +2065,7 @@ function renderCalendar() {
 function isSameDay(date1, date2) {
     return date1.getFullYear() === date2.getFullYear() &&
         date1.getMonth() === date2.getMonth() &&
-        date1.getDate() === date2.getDate();
+        date1.getDate() === date2.getDate();LL
 }
 
 function showBookingDetails(bookingId) {
