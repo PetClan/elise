@@ -426,16 +426,24 @@
                 <div class="confirmation-section">
                     <div class="confirmation-header">
                         <h3>📧 Email Version</h3>
-                        <button type="button" class="btn btn-small btn-primary" onclick="copyConfirmation('email')">Copy
-                            Email</button>
+                        <div style="display: flex; gap: 6px;">
+                            <button type="button" class="btn btn-small btn-secondary" onclick="toggleEditConfirmation('email')"
+                                id="editEmailBtn">Edit</button>
+                            <button type="button" class="btn btn-small btn-primary" onclick="copyConfirmation('email')">Copy
+                                Email</button>
+                        </div>
                     </div>
                     <div class="confirmation-box" id="confirmationEmail"></div>
                 </div>
                 <div class="confirmation-section" style="margin-top: 20px;">
                     <div class="confirmation-header">
                         <h3>💬 Text Version</h3>
-                        <button type="button" class="btn btn-small btn-primary" onclick="copyConfirmation('text')">Copy
-                            Text</button>
+                        <div style="display: flex; gap: 6px;">
+                            <button type="button" class="btn btn-small btn-secondary" onclick="toggleEditConfirmation('text')"
+                                id="editTextBtn">Edit</button>
+                            <button type="button" class="btn btn-small btn-primary" onclick="copyConfirmation('text')">Copy
+                                Text</button>
+                        </div>
                     </div>
                     <div class="confirmation-box" id="confirmationText"></div>
                 </div>

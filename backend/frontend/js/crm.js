@@ -880,6 +880,28 @@ function copyConfirmation(type) {
         .catch(() => showToast('Failed to copy', 'error'));
 }
 
+function toggleEditConfirmation(type) {
+    const boxId = type === 'email' ? 'confirmationEmail' : 'confirmationText';
+    const btnId = type === 'email' ? 'editEmailBtn' : 'editTextBtn';
+    const box = document.getElementById(boxId);
+    const btn = document.getElementById(btnId);
+
+    const isEditing = box.getAttribute('contenteditable') === 'true';
+
+    if (isEditing) {
+        box.setAttribute('contenteditable', 'false');
+        box.style.outline = '';
+        box.style.background = '';
+        btn.textContent = 'Edit';
+    } else {
+        box.setAttribute('contenteditable', 'true');
+        box.style.outline = '2px solid var(--primary)';
+        box.style.background = '#fffef7';
+        btn.textContent = 'Done';
+        box.focus();
+    }
+}
+
 async function loadContactBookings(contactId) {
     const container = document.getElementById('contactBookingsList');
     if (!container) return;
