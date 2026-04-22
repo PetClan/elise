@@ -47,6 +47,29 @@ class ContactResponse(ContactBase):
     class Config:
         from_attributes = True
 
+# Target Schemas
+class TargetBase(BaseModel):
+    care_home_name: str
+    telephone: Optional[str] = None
+    notes: Optional[str] = None
+
+
+class TargetCreate(TargetBase):
+    pass
+
+
+class TargetUpdate(BaseModel):
+    care_home_name: Optional[str] = None
+    telephone: Optional[str] = None
+    notes: Optional[str] = None
+
+
+class TargetResponse(TargetBase):
+    id: int
+
+    class Config:
+        from_attributes = True
+
 
 # Call Log Schemas
 class CallLogBase(BaseModel):
@@ -133,30 +156,6 @@ class BookingUpdate(BaseModel):
 class BookingResponse(BookingBase):
     id: int
     contact: Optional[ContactResponse] = None
-
-    class Config:
-        from_attributes = True
-
-
-# Target Schemas
-class TargetBase(BaseModel):
-    care_home_name: str
-    telephone: Optional[str] = None
-    notes: Optional[str] = None
-
-
-class TargetCreate(TargetBase):
-    pass
-
-
-class TargetUpdate(BaseModel):
-    care_home_name: Optional[str] = None
-    telephone: Optional[str] = None
-    notes: Optional[str] = None
-
-
-class TargetResponse(TargetBase):
-    id: int
 
     class Config:
         from_attributes = True
