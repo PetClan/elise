@@ -1164,21 +1164,20 @@ async function handleBookingSubmit(e) {
         });
 
         if (response.ok) {
-            if (response.ok) {
-                const savedBooking = await response.json();
-                closeModal('bookingModal');
-                loadBookings();
-                loadCalendar();
-                loadDashboard();
-                showToast(id ? 'Booking updated!' : 'Booking added!', 'success');
+            const savedBooking = await response.json();
+            closeModal('bookingModal');
+            loadBookings();
+            loadCalendar();
+            loadDashboard();
+            showToast(id ? 'Booking updated!' : 'Booking added!', 'success');
 
-                // Auto-open confirmation modal only for NEW bookings
-                if (!id && savedBooking.id) {
-                    showBookingConfirmation(savedBooking.id);
-                }
-            } else {
-                showToast('Failed to save booking', 'error');
+            // Auto-open confirmation modal only for NEW bookings
+            if (!id && savedBooking.id) {
+                showBookingConfirmation(savedBooking.id);
             }
+        } else {
+            showToast('Failed to save booking', 'error');
+        }
     } catch (error) {
         console.error('Error saving booking:', error);
         showToast('Failed to save booking', 'error');
