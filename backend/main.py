@@ -24,7 +24,10 @@ app = FastAPI(title="Elise CRM", version="1.0.0")
 def startup():
     from sqlalchemy import text
     
-    # Add missing columns to existing tables
+    # Ensure all tables exist FIRST (creates any new tables like 'targets')
+    init_db()
+    
+    # Then add missing columns to existing tables
     db = SessionLocal()
     try:
         # Add address column to contacts if it doesn't exist
@@ -58,9 +61,6 @@ def startup():
         db.rollback()
     finally:
         db.close()
-    
-    # Ensure all tables exist
-    init_db()
 
 
 # ============== Authentication ==============
