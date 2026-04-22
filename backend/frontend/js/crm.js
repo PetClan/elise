@@ -816,6 +816,70 @@ function deleteCallbackFromContact(callbackId, contactId) {
 // BOOKINGS
 // ========================================
 
+function showBookingConfirmation(bookingId) {
+    fetch(`${API_URL}/bookings/${bookingId}`, {
+        headers: { 'Authorization': `Bearer ${authToken}` }
+    })
+        .then(response => response.json())
+        .then(booking => {
+            const careHome = booking.contact?.care_home_name || 'your care home';
+            const contactPerson = booking.contact?.contact_person?.trim();
+            const greetingName = contactPerson ? contactPerson.split(' ')[0] : 'there';
+
+            const bookingDate = new Date(booking.booking_from).toLocaleDateString('en-GB', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+            const fromTime = new Date(booking.booking_from).toLocaleTimeString('en-GB', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            const toTime = new Date(booking.booking_to).toLocaleTimeString('en-GB', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            const type = booking.booking_type || 'Musical Entertainment';
+            const fee = booking.fee_agreed ? parseFloat(booking.fee_agreed).toFixed(2) : '0.00';
+
+            const emailText = `Subject: Booking Confirmation — Elise's Visit to ${careHome}
+
+Hi ${greetingName},
+
+Just a quick note to confirm I'm booked in for my visit to ${careHome} on ${bookingDate}, from ${fromTime} to ${toTime}.
+
+I'll be performing: ${type}
+
+The agreed fee is £${fee}.
+
+Looking forward to seeing everyone!
+
+Elise 🎤
+Elise Care Home Entertainment
+07513 049520
+elisethecarehomesinger.co.uk`;
+
+            const smsText = `Hi ${greetingName}, just confirming Elise's visit to ${careHome} on ${bookingDate} at ${fromTime}. Performing: ${type}. Fee agreed: £${fee}. Looking forward to it! — Elise`;
+
+            document.getElementById('confirmationEmail').textContent = emailText;
+            document.getElementById('confirmationText').textContent = smsText;
+            document.getElementById('bookingConfirmationModal').classList.add('active');
+        })
+        .catch(error => {
+            console.error('Error loading booking for confirmation:', error);
+            showToast('Failed to load booking details', 'error');
+        });
+}
+
+function copyConfirmation(type) {
+    const elementId = type === 'email' ? 'confirmationEmail' : 'confirmationText';
+    const text = document.getElementById(elementId).textContent;
+    navigator.clipboard.writeText(text)
+        .then(() => showToast(`${type === 'email' ? 'Email' : 'Text'} copied to clipboard!`, 'success'))
+        .catch(() => showToast('Failed to copy', 'error'));
+}
+
 async function loadContactBookings(contactId) {
     const container = document.getElementById('contactBookingsList');
     if (!container) return;
@@ -1048,6 +1112,7 @@ function renderBookingsTable(bookings) {
                 <div class="action-dropdown">
                     <button class="action-dropdown-toggle" onclick="toggleActionDropdown(event, this)" title="Actions">⋮</button>
                     <div class="action-dropdown-menu">
+                        <button class="action-dropdown-item" onclick="showBookingConfirmation(${booking.id})">Confirmation</button>
                         <button class="action-dropdown-item" onclick="generateInvoice(${booking.id})">Invoice</button>
                         <button class="action-dropdown-item" onclick="generateOverdueInvoice(${booking.id})">Overdue</button>
                         <button class="action-dropdown-item" onclick="openReceiptModal(${booking.id})">Receipt</button>
@@ -1099,14 +1164,21 @@ async function handleBookingSubmit(e) {
         });
 
         if (response.ok) {
-            closeModal('bookingModal');
-            loadBookings();
-            loadCalendar();
-            loadDashboard();
-            showToast(id ? 'Booking updated!' : 'Booking added!', 'success');
-        } else {
-            showToast('Failed to save booking', 'error');
-        }
+            if (response.ok) {
+                const savedBooking = await response.json();
+                closeModal('bookingModal');
+                loadBookings();
+                loadCalendar();
+                loadDashboard();
+                showToast(id ? 'Booking updated!' : 'Booking added!', 'success');
+
+                // Auto-open confirmation modal only for NEW bookings
+                if (!id && savedBooking.id) {
+                    showBookingConfirmation(savedBooking.id);
+                }
+            } else {
+                showToast('Failed to save booking', 'error');
+            }
     } catch (error) {
         console.error('Error saving booking:', error);
         showToast('Failed to save booking', 'error');

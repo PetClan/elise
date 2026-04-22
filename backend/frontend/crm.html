@@ -415,6 +415,38 @@
         </div>
     </div>
 
+    <!-- Booking Confirmation Modal -->
+    <div id="bookingConfirmationModal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>Booking Confirmation</h2>
+                <button class="modal-close" onclick="closeModal('bookingConfirmationModal')">&times;</button>
+            </div>
+            <div id="bookingConfirmationContent" style="padding: var(--spacing-md) var(--spacing-lg);">
+                <div class="confirmation-section">
+                    <div class="confirmation-header">
+                        <h3>📧 Email Version</h3>
+                        <button type="button" class="btn btn-small btn-primary" onclick="copyConfirmation('email')">Copy
+                            Email</button>
+                    </div>
+                    <div class="confirmation-box" id="confirmationEmail"></div>
+                </div>
+                <div class="confirmation-section" style="margin-top: 20px;">
+                    <div class="confirmation-header">
+                        <h3>💬 Text Version</h3>
+                        <button type="button" class="btn btn-small btn-primary" onclick="copyConfirmation('text')">Copy
+                            Text</button>
+                    </div>
+                    <div class="confirmation-box" id="confirmationText"></div>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary"
+                    onclick="closeModal('bookingConfirmationModal')">Close</button>
+            </div>
+        </div>
+    </div>
+    
     <!-- Booking Modal -->
     <div id="bookingModal" class="modal">
         <div class="modal-content">
