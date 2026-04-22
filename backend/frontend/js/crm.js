@@ -1379,6 +1379,24 @@ async function generateInvoice(bookingId) {
         }
         const booking = await response.json();
 
+        // If not already invoiced or paid, ask whether to mark as invoiced
+        if (booking.fee_status === 'Unpaid') {
+            const shouldMark = confirm('Mark this booking as Invoiced?');
+            if (shouldMark) {
+                await fetch(`${API_URL}/bookings/${bookingId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ fee_status: 'Invoiced' })
+                });
+                showToast('Booking marked as Invoiced', 'success');
+                loadBookings();
+                loadDashboard();
+            }
+        }
+
         const invoiceNumber = `INV-${new Date().getFullYear()}-${String(bookingId).padStart(4, '0')}`;
         const invoiceDate = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
         const dueDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
@@ -1738,6 +1756,21 @@ async function generateReceipt(bookingId, receiptDate, paymentMethod, chequeNumb
             return;
         }
         const booking = await response.json();
+
+        // Auto-mark booking as Paid when receipt is generated
+        if (booking.fee_status !== 'Paid') {
+            await fetch(`${API_URL}/bookings/${bookingId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                },
+                body: JSON.stringify({ fee_status: 'Paid' })
+            });
+            showToast('Booking marked as Paid', 'success');
+            loadBookings();
+            loadDashboard();
+        }
 
         const receiptNumber = `REC-${new Date().getFullYear()}-${String(bookingId).padStart(4, '0')}`;
         const receiptDateFormatted = new Date(receiptDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
