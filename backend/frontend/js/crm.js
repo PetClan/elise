@@ -593,10 +593,10 @@ function renderCallbackSubSection(title, items, contactId) {
         <table class="data-table" style="margin-bottom: 10px;">
             <thead>
                 <tr>
-                    <th>Original Call</th>
-                    <th>Callback Date</th>
+                    <th style="width: 18%;">Original Call</th>
+                    <th style="width: 18%;">Callback Date</th>
                     <th>Notes</th>
-                    <th>Actions</th>
+                    <th style="width: 110px;">Actions</th>
                 </tr>
             </thead>
             <tbody>${rows}</tbody>

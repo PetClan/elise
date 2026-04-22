@@ -1156,6 +1156,25 @@ img {
     padding: var(--spacing-lg);
 }
 
+.modal-large {
+    max-width: 900px;
+}
+
+.contact-history-section .actions {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: stretch;
+}
+
+.contact-history-section .actions .btn {
+    width: 100%;
+    white-space: nowrap;
+}modal-small {
+    max-width: 400px;
+    padding: var(--spacing-lg);
+}
+
 .modal-header {
     display: flex;
     justify-content: space-between;
