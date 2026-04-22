@@ -19,6 +19,7 @@ let bookingsPage = 1;
 let allCallbacks = [];
 let allBookings = [];
 let filteredContacts = null;
+let contactsLetter = null;
 
 // ========================================
 // ACTION DROPDOWN
@@ -99,6 +100,44 @@ function renderPagination(containerId, totalItems, currentPage, onPageChange, pa
 function goToContactsPage(page) {
     contactsPage = page;
     renderContactsTable(filteredContacts);
+}
+
+function goToContactsLetter(letter) {
+    contactsLetter = letter;
+    renderContactsTable(filteredContacts);
+}
+
+function renderLetterPagination(containerId, items, currentLetter, onLetterChange) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+
+    // Figure out which letters have entries
+    const lettersWithItems = new Set(
+        items
+            .map(it => (it.care_home_name || '').trim().charAt(0).toUpperCase())
+            .filter(l => l)
+    );
+
+    // Also catch anything starting with a number or symbol
+    const hasNonAlpha = items.some(it => {
+        const first = (it.care_home_name || '').trim().charAt(0).toUpperCase();
+        return first && !letters.includes(first);
+    });
+
+    let html = letters.map(letter => {
+        const hasItems = lettersWithItems.has(letter);
+        const isActive = letter === currentLetter;
+        return `<button class="pagination-btn ${isActive ? 'active' : ''}" ${hasItems ? '' : 'disabled'} onclick="${onLetterChange}('${letter}')">${letter}</button>`;
+    }).join('');
+
+    if (hasNonAlpha) {
+        const isActive = currentLetter === '#';
+        html += `<button class="pagination-btn ${isActive ? 'active' : ''}" onclick="${onLetterChange}('#')">#</button>`;
+    }
+
+    container.innerHTML = html;
 }
 
 function goToCallbacksPage(page) {
@@ -368,12 +407,25 @@ function renderContactsTable(filtered = null) {
         return;
     }
 
-    // Ensure current page is in range
-    const totalPages = Math.ceil(displayContacts.length / PAGE_SIZE);
-    if (contactsPage > totalPages) contactsPage = totalPages;
-    if (contactsPage < 1) contactsPage = 1;
+    // Figure out which letters have contacts
+    const lettersWithContacts = new Set(
+        displayContacts
+            .map(c => (c.care_home_name || '').trim().charAt(0).toUpperCase())
+            .filter(l => l)
+    );
 
-    const pageContacts = paginate(displayContacts, contactsPage);
+    // Default to first letter that has contacts, if none selected or selected has none
+    if (!contactsLetter || !lettersWithContacts.has(contactsLetter)) {
+        contactsLetter = displayContacts[0].care_home_name.trim().charAt(0).toUpperCase();
+    }
+
+    // Filter to just those starting with that letter (or non-alpha for '#')
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const pageContacts = displayContacts.filter(c => {
+        const first = (c.care_home_name || '').trim().charAt(0).toUpperCase();
+        if (contactsLetter === '#') return first && !letters.includes(first);
+        return first === contactsLetter;
+    });
 
     tbody.innerHTML = pageContacts.map(contact => `
         <tr>
@@ -394,12 +446,13 @@ function renderContactsTable(filtered = null) {
         </tr>
     `).join('');
 
-    renderPagination('contactsPagination', displayContacts.length, contactsPage, 'goToContactsPage');
+    renderLetterPagination('contactsPagination', displayContacts, contactsLetter, 'goToContactsLetter');
 }
 
 function filterContacts() {
     const searchTerm = document.getElementById('contactSearch').value.toLowerCase();
     contactsPage = 1;
+    contactsLetter = null;
     if (!searchTerm) {
         renderContactsTable();
         return;
