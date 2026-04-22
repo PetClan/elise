@@ -1161,7 +1161,11 @@ img {
 }
 
 .modal-large #contactDetailsContent {
-    padding: var(--spacing-md) var(--spacing-lg);
+    padding: var(--spacing-md) var(--spacing-lg) var(--spacing-lg) var(--spacing-lg);
+}
+
+.modal-large .contact-history-section:last-of-type {
+    margin-bottom: var(--spacing-md);
 }
 
 .modal-large .contact-details {
