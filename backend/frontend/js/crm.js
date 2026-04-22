@@ -12,6 +12,29 @@ let currentCallbackTab = 'awaiting';
 let deleteTarget = { type: null, id: null };
 
 // ========================================
+// ACTION DROPDOWN
+// ========================================
+
+function toggleActionDropdown(event, button) {
+    event.stopPropagation();
+    const dropdown = button.closest('.action-dropdown');
+    const wasOpen = dropdown.classList.contains('open');
+    // Close all other open dropdowns
+    document.querySelectorAll('.action-dropdown.open').forEach(d => d.classList.remove('open'));
+    // Toggle this one
+    if (!wasOpen) {
+        dropdown.classList.add('open');
+    }
+}
+
+// Close any open dropdown when clicking anywhere else
+document.addEventListener('click', function (e) {
+    if (!e.target.closest('.action-dropdown')) {
+        document.querySelectorAll('.action-dropdown.open').forEach(d => d.classList.remove('open'));
+    }
+});
+
+// ========================================
 // INITIALIZATION
 // ========================================
 
@@ -448,9 +471,14 @@ function renderCallbacksTable(callbacks) {
             <td>${formatDateTime(cb.callback_datetime)}</td>
             <td>${escapeHtml(cb.notes || '-')}</td>
             <td class="actions">
-                <button class="btn btn-small btn-view" onclick="viewCallback(${cb.id})">View</button>
-                <button class="btn btn-small btn-edit" onclick="editCallback(${cb.id})">Edit</button>
-                <button class="btn btn-small btn-delete" onclick="deleteItem('callback', ${cb.id})">Delete</button>
+                <div class="action-dropdown">
+                    <button class="action-dropdown-toggle" onclick="toggleActionDropdown(event, this)" title="Actions">⋮</button>
+                    <div class="action-dropdown-menu">
+                        <button class="action-dropdown-item" onclick="viewCallback(${cb.id})">View</button>
+                        <button class="action-dropdown-item" onclick="editCallback(${cb.id})">Edit</button>
+                        <button class="action-dropdown-item danger" onclick="deleteItem('callback', ${cb.id})">Delete</button>
+                    </div>
+                </div>
             </td>
         </tr>
     `).join('');
@@ -582,9 +610,14 @@ function renderCallbackSubSection(title, items, contactId) {
             <td>${formatDateTime(cb.callback_datetime)}</td>
             <td>${escapeHtml(cb.notes || '-')}</td>
             <td class="actions">
-                <button class="btn btn-small btn-view" onclick="viewCallback(${cb.id})">View</button>
-                <button class="btn btn-small btn-edit" onclick="editCallbackFromContact(${cb.id}, ${contactId})">Edit</button>
-                <button class="btn btn-small btn-delete" onclick="deleteCallbackFromContact(${cb.id}, ${contactId})">Delete</button>
+                <div class="action-dropdown">
+                    <button class="action-dropdown-toggle" onclick="toggleActionDropdown(event, this)" title="Actions">⋮</button>
+                    <div class="action-dropdown-menu">
+                        <button class="action-dropdown-item" onclick="viewCallback(${cb.id})">View</button>
+                        <button class="action-dropdown-item" onclick="editCallbackFromContact(${cb.id}, ${contactId})">Edit</button>
+                        <button class="action-dropdown-item danger" onclick="deleteCallbackFromContact(${cb.id}, ${contactId})">Delete</button>
+                    </div>
+                </div>
             </td>
         </tr>
     `).join('');
@@ -676,11 +709,16 @@ function renderBookingSubSection(title, items, contactId) {
             <td>£${b.fee_agreed ? parseFloat(b.fee_agreed).toFixed(2) : '0.00'}</td>
             <td><span class="status-badge status-${b.fee_status.toLowerCase()}">${b.fee_status}</span></td>
             <td class="actions">
-                <button class="btn btn-small btn-invoice" onclick="generateInvoice(${b.id})">Invoice</button>
-                <button class="btn btn-small btn-overdue" onclick="generateOverdueInvoice(${b.id})">Overdue</button>
-                <button class="btn btn-small btn-receipt" onclick="openReceiptModal(${b.id})">Receipt</button>
-                <button class="btn btn-small btn-edit" onclick="editBookingFromContact(${b.id}, ${contactId})">Edit</button>
-                <button class="btn btn-small btn-delete" onclick="deleteBookingFromContact(${b.id}, ${contactId})">Delete</button>
+                <div class="action-dropdown">
+                    <button class="action-dropdown-toggle" onclick="toggleActionDropdown(event, this)" title="Actions">⋮</button>
+                    <div class="action-dropdown-menu">
+                        <button class="action-dropdown-item" onclick="generateInvoice(${b.id})">Invoice</button>
+                        <button class="action-dropdown-item" onclick="generateOverdueInvoice(${b.id})">Overdue</button>
+                        <button class="action-dropdown-item" onclick="openReceiptModal(${b.id})">Receipt</button>
+                        <button class="action-dropdown-item" onclick="editBookingFromContact(${b.id}, ${contactId})">Edit</button>
+                        <button class="action-dropdown-item danger" onclick="deleteBookingFromContact(${b.id}, ${contactId})">Delete</button>
+                    </div>
+                </div>
             </td>
         </tr>
     `).join('');
@@ -731,11 +769,16 @@ function renderPastBookingsTable(past, contactId) {
             <td>£${b.fee_agreed ? parseFloat(b.fee_agreed).toFixed(2) : '0.00'}</td>
             <td><span class="status-badge status-${b.fee_status.toLowerCase()}">${b.fee_status}</span></td>
             <td class="actions">
-                <button class="btn btn-small btn-invoice" onclick="generateInvoice(${b.id})">Invoice</button>
-                <button class="btn btn-small btn-overdue" onclick="generateOverdueInvoice(${b.id})">Overdue</button>
-                <button class="btn btn-small btn-receipt" onclick="openReceiptModal(${b.id})">Receipt</button>
-                <button class="btn btn-small btn-edit" onclick="editBookingFromContact(${b.id}, ${contactId})">Edit</button>
-                <button class="btn btn-small btn-delete" onclick="deleteBookingFromContact(${b.id}, ${contactId})">Delete</button>
+                <div class="action-dropdown">
+                    <button class="action-dropdown-toggle" onclick="toggleActionDropdown(event, this)" title="Actions">⋮</button>
+                    <div class="action-dropdown-menu">
+                        <button class="action-dropdown-item" onclick="generateInvoice(${b.id})">Invoice</button>
+                        <button class="action-dropdown-item" onclick="generateOverdueInvoice(${b.id})">Overdue</button>
+                        <button class="action-dropdown-item" onclick="openReceiptModal(${b.id})">Receipt</button>
+                        <button class="action-dropdown-item" onclick="editBookingFromContact(${b.id}, ${contactId})">Edit</button>
+                        <button class="action-dropdown-item danger" onclick="deleteBookingFromContact(${b.id}, ${contactId})">Delete</button>
+                    </div>
+                </div>
             </td>
         </tr>
     `).join('');
@@ -819,11 +862,16 @@ function renderBookingsTable(bookings) {
             <td>Â£${booking.fee_agreed ? parseFloat(booking.fee_agreed).toFixed(2) : '0.00'}</td>
             <td><span class="status-badge status-${booking.fee_status.toLowerCase()}">${booking.fee_status}</span></td>
             <td class="actions">
-                <button class="btn btn-small btn-invoice" onclick="generateInvoice(${booking.id})">Invoice</button>
-                <button class="btn btn-small btn-overdue" onclick="generateOverdueInvoice(${booking.id})">Overdue</button>
-                <button class="btn btn-small btn-receipt" onclick="openReceiptModal(${booking.id})">Receipt</button>
-                <button class="btn btn-small btn-edit" onclick="editBooking(${booking.id})">Edit</button>
-                <button class="btn btn-small btn-delete" onclick="deleteItem('booking', ${booking.id})">Delete</button>
+                <div class="action-dropdown">
+                    <button class="action-dropdown-toggle" onclick="toggleActionDropdown(event, this)" title="Actions">⋮</button>
+                    <div class="action-dropdown-menu">
+                        <button class="action-dropdown-item" onclick="generateInvoice(${booking.id})">Invoice</button>
+                        <button class="action-dropdown-item" onclick="generateOverdueInvoice(${booking.id})">Overdue</button>
+                        <button class="action-dropdown-item" onclick="openReceiptModal(${booking.id})">Receipt</button>
+                        <button class="action-dropdown-item" onclick="editBooking(${booking.id})">Edit</button>
+                        <button class="action-dropdown-item danger" onclick="deleteItem('booking', ${booking.id})">Delete</button>
+                    </div>
+                </div>
             </td>
         </tr>
     `).join('');

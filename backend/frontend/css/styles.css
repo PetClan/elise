@@ -2082,3 +2082,81 @@ img {
         font-size: 1rem;
     }
 }
+/* ========================================
+   ACTION DROPDOWN MENU
+   ======================================== */
+.action-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.action-dropdown-toggle {
+    background: none;
+    border: 1px solid var(--gray-light);
+    border-radius: 4px;
+    padding: 2px 8px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    line-height: 1;
+    color: var(--dark);
+}
+
+.action-dropdown-toggle:hover {
+    background: var(--light);
+}
+
+.action-dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background: var(--white);
+    border: 1px solid var(--gray-light);
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 140px;
+    z-index: 100;
+    padding: 4px 0;
+    margin-top: 2px;
+}
+
+.action-dropdown.open .action-dropdown-menu {
+    display: block;
+}
+
+.action-dropdown-item {
+    display: block;
+    width: 100%;
+    padding: 8px 14px;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.875rem;
+    color: var(--dark);
+    white-space: nowrap;
+}
+
+.action-dropdown-item:hover {
+    background: var(--light);
+}
+
+.action-dropdown-item.danger {
+    color: #d32f2f;
+}
+
+.action-dropdown-item.danger:hover {
+    background: #ffebee;
+}
+
+/* Allow dropdown to overflow the table cell */
+.data-table td.actions {
+    overflow: visible !important;
+}
+
+/* Override the column-flex stacking inside the contact view tables */
+.modal-large .contact-history-section .data-table td.actions {
+    display: table-cell !important;
+    width: 60px !important;
+    text-align: center;
+}
