@@ -1006,9 +1006,8 @@ img {
 }
 
 .data-table .actions {
-    display: flex;
     gap: var(--spacing-xs);
-    flex-wrap: wrap;
+    white-space: nowrap;
 }
 
 .btn-edit {
@@ -2163,10 +2162,12 @@ img {
     vertical-align: middle;
     justify-content: center;
     align-items: center;
+    width: 80px;
 }
 
 .data-table th:last-child {
     text-align: center;
+    width: 80px;
 }
 
 /* Override the column-flex stacking inside the contact view tables */
