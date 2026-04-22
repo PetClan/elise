@@ -2161,6 +2161,8 @@ img {
     overflow: visible !important;
     text-align: center;
     vertical-align: middle;
+    justify-content: center;
+    align-items: center;
 }
 
 .data-table th:last-child {
