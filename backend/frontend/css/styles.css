@@ -2211,3 +2211,75 @@ img {
     color: var(--gray);
     user-select: none;
 }
+/* ========================================
+   CALENDAR MONTH/YEAR JUMPER
+   ======================================== */
+.calendar-jumper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--light);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.calendar-year-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.year-btn {
+    background: var(--white);
+    border: 1px solid var(--gray-light);
+    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--dark);
+}
+
+.year-btn:hover {
+    background: var(--primary);
+    color: var(--white);
+    border-color: var(--primary);
+}
+
+.year-label {
+    font-weight: 600;
+    font-size: 1.1rem;
+    min-width: 60px;
+    text-align: center;
+}
+
+.calendar-months {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.month-btn {
+    background: var(--white);
+    border: 1px solid var(--gray-light);
+    border-radius: 6px;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--dark);
+    min-width: 50px;
+}
+
+.month-btn:hover {
+    background: var(--light);
+}
+
+.month-btn.active {
+    background: var(--primary);
+    color: var(--white);
+    border-color: var(--primary);
+    font-weight: 600;
+}

@@ -1895,6 +1895,27 @@ function initCalendar() {
             renderCalendar();
         });
     }
+
+    const prevYearBtn = document.getElementById('prevYear');
+    const nextYearBtn = document.getElementById('nextYear');
+
+    if (prevYearBtn) {
+        prevYearBtn.addEventListener('click', () => {
+            currentCalendarDate.setFullYear(currentCalendarDate.getFullYear() - 1);
+            renderCalendar();
+        });
+    }
+    if (nextYearBtn) {
+        nextYearBtn.addEventListener('click', () => {
+            currentCalendarDate.setFullYear(currentCalendarDate.getFullYear() + 1);
+            renderCalendar();
+        });
+    }
+}
+
+function jumpToMonth(monthIndex) {
+    currentCalendarDate.setMonth(monthIndex);
+    renderCalendar();
 }
 
 async function loadCalendar() {
@@ -1917,10 +1938,24 @@ function renderCalendar() {
 
     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'];
+    const monthAbbr = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
     const currentMonthEl = document.getElementById('currentMonth');
     if (currentMonthEl) {
         currentMonthEl.textContent = `${monthNames[month]} ${year}`;
+    }
+
+    // Update the year label in the jumper
+    const currentYearEl = document.getElementById('currentYear');
+    if (currentYearEl) currentYearEl.textContent = year;
+
+    // Render the 12 month buttons
+    const monthButtonsEl = document.getElementById('monthButtons');
+    if (monthButtonsEl) {
+        monthButtonsEl.innerHTML = monthAbbr.map((m, i) =>
+            `<button class="month-btn ${i === month ? 'active' : ''}" onclick="jumpToMonth(${i})">${m}</button>`
+        ).join('');
     }
 
     const firstDay = new Date(year, month, 1);
