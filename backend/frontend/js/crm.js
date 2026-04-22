@@ -424,6 +424,7 @@ function renderCallbacksTable(callbacks) {
             <td>${formatDateTime(cb.callback_datetime)}</td>
             <td>${escapeHtml(cb.notes || '-')}</td>
             <td class="actions">
+                <button class="btn btn-small btn-view" onclick="viewCallback(${cb.id})">View</button>
                 <button class="btn btn-small btn-edit" onclick="editCallback(${cb.id})">Edit</button>
                 <button class="btn btn-small btn-delete" onclick="deleteItem('callback', ${cb.id})">Delete</button>
             </td>
@@ -466,6 +467,30 @@ async function handleCallbackSubmit(e) {
         console.error('Error saving callback:', error);
         showToast('Failed to save callback', 'error');
     }
+}
+
+function viewCallback(id) {
+    fetch(`${API_URL}/callbacks/${id}`, {
+        headers: { 'Authorization': `Bearer ${authToken}` }
+    })
+        .then(response => response.json())
+        .then(cb => {
+            document.getElementById('callbackDetailsContent').innerHTML = `
+                <div class="details-grid">
+                    <p><strong>Contact:</strong> ${escapeHtml(cb.contact?.care_home_name || 'Unknown')}</p>
+                    <p><strong>Callback Type:</strong> ${escapeHtml(cb.callback_type)}</p>
+                    <p><strong>Original Call:</strong> ${formatDateTime(cb.original_call_datetime)}</p>
+                    <p><strong>Callback Date:</strong> ${formatDateTime(cb.callback_datetime)}</p>
+                    <p><strong>Notes:</strong> ${escapeHtml(cb.notes || '-')}</p>
+                </div>
+            `;
+            document.getElementById('editCallbackBtn').onclick = () => {
+                closeModal('callbackDetailsModal');
+                editCallback(id);
+            };
+            document.getElementById('callbackDetailsModal').classList.add('active');
+        })
+        .catch(error => console.error('Error loading callback:', error));
 }
 
 function editCallback(id) {
