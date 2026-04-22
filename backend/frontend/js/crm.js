@@ -1030,7 +1030,7 @@ function renderBookingsTable(bookings) {
 
     tbody.innerHTML = pageBookings.map(booking => `
         <tr>
-            <td>${formatDateTime(booking.booking_from)} - ${formatDateTime(booking.booking_to)}</td>
+            <td>${formatBookingDateRange(booking.booking_from, booking.booking_to)}</td>
             <td>${escapeHtml(booking.contact?.care_home_name || 'Unknown')}</td>
             <td>${escapeHtml(booking.booking_type || '-')}</td>
             <td>£${booking.fee_agreed ? parseFloat(booking.fee_agreed).toFixed(2) : '0.00'}</td>
@@ -1254,6 +1254,27 @@ function formatDateTime(dateStr) {
         hour: '2-digit',
         minute: '2-digit'
     });
+}
+
+function formatBookingDateRange(fromStr, toStr) {
+    if (!fromStr) return '-';
+    const from = new Date(fromStr);
+    const datePart = from.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+    });
+    const fromTime = from.toLocaleTimeString('en-GB', {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    if (!toStr) return `${datePart}, ${fromTime}`;
+    const to = new Date(toStr);
+    const toTime = to.toLocaleTimeString('en-GB', {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    return `${datePart}, ${fromTime} - ${toTime}`;
 }
 
 function formatDateTimeForInput(dateStr) {
@@ -2056,8 +2077,7 @@ function showBookingDetails(bookingId) {
             content.innerHTML = `
             <div class="booking-details">
                 <p><strong>Care Home:</strong> ${escapeHtml(booking.contact?.care_home_name || 'Unknown')}</p>
-                <p><strong>From:</strong> ${formatDateTime(booking.booking_from)}</p>
-                <p><strong>To:</strong> ${formatDateTime(booking.booking_to)}</p>
+                <p><strong>Date:</strong> ${formatBookingDateRange(booking.booking_from, booking.booking_to)}</p>
                 <p><strong>Type:</strong> ${escapeHtml(booking.booking_type || 'Not specified')}</p>
                 <p><strong>Fee Agreed:</strong> £${booking.fee_agreed ? parseFloat(booking.fee_agreed).toFixed(2) : '0.00'}</p>
                 <p><strong>Status:</strong> <span class="status-badge status-${booking.fee_status.toLowerCase()}">${booking.fee_status}</span></p>

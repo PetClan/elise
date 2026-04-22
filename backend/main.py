@@ -361,10 +361,13 @@ def get_bookings(
     db: Session = Depends(get_db),
     token: str = Depends(get_current_session)
 ):
-    """Get all bookings, optionally filtered by fee status"""
+    """Get all bookings, optionally filtered by fee status.
+    'Unpaid' filter shows both Unpaid AND Invoiced (anything not yet paid)."""
     query = db.query(Booking)
     
-    if fee_status:
+    if fee_status == "Unpaid":
+        query = query.filter(Booking.fee_status.in_([FeeStatus.UNPAID, FeeStatus.INVOICED]))
+    elif fee_status:
         query = query.filter(Booking.fee_status == FeeStatus(fee_status))
     
     return query.order_by(Booking.booking_from).all()
@@ -475,7 +478,7 @@ def get_dashboard_stats(
     ).count()
     
     unpaid_bookings = db.query(Booking).filter(
-        Booking.fee_status == FeeStatus.UNPAID
+        Booking.fee_status.in_([FeeStatus.UNPAID, FeeStatus.INVOICED])
     ).count()
     
     invoiced_bookings = db.query(Booking).filter(
