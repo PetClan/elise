@@ -398,7 +398,7 @@ function renderContactsTable(filtered = null) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="5" class="empty-state">
-                    <div class="empty-state-icon">ðŸ‘¥</div>
+                    <div class="empty-state-icon">👥</div>
                     <p>${filtered ? 'No contacts match your search.' : 'No contacts yet. Add your first contact!'}</p>
                 </td>
             </tr>
@@ -610,7 +610,7 @@ function renderCallbacksTable(callbacks) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="5" class="empty-state">
-                    <div class="empty-state-icon">ðŸ””</div>
+                    <div class="empty-state-icon">🔔</div>
                     <p>No callbacks in this category.</p>
                 </td>
             </tr>
@@ -1012,7 +1012,7 @@ function renderBookingsTable(bookings) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="6" class="empty-state">
-                    <div class="empty-state-icon">ðŸ“…</div>
+                    <div class="empty-state-icon">📅</div>
                     <p>No bookings found.</p>
                 </td>
             </tr>
@@ -1932,6 +1932,32 @@ async function loadCalendar() {
     renderCalendar();
 }
 
+// Palette of 12 colours for care home events on the calendar
+const CARE_HOME_COLOURS = [
+    '#e91e63', // pink
+    '#9c27b0', // purple
+    '#673ab7', // deep purple
+    '#3f51b5', // indigo
+    '#2196f3', // blue
+    '#009688', // teal
+    '#4caf50', // green
+    '#ff9800', // orange
+    '#ff5722', // deep orange
+    '#795548', // brown
+    '#607d8b', // blue-grey
+    '#d81b60'  // raspberry
+];
+
+function getCareHomeColor(name) {
+    if (!name) return CARE_HOME_COLOURS[0];
+    // Simple deterministic hash: sum of char codes
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+        hash = (hash + name.charCodeAt(i) * (i + 1)) % CARE_HOME_COLOURS.length;
+    }
+    return CARE_HOME_COLOURS[hash];
+}
+
 function renderCalendar() {
     const year = currentCalendarDate.getFullYear();
     const month = currentCalendarDate.getMonth();
@@ -1995,9 +2021,11 @@ function renderCalendar() {
                             hour: '2-digit',
                             minute: '2-digit'
                         });
-                        html += `<div class="calendar-booking" onclick="showBookingDetails(${booking.id})">
+                        const careHomeName = booking.contact?.care_home_name || '';
+                        const color = getCareHomeColor(careHomeName);
+                        html += `<div class="calendar-booking" style="background: ${color};" onclick="showBookingDetails(${booking.id})">
                             <span class="booking-time">${time}</span>
-                            <span class="booking-venue">${escapeHtml(booking.contact?.care_home_name || '')}</span>
+                            <span class="booking-venue">${escapeHtml(careHomeName)}</span>
                         </div>`;
                     });
                     html += '</div>';
