@@ -386,6 +386,8 @@ function viewContact(id) {
     };
 
     document.getElementById('contactDetailsModal').classList.add('active');
+
+    loadContactCallbacks(id);
 }
 
 function editContact(id) {
@@ -530,6 +532,86 @@ function editCallback(id) {
             document.getElementById('callbackModal').classList.add('active');
         })
         .catch(error => console.error('Error loading callback:', error));
+}
+
+async function loadContactCallbacks(contactId) {
+    const container = document.getElementById('contactCallbacksList');
+    if (!container) return;
+
+    try {
+        const response = await fetch(`${API_URL}/callbacks`, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        if (!response.ok) {
+            container.innerHTML = '<p>Failed to load callbacks.</p>';
+            return;
+        }
+        const allCallbacks = await response.json();
+        const callbacks = allCallbacks.filter(cb => cb.contact_id === contactId);
+
+        if (callbacks.length === 0) {
+            container.innerHTML = '<p style="color: #666; font-style: italic;">No callbacks for this contact.</p>';
+            return;
+        }
+
+        const awaiting = callbacks.filter(cb => cb.callback_type === 'Awaiting Callback');
+        const toCallBack = callbacks.filter(cb => cb.callback_type === 'To Call Back');
+
+        container.innerHTML = `
+            ${renderCallbackSubSection('Awaiting Callback', awaiting, contactId)}
+            ${renderCallbackSubSection('To Call Back', toCallBack, contactId)}
+        `;
+    } catch (error) {
+        console.error('Error loading contact callbacks:', error);
+        container.innerHTML = '<p>Failed to load callbacks.</p>';
+    }
+}
+
+function renderCallbackSubSection(title, items, contactId) {
+    if (items.length === 0) {
+        return `
+            <h4 style="margin-top: 15px; margin-bottom: 8px; font-size: 14px;">${title}</h4>
+            <p style="color: #666; font-style: italic; margin-bottom: 10px;">None</p>
+        `;
+    }
+
+    const rows = items.map(cb => `
+        <tr>
+            <td>${formatDateTime(cb.original_call_datetime)}</td>
+            <td>${formatDateTime(cb.callback_datetime)}</td>
+            <td>${escapeHtml(cb.notes || '-')}</td>
+            <td class="actions">
+                <button class="btn btn-small btn-view" onclick="viewCallback(${cb.id})">View</button>
+                <button class="btn btn-small btn-edit" onclick="editCallbackFromContact(${cb.id}, ${contactId})">Edit</button>
+                <button class="btn btn-small btn-delete" onclick="deleteCallbackFromContact(${cb.id}, ${contactId})">Delete</button>
+            </td>
+        </tr>
+    `).join('');
+
+    return `
+        <h4 style="margin-top: 15px; margin-bottom: 8px; font-size: 14px;">${title}</h4>
+        <table class="data-table" style="margin-bottom: 10px;">
+            <thead>
+                <tr>
+                    <th>Original Call</th>
+                    <th>Callback Date</th>
+                    <th>Notes</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+        </table>
+    `;
+}
+
+function editCallbackFromContact(callbackId, contactId) {
+    closeModal('contactDetailsModal');
+    editCallback(callbackId);
+}
+
+function deleteCallbackFromContact(callbackId, contactId) {
+    deleteTarget = { type: 'callback', id: callbackId, returnToContact: contactId };
+    document.getElementById('deleteModal').classList.add('active');
 }
 
 // ========================================
@@ -679,7 +761,7 @@ function deleteItem(type, id) {
 }
 
 async function confirmDelete() {
-    const { type, id } = deleteTarget;
+    const { type, id, returnToContact } = deleteTarget;
     let endpoint;
 
     switch (type) {
@@ -703,6 +785,10 @@ async function confirmDelete() {
                 case 'booking': loadBookings(); loadCalendar(); break;
             }
             loadDashboard();
+
+            if (returnToContact) {
+                viewContact(returnToContact);
+            }
         } else {
             showToast('Failed to delete item', 'error');
         }
