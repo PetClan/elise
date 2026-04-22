@@ -1033,7 +1033,7 @@ function renderBookingsTable(bookings) {
             <td>${formatDateTime(booking.booking_from)} - ${formatDateTime(booking.booking_to)}</td>
             <td>${escapeHtml(booking.contact?.care_home_name || 'Unknown')}</td>
             <td>${escapeHtml(booking.booking_type || '-')}</td>
-            <td>Â£${booking.fee_agreed ? parseFloat(booking.fee_agreed).toFixed(2) : '0.00'}</td>
+            <td>£${booking.fee_agreed ? parseFloat(booking.fee_agreed).toFixed(2) : '0.00'}</td>
             <td><span class="status-badge status-${booking.fee_status.toLowerCase()}">${booking.fee_status}</span></td>
             <td class="actions">
                 <div class="action-dropdown">
@@ -1316,7 +1316,7 @@ async function exportBookingsCSV() {
             formatDateTime(b.booking_to),
             b.contact?.care_home_name || '',
             b.booking_type || '',
-            b.fee_agreed ? `Â£${parseFloat(b.fee_agreed).toFixed(2)}` : '',
+            b.fee_agreed ? `£${parseFloat(b.fee_agreed).toFixed(2)}` : '',
             b.fee_status || ''
         ]);
 
@@ -1459,7 +1459,7 @@ async function generateInvoice(bookingId) {
                 </td>
                 <td>${bookingDate}</td>
                 <td>${bookingTimeFrom} - ${bookingTimeTo}</td>
-                <td class="amount">Â£${fee}</td>
+                <td class="amount">£${fee}</td>
             </tr>
         </tbody>
     </table>
@@ -1467,11 +1467,11 @@ async function generateInvoice(bookingId) {
     <div class="totals">
         <div class="row">
             <span>Subtotal:</span>
-            <span>Â£${fee}</span>
+            <span>£${fee}</span>
         </div>
         <div class="row total">
             <span>Total Due:</span>
-            <span>Â£${fee}</span>
+            <span>£${fee}</span>
         </div>
     </div>
     
@@ -1822,7 +1822,7 @@ async function generateReceipt(bookingId, receiptDate, paymentMethod, chequeNumb
                 </td>
                 <td>${bookingDate}</td>
                 <td>${bookingTimeFrom} - ${bookingTimeTo}</td>
-                <td class="amount">Â£${fee}</td>
+                <td class="amount">£${fee}</td>
             </tr>
         </tbody>
     </table>
@@ -1830,18 +1830,18 @@ async function generateReceipt(bookingId, receiptDate, paymentMethod, chequeNumb
     <div class="totals">
         <div class="row">
             <span>Subtotal:</span>
-            <span>Â£${fee}</span>
+            <span>£${fee}</span>
         </div>
         <div class="row total">
             <span>Total Paid:</span>
-            <span>Â£${fee}</span>
+            <span>£${fee}</span>
         </div>
     </div>
     
     <div class="payment-info">
         <h3>Payment Confirmation</h3>
         <p>Thank you for your payment. This receipt confirms that payment has been received in full.</p>
-        <p><strong>Amount Received:</strong> Â£${fee}</p>
+        <p><strong>Amount Received:</strong> £${fee}</p>
         <p><strong>Payment Method:</strong> ${paymentMethod}</p>
         ${chequeInfo}
     </div>
@@ -2059,8 +2059,13 @@ function showBookingDetails(bookingId) {
                 <p><strong>From:</strong> ${formatDateTime(booking.booking_from)}</p>
                 <p><strong>To:</strong> ${formatDateTime(booking.booking_to)}</p>
                 <p><strong>Type:</strong> ${escapeHtml(booking.booking_type || 'Not specified')}</p>
-                <p><strong>Fee Agreed:</strong> Â£${booking.fee_agreed ? parseFloat(booking.fee_agreed).toFixed(2) : '0.00'}</p>
+                <p><strong>Fee Agreed:</strong> £${booking.fee_agreed ? parseFloat(booking.fee_agreed).toFixed(2) : '0.00'}</p>
                 <p><strong>Status:</strong> <span class="status-badge status-${booking.fee_status.toLowerCase()}">${booking.fee_status}</span></p>
+                <div class="booking-actions-row" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
+                    <button type="button" class="btn btn-small btn-invoice" id="invoiceBookingBtn">Create Invoice</button>
+                    <button type="button" class="btn btn-small btn-overdue" id="overdueBookingBtn">Overdue</button>
+                    <button type="button" class="btn btn-small btn-receipt" id="receiptBookingBtn">Create Receipt</button>
+                </div>
             </div>
         `;
 
