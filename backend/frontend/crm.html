@@ -54,6 +54,10 @@
                     <span class="nav-icon">🔔</span>
                     Callbacks
                 </a>
+                <a href="#" class="nav-item" data-section="targets">
+                    <span class="nav-icon">🎯</span>
+                    Targets
+                </a>
                 <a href="#" class="nav-item" data-section="bookings">
                     <span class="nav-icon">📅</span>
                     Bookings
@@ -192,8 +196,37 @@
                     </table>
                 </div>
                 <div id="callbacksPagination" class="pagination"></div>
-            </section>
-            <!-- Calendar Section -->
+                </section>
+                
+                <!-- Targets Section -->
+                <section id="targets" class="content-section">
+                    <div class="section-header">
+                        <h1>Targets</h1>
+                        <button class="btn btn-primary" onclick="openModal('targetModal')">+ Add Target</button>
+                    </div>
+                
+                    <div class="search-bar">
+                        <input type="text" id="targetSearch" placeholder="Search targets..." oninput="filterTargets()">
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Care Home</th>
+                                    <th>Telephone</th>
+                                    <th>Notes</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="targetsTable">
+                                <!-- Populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="targetsPagination" class="pagination"></div>
+                </section>
+                
+                <!-- Calendar Section -->
             <section id="calendar" class="content-section">
                 <div class="section-header">
                     <h1>Calendar</h1>
@@ -452,6 +485,35 @@
                 <button type="button" class="btn btn-secondary"
                     onclick="closeModal('bookingConfirmationModal')">Close</button>
             </div>
+        </div>
+    </div>
+    
+    <!-- Target Modal -->
+    <div id="targetModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="targetModalTitle">Add Target</h2>
+                <button class="modal-close" onclick="closeModal('targetModal')">&times;</button>
+            </div>
+            <form id="targetForm">
+                <input type="hidden" id="targetId">
+                <div class="form-group">
+                    <label for="targetCareHomeName">Care Home Name *</label>
+                    <input type="text" id="targetCareHomeName" required>
+                </div>
+                <div class="form-group">
+                    <label for="targetTelephone">Telephone</label>
+                    <input type="tel" id="targetTelephone">
+                </div>
+                <div class="form-group">
+                    <label for="targetNotes">Notes</label>
+                    <textarea id="targetNotes" rows="4"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('targetModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Target</button>
+                </div>
+            </form>
         </div>
     </div>
     

@@ -21,6 +21,11 @@ let allBookings = [];
 let filteredContacts = null;
 let contactsLetter = null;
 
+// Targets state
+let targets = [];
+let filteredTargets = null;
+let targetsLetter = null;
+
 // ========================================
 // ACTION DROPDOWN
 // ========================================
@@ -200,6 +205,9 @@ function setupEventListeners() {
     if (callbackForm) callbackForm.addEventListener('submit', handleCallbackSubmit);
     if (bookingForm) bookingForm.addEventListener('submit', handleBookingSubmit);
 
+    const targetForm = document.getElementById('targetForm');
+    if (targetForm) targetForm.addEventListener('submit', handleTargetSubmit);
+
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', function () {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -322,6 +330,7 @@ function navigateToSection(section) {
         case 'calendar': loadCalendar(); break;
         case 'contacts': loadContacts(); break;
         case 'callbacks': loadCallbacks(); break;
+        case 'targets': loadTargets(); break;
         case 'bookings': loadBookings(); break;
     }
 }
@@ -491,6 +500,35 @@ async function handleContactSubmit(e) {
         website: document.getElementById('contactWebsite').value
     };
 
+    // If promoting a target, use the promote endpoint instead
+    if (promotingTargetId) {
+        try {
+            const response = await fetch(`${API_URL}/targets/${promotingTargetId}/promote`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                },
+                body: JSON.stringify(data)
+            });
+            if (response.ok) {
+                closeModal('contactModal');
+                const wasPromoting = promotingTargetId;
+                promotingTargetId = null;
+                loadTargets();
+                loadContacts();
+                loadDashboard();
+                showToast('Target promoted to Contact!', 'success');
+            } else {
+                showToast('Failed to promote target', 'error');
+            }
+        } catch (error) {
+            console.error('Error promoting target:', error);
+            showToast('Failed to promote target', 'error');
+        }
+        return;
+    }
+
     try {
         const url = id ? `${API_URL}/contacts/${id}` : `${API_URL}/contacts`;
         const method = id ? 'PUT' : 'POST';
@@ -579,6 +617,172 @@ function editContact(id) {
     document.getElementById('contactAddress').value = contact.address || '';
     document.getElementById('contactPostcode').value = contact.postcode || '';
     document.getElementById('contactWebsite').value = contact.website || '';
+
+    document.getElementById('contactModal').classList.add('active');
+}
+
+// ========================================
+// TARGETS
+// ========================================
+
+async function loadTargets() {
+    try {
+        const response = await fetch(`${API_URL}/targets`, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        if (response.ok) {
+            targets = await response.json();
+            renderTargetsTable();
+        }
+    } catch (error) {
+        console.error('Failed to load targets:', error);
+    }
+}
+
+function renderTargetsTable(filtered = null) {
+    const tbody = document.getElementById('targetsTable');
+    filteredTargets = filtered;
+    const displayTargets = (filtered || targets)
+        .slice()
+        .sort((a, b) => (a.care_home_name || '').localeCompare(b.care_home_name || ''));
+
+    if (displayTargets.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="4" class="empty-state">
+                    <div class="empty-state-icon">🎯</div>
+                    <p>${filtered ? 'No targets match your search.' : 'No targets yet. Add your first target!'}</p>
+                </td>
+            </tr>
+        `;
+        document.getElementById('targetsPagination').innerHTML = '';
+        return;
+    }
+
+    // Figure out which letters have targets
+    const lettersWithTargets = new Set(
+        displayTargets
+            .map(t => (t.care_home_name || '').trim().charAt(0).toUpperCase())
+            .filter(l => l)
+    );
+
+    if (!targetsLetter || !lettersWithTargets.has(targetsLetter)) {
+        targetsLetter = displayTargets[0].care_home_name.trim().charAt(0).toUpperCase();
+    }
+
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const pageTargets = displayTargets.filter(t => {
+        const first = (t.care_home_name || '').trim().charAt(0).toUpperCase();
+        if (targetsLetter === '#') return first && !letters.includes(first);
+        return first === targetsLetter;
+    });
+
+    tbody.innerHTML = pageTargets.map(target => `
+        <tr>
+            <td>${escapeHtml(target.care_home_name)}</td>
+            <td>${target.telephone ? `<a href="tel:${target.telephone}" class="phone-link">${escapeHtml(target.telephone)}</a>` : '-'}</td>
+            <td>${escapeHtml(target.notes || '-')}</td>
+            <td class="actions">
+                <div class="action-dropdown">
+                    <button class="action-dropdown-toggle" onclick="toggleActionDropdown(event, this)" title="Actions">⋮</button>
+                    <div class="action-dropdown-menu">
+                        <button class="action-dropdown-item" onclick="editTarget(${target.id})">Edit</button>
+                        <button class="action-dropdown-item" onclick="promoteTarget(${target.id})">Promote to Contact</button>
+                        <button class="action-dropdown-item danger" onclick="deleteItem('target', ${target.id})">Delete</button>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+
+    renderLetterPagination('targetsPagination', displayTargets, targetsLetter, 'goToTargetsLetter');
+}
+
+function goToTargetsLetter(letter) {
+    targetsLetter = letter;
+    renderTargetsTable(filteredTargets);
+}
+
+function filterTargets() {
+    const searchTerm = document.getElementById('targetSearch').value.toLowerCase();
+    targetsLetter = null;
+    if (!searchTerm) {
+        renderTargetsTable();
+        return;
+    }
+    const filtered = targets.filter(t =>
+        t.care_home_name.toLowerCase().includes(searchTerm) ||
+        (t.telephone && t.telephone.includes(searchTerm)) ||
+        (t.notes && t.notes.toLowerCase().includes(searchTerm))
+    );
+    renderTargetsTable(filtered);
+}
+
+async function handleTargetSubmit(e) {
+    e.preventDefault();
+    const id = document.getElementById('targetId').value;
+    const data = {
+        care_home_name: document.getElementById('targetCareHomeName').value,
+        telephone: document.getElementById('targetTelephone').value,
+        notes: document.getElementById('targetNotes').value
+    };
+
+    try {
+        const url = id ? `${API_URL}/targets/${id}` : `${API_URL}/targets`;
+        const method = id ? 'PUT' : 'POST';
+        const response = await fetch(url, {
+            method,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            closeModal('targetModal');
+            loadTargets();
+            showToast(id ? 'Target updated!' : 'Target added!', 'success');
+        } else {
+            showToast('Failed to save target', 'error');
+        }
+    } catch (error) {
+        console.error('Error saving target:', error);
+        showToast('Failed to save target', 'error');
+    }
+}
+
+function editTarget(id) {
+    const target = targets.find(t => t.id === id);
+    if (!target) return;
+
+    document.getElementById('targetModalTitle').textContent = 'Edit Target';
+    document.getElementById('targetId').value = target.id;
+    document.getElementById('targetCareHomeName').value = target.care_home_name;
+    document.getElementById('targetTelephone').value = target.telephone || '';
+    document.getElementById('targetNotes').value = target.notes || '';
+    document.getElementById('targetModal').classList.add('active');
+}
+
+// Tracks which Target (if any) is currently being promoted to a Contact
+let promotingTargetId = null;
+
+function promoteTarget(id) {
+    const target = targets.find(t => t.id === id);
+    if (!target) return;
+
+    promotingTargetId = id;
+
+    // Pre-fill the Contact form with the target's data
+    document.getElementById('contactModalTitle').textContent = 'Promote Target to Contact';
+    document.getElementById('contactId').value = '';
+    document.getElementById('careHomeName').value = target.care_home_name;
+    document.getElementById('contactPerson').value = '';
+    document.getElementById('telephone').value = target.telephone || '';
+    document.getElementById('contactEmail').value = '';
+    document.getElementById('contactAddress').value = '';
+    document.getElementById('contactPostcode').value = '';
+    document.getElementById('contactWebsite').value = '';
 
     document.getElementById('contactModal').classList.add('active');
 }
@@ -1256,6 +1460,7 @@ async function confirmDelete() {
         case 'contact': endpoint = `${API_URL}/contacts/${id}`; break;
         case 'callback': endpoint = `${API_URL}/callbacks/${id}`; break;
         case 'booking': endpoint = `${API_URL}/bookings/${id}`; break;
+        case 'target': endpoint = `${API_URL}/targets/${id}`; break;
     }
 
     try {
@@ -1271,6 +1476,7 @@ async function confirmDelete() {
                 case 'contact': loadContacts(); break;
                 case 'callback': loadCallbacks(); break;
                 case 'booking': loadBookings(); loadCalendar(); break;
+                case 'target': loadTargets(); break;
             }
             loadDashboard();
 
@@ -1293,6 +1499,7 @@ async function confirmDelete() {
 
 function openModal(modalId) {
     if (modalId === 'contactModal') {
+        promotingTargetId = null;
         document.getElementById('contactModalTitle').textContent = 'Add Contact';
         document.getElementById('contactId').value = '';
         document.getElementById('careHomeName').value = '';
@@ -1310,6 +1517,12 @@ function openModal(modalId) {
         document.getElementById('originalCallDateTime').value = formatDateTimeForInput(new Date().toISOString());
         document.getElementById('callbackDateTime').value = formatDateTimeForInput(new Date().toISOString());
         document.getElementById('callbackNotes').value = '';
+    } else if (modalId === 'targetModal') {
+        document.getElementById('targetModalTitle').textContent = 'Add Target';
+        document.getElementById('targetId').value = '';
+        document.getElementById('targetCareHomeName').value = '';
+        document.getElementById('targetTelephone').value = '';
+        document.getElementById('targetNotes').value = '';
     } else if (modalId === 'bookingModal') {
         const bookingForm = document.getElementById('bookingForm');
         if (bookingForm) bookingForm.reset();
