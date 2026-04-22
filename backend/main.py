@@ -461,9 +461,10 @@ def get_dashboard_stats(
     
     total_contacts = db.query(Contact).count()
     total_bookings = db.query(Booking).count()
+    today_start = datetime.combine(today, datetime.min.time())
     upcoming_bookings = db.query(Booking).filter(
-    Booking.booking_from >= datetime.now()
-).count()
+        Booking.booking_from >= today_start
+    ).count()
     
     awaiting_callbacks = db.query(Callback).filter(
         Callback.callback_type == CallbackType.AWAITING_CALLBACK
