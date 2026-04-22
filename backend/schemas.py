@@ -75,7 +75,8 @@ class CallLogResponse(CallLogBase):
 
 # Callback Schemas
 class CallbackBase(BaseModel):
-    contact_id: int
+    contact_id: Optional[int] = None
+    target_id: Optional[int] = None
     original_call_datetime: datetime
     notes: Optional[str] = None
     callback_datetime: datetime
@@ -88,6 +89,7 @@ class CallbackCreate(CallbackBase):
 
 class CallbackUpdate(BaseModel):
     contact_id: Optional[int] = None
+    target_id: Optional[int] = None
     original_call_datetime: Optional[datetime] = None
     notes: Optional[str] = None
     callback_datetime: Optional[datetime] = None
@@ -97,6 +99,7 @@ class CallbackUpdate(BaseModel):
 class CallbackResponse(CallbackBase):
     id: int
     contact: Optional[ContactResponse] = None
+    target: Optional[TargetResponse] = None
 
     class Config:
         from_attributes = True
@@ -130,6 +133,30 @@ class BookingUpdate(BaseModel):
 class BookingResponse(BookingBase):
     id: int
     contact: Optional[ContactResponse] = None
+
+    class Config:
+        from_attributes = True
+
+
+# Target Schemas
+class TargetBase(BaseModel):
+    care_home_name: str
+    telephone: Optional[str] = None
+    notes: Optional[str] = None
+
+
+class TargetCreate(TargetBase):
+    pass
+
+
+class TargetUpdate(BaseModel):
+    care_home_name: Optional[str] = None
+    telephone: Optional[str] = None
+    notes: Optional[str] = None
+
+
+class TargetResponse(TargetBase):
+    id: int
 
     class Config:
         from_attributes = True

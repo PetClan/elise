@@ -6,12 +6,13 @@ from typing import List, Optional
 import os
 
 from database import get_db, init_db, SessionLocal
-from models import Contact, CallLog, Callback, Booking, CallbackType, FeeStatus
+from models import Contact, CallLog, Callback, Booking, Target, CallbackType, FeeStatus
 from schemas import (
     ContactCreate, ContactUpdate, ContactResponse,
     CallLogCreate, CallLogUpdate, CallLogResponse,
     CallbackCreate, CallbackUpdate, CallbackResponse,
     BookingCreate, BookingUpdate, BookingResponse,
+    TargetCreate, TargetUpdate, TargetResponse,
     PasswordCheck
 )
 from auth import verify_password, create_session, validate_session, invalidate_session
@@ -38,10 +39,14 @@ def startup():
         db.execute(text("ALTER TABLE bookings ADD COLUMN IF NOT EXISTS booking_from TIMESTAMP"))
         # Add booking_to column to bookings if it doesn't exist
         db.execute(text("ALTER TABLE bookings ADD COLUMN IF NOT EXISTS booking_to TIMESTAMP"))
-        # Add more_info column to bookings if it doesn't exist
+       # Add more_info column to bookings if it doesn't exist
         db.execute(text("ALTER TABLE bookings ADD COLUMN IF NOT EXISTS more_info TEXT"))
         # Drop old booking_date column if it exists
         db.execute(text("ALTER TABLE bookings DROP COLUMN IF EXISTS booking_date"))
+        # Make callbacks.contact_id nullable (callbacks can belong to a target instead)
+        db.execute(text("ALTER TABLE callbacks ALTER COLUMN contact_id DROP NOT NULL"))
+        # Add target_id column to callbacks if it doesn't exist
+        db.execute(text("ALTER TABLE callbacks ADD COLUMN IF NOT EXISTS target_id INTEGER REFERENCES targets(id)"))
         # Drop old venue column if it exists
         db.execute(text("ALTER TABLE bookings DROP COLUMN IF EXISTS venue"))
         # Delete old bookings with NULL values in required fields
@@ -296,16 +301,25 @@ def create_callback(
     db: Session = Depends(get_db),
     token: str = Depends(get_current_session)
 ):
-    """Create a new callback"""
-    # Verify contact exists
-    contact = db.query(Contact).filter(Contact.id == callback.contact_id).first()
-    if not contact:
-        raise HTTPException(status_code=404, detail="Contact not found")
-    
+    """Create a new callback - must link to either a Contact or a Target."""
+    # Must have exactly one of contact_id or target_id
+    if not callback.contact_id and not callback.target_id:
+        raise HTTPException(status_code=400, detail="Callback must be linked to either a Contact or a Target")
+    if callback.contact_id and callback.target_id:
+        raise HTTPException(status_code=400, detail="Callback cannot be linked to both a Contact and a Target")
+
+    # Verify the linked entity exists
+    if callback.contact_id:
+        if not db.query(Contact).filter(Contact.id == callback.contact_id).first():
+            raise HTTPException(status_code=404, detail="Contact not found")
+    else:
+        if not db.query(Target).filter(Target.id == callback.target_id).first():
+            raise HTTPException(status_code=404, detail="Target not found")
+
     callback_data = callback.model_dump()
     # Convert enum string to enum value
     callback_data['callback_type'] = CallbackType(callback_data['callback_type'])
-    
+
     db_callback = Callback(**callback_data)
     db.add(db_callback)
     db.commit()
@@ -448,6 +462,111 @@ def bookings_backup_test(token: str = Depends(get_current_session)):
     """Simple test endpoint to verify backup wiring"""
     return {"status": "ok", "message": "Backup endpoint is working"}
 
+
+# ============== Targets ==============
+
+@app.get("/api/targets", response_model=List[TargetResponse])
+def get_targets(
+    db: Session = Depends(get_db),
+    token: str = Depends(get_current_session)
+):
+    """Get all targets, sorted alphabetically"""
+    return db.query(Target).order_by(Target.care_home_name).all()
+
+
+@app.get("/api/targets/{target_id}", response_model=TargetResponse)
+def get_target(
+    target_id: int,
+    db: Session = Depends(get_db),
+    token: str = Depends(get_current_session)
+):
+    """Get a single target by ID"""
+    target = db.query(Target).filter(Target.id == target_id).first()
+    if not target:
+        raise HTTPException(status_code=404, detail="Target not found")
+    return target
+
+
+@app.post("/api/targets", response_model=TargetResponse, status_code=status.HTTP_201_CREATED)
+def create_target(
+    target: TargetCreate,
+    db: Session = Depends(get_db),
+    token: str = Depends(get_current_session)
+):
+    """Create a new target"""
+    db_target = Target(**target.model_dump())
+    db.add(db_target)
+    db.commit()
+    db.refresh(db_target)
+    return db_target
+
+
+@app.put("/api/targets/{target_id}", response_model=TargetResponse)
+def update_target(
+    target_id: int,
+    target: TargetUpdate,
+    db: Session = Depends(get_db),
+    token: str = Depends(get_current_session)
+):
+    """Update a target"""
+    db_target = db.query(Target).filter(Target.id == target_id).first()
+    if not db_target:
+        raise HTTPException(status_code=404, detail="Target not found")
+
+    update_data = target.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(db_target, field, value)
+
+    db.commit()
+    db.refresh(db_target)
+    return db_target
+
+
+@app.delete("/api/targets/{target_id}")
+def delete_target(
+    target_id: int,
+    db: Session = Depends(get_db),
+    token: str = Depends(get_current_session)
+):
+    """Delete a target (and any associated callbacks via cascade)"""
+    db_target = db.query(Target).filter(Target.id == target_id).first()
+    if not db_target:
+        raise HTTPException(status_code=404, detail="Target not found")
+
+    db.delete(db_target)
+    db.commit()
+    return {"success": True, "message": "Target deleted"}
+
+
+@app.post("/api/targets/{target_id}/promote", response_model=ContactResponse, status_code=status.HTTP_201_CREATED)
+def promote_target_to_contact(
+    target_id: int,
+    contact: ContactCreate,
+    db: Session = Depends(get_db),
+    token: str = Depends(get_current_session)
+):
+    """Promote a target to a contact. Re-links any existing callbacks to the new contact,
+    then deletes the target."""
+    db_target = db.query(Target).filter(Target.id == target_id).first()
+    if not db_target:
+        raise HTTPException(status_code=404, detail="Target not found")
+
+    # Create the new contact
+    db_contact = Contact(**contact.model_dump())
+    db.add(db_contact)
+    db.flush()  # get an id without committing
+
+    # Re-link any callbacks from the target to the new contact
+    db.query(Callback).filter(Callback.target_id == target_id).update({
+        "contact_id": db_contact.id,
+        "target_id": None
+    })
+
+    # Delete the target
+    db.delete(db_target)
+    db.commit()
+    db.refresh(db_contact)
+    return db_contact
 
 
 # ============== Dashboard Stats ==============

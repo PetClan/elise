@@ -49,7 +49,8 @@ class Callback(Base):
     __tablename__ = "callbacks"
 
     id = Column(Integer, primary_key=True, index=True)
-    contact_id = Column(Integer, ForeignKey("contacts.id"), nullable=False)
+    contact_id = Column(Integer, ForeignKey("contacts.id"), nullable=True)
+    target_id = Column(Integer, ForeignKey("targets.id"), nullable=True)
     original_call_datetime = Column(DateTime, nullable=False)
     notes = Column(Text, nullable=True)
     callback_datetime = Column(DateTime, nullable=False)
@@ -57,6 +58,7 @@ class Callback(Base):
 
     # Relationships
     contact = relationship("Contact", back_populates="callbacks")
+    target = relationship("Target", back_populates="callbacks")
 
 
 class Booking(Base):
@@ -73,3 +75,15 @@ class Booking(Base):
 
     # Relationships
     contact = relationship("Contact", back_populates="bookings")
+
+
+class Target(Base):
+    __tablename__ = "targets"
+
+    id = Column(Integer, primary_key=True, index=True)
+    care_home_name = Column(String(255), nullable=False)
+    telephone = Column(String(50), nullable=True)
+    notes = Column(Text, nullable=True)
+
+    # Relationships
+    callbacks = relationship("Callback", back_populates="target", cascade="all, delete-orphan")   
