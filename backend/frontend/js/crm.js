@@ -388,6 +388,7 @@ function viewContact(id) {
     document.getElementById('contactDetailsModal').classList.add('active');
 
     loadContactCallbacks(id);
+    loadContactBookings(id);
 }
 
 function editContact(id) {
@@ -617,6 +618,166 @@ function deleteCallbackFromContact(callbackId, contactId) {
 // ========================================
 // BOOKINGS
 // ========================================
+
+async function loadContactBookings(contactId) {
+    const container = document.getElementById('contactBookingsList');
+    if (!container) return;
+
+    try {
+        const response = await fetch(`${API_URL}/bookings`, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        if (!response.ok) {
+            container.innerHTML = '<p>Failed to load bookings.</p>';
+            return;
+        }
+        const allBookings = await response.json();
+        const bookings = allBookings.filter(b => b.contact_id === contactId);
+
+        if (bookings.length === 0) {
+            container.innerHTML = '<p style="color: #666; font-style: italic;">No bookings for this contact.</p>';
+            return;
+        }
+
+        const now = new Date();
+        const upcoming = bookings
+            .filter(b => new Date(b.booking_from) >= now)
+            .sort((a, b) => new Date(a.booking_from) - new Date(b.booking_from));
+        const past = bookings
+            .filter(b => new Date(b.booking_from) < now)
+            .sort((a, b) => new Date(b.booking_from) - new Date(a.booking_from));
+
+        // Store past bookings on the container so the filter can re-render
+        container._pastBookings = past;
+        container._contactId = contactId;
+
+        container.innerHTML = `
+            ${renderBookingSubSection('Upcoming', upcoming, contactId)}
+            ${renderPastBookingsSection(past, contactId)}
+        `;
+    } catch (error) {
+        console.error('Error loading contact bookings:', error);
+        container.innerHTML = '<p>Failed to load bookings.</p>';
+    }
+}
+
+function renderBookingSubSection(title, items, contactId) {
+    if (items.length === 0) {
+        return `
+            <h4 style="margin-top: 15px; margin-bottom: 8px; font-size: 14px;">${title}</h4>
+            <p style="color: #666; font-style: italic; margin-bottom: 10px;">None</p>
+        `;
+    }
+
+    const rows = items.map(b => `
+        <tr>
+            <td>${formatDateTime(b.booking_from)}</td>
+            <td>${escapeHtml(b.booking_type || '-')}</td>
+            <td>£${b.fee_agreed ? parseFloat(b.fee_agreed).toFixed(2) : '0.00'}</td>
+            <td><span class="status-badge status-${b.fee_status.toLowerCase()}">${b.fee_status}</span></td>
+            <td class="actions">
+                <button class="btn btn-small btn-invoice" onclick="generateInvoice(${b.id})">Invoice</button>
+                <button class="btn btn-small btn-overdue" onclick="generateOverdueInvoice(${b.id})">Overdue</button>
+                <button class="btn btn-small btn-receipt" onclick="openReceiptModal(${b.id})">Receipt</button>
+                <button class="btn btn-small btn-edit" onclick="editBookingFromContact(${b.id}, ${contactId})">Edit</button>
+                <button class="btn btn-small btn-delete" onclick="deleteBookingFromContact(${b.id}, ${contactId})">Delete</button>
+            </td>
+        </tr>
+    `).join('');
+
+    return `
+        <h4 style="margin-top: 15px; margin-bottom: 8px; font-size: 14px;">${title}</h4>
+        <table class="data-table" style="margin-bottom: 10px;">
+            <thead>
+                <tr>
+                    <th style="width: 140px;">Date/Time</th>
+                    <th>Type</th>
+                    <th style="width: 80px;">Fee</th>
+                    <th style="width: 90px;">Status</th>
+                    <th style="width: 90px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+        </table>
+    `;
+}
+
+function renderPastBookingsSection(past, contactId) {
+    return `
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 20px; margin-bottom: 8px;">
+            <h4 style="margin: 0; font-size: 14px;">Past</h4>
+            <select id="pastBookingsFilter" onchange="filterPastBookings(${contactId})" style="padding: 4px 8px; font-size: 0.85rem;">
+                <option value="">All</option>
+                <option value="Unpaid">Unpaid</option>
+                <option value="Invoiced">Invoiced</option>
+                <option value="Paid">Paid</option>
+            </select>
+        </div>
+        <div id="pastBookingsContainer">
+            ${renderPastBookingsTable(past, contactId)}
+        </div>
+    `;
+}
+
+function renderPastBookingsTable(past, contactId) {
+    if (past.length === 0) {
+        return '<p style="color: #666; font-style: italic; margin-bottom: 10px;">None</p>';
+    }
+
+    const rows = past.map(b => `
+        <tr>
+            <td>${formatDateTime(b.booking_from)}</td>
+            <td>${escapeHtml(b.booking_type || '-')}</td>
+            <td>£${b.fee_agreed ? parseFloat(b.fee_agreed).toFixed(2) : '0.00'}</td>
+            <td><span class="status-badge status-${b.fee_status.toLowerCase()}">${b.fee_status}</span></td>
+            <td class="actions">
+                <button class="btn btn-small btn-invoice" onclick="generateInvoice(${b.id})">Invoice</button>
+                <button class="btn btn-small btn-overdue" onclick="generateOverdueInvoice(${b.id})">Overdue</button>
+                <button class="btn btn-small btn-receipt" onclick="openReceiptModal(${b.id})">Receipt</button>
+                <button class="btn btn-small btn-edit" onclick="editBookingFromContact(${b.id}, ${contactId})">Edit</button>
+                <button class="btn btn-small btn-delete" onclick="deleteBookingFromContact(${b.id}, ${contactId})">Delete</button>
+            </td>
+        </tr>
+    `).join('');
+
+    return `
+        <table class="data-table" style="margin-bottom: 10px;">
+            <thead>
+                <tr>
+                    <th style="width: 140px;">Date/Time</th>
+                    <th>Type</th>
+                    <th style="width: 80px;">Fee</th>
+                    <th style="width: 90px;">Status</th>
+                    <th style="width: 90px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+        </table>
+    `;
+}
+
+function filterPastBookings(contactId) {
+    const container = document.getElementById('contactBookingsList');
+    const filterValue = document.getElementById('pastBookingsFilter').value;
+    const past = container._pastBookings || [];
+
+    const filtered = filterValue
+        ? past.filter(b => b.fee_status === filterValue)
+        : past;
+
+    document.getElementById('pastBookingsContainer').innerHTML =
+        renderPastBookingsTable(filtered, contactId);
+}
+
+function editBookingFromContact(bookingId, contactId) {
+    closeModal('contactDetailsModal');
+    editBooking(bookingId);
+}
+
+function deleteBookingFromContact(bookingId, contactId) {
+    deleteTarget = { type: 'booking', id: bookingId, returnToContact: contactId };
+    document.getElementById('deleteModal').classList.add('active');
+}
 
 async function loadBookings() {
     const statusFilter = document.getElementById('bookingStatusFilter');
