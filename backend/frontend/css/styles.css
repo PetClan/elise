@@ -1160,16 +1160,55 @@ img {
     max-width: 900px;
 }
 
+.modal-large #contactDetailsContent {
+    padding: var(--spacing-md) var(--spacing-lg);
+}
+
+.modal-large .contact-details {
+    gap: 0;
+}
+
+.modal-large .contact-details p {
+    margin-bottom: 6px;
+    line-height: 1.5;
+}
+
+.modal-large hr {
+    border: none;
+    border-top: 1px solid var(--gray-light);
+}
+
+.modal-large .contact-history-section h3 {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.modal-large .contact-history-section h4 {
+    font-weight: 600;
+    color: var(--gray);
+}
+
+.modal-large .contact-history-section .data-table {
+    font-size: 0.875rem;
+}
+
+.modal-large .contact-history-section .data-table th,
+.modal-large .contact-history-section .data-table td {
+    padding: 8px 10px;
+}
+
 .contact-history-section .actions {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 3px;
     align-items: stretch;
 }
 
 .contact-history-section .actions .btn {
     width: 100%;
     white-space: nowrap;
+    padding: 4px 8px;
+    font-size: 0.8rem;
 }modal-small {
     max-width: 400px;
     padding: var(--spacing-lg);
