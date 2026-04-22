@@ -160,6 +160,7 @@
                         </tbody>
                     </table>
                 </div>
+                <div id="contactsPagination" class="pagination"></div>
             </section>
 
             <!-- Callbacks Section -->
@@ -190,6 +191,7 @@
                         </tbody>
                     </table>
                 </div>
+                <div id="callbacksPagination" class="pagination"></div>
             </section>
             <!-- Calendar Section -->
             <section id="calendar" class="content-section">
@@ -277,6 +279,7 @@
                         </tbody>
                     </table>
                 </div>
+                <div id="bookingsPagination" class="pagination"></div>
             </section>
         </main>
     </div>
@@ -339,29 +342,29 @@
                 <div class="form-actions">
                     <button type="button" class="btn btn-secondary" onclick="closeModal('contactModal')">Cancel</button>
                     <button type="submit" class="btn btn-primary">Save Contact</button>
-                    </div>
-                    </form>
-                    </div>
-                    </div>
-                    
-                    <!-- Callback Details Modal -->
-                    <div id="callbackDetailsModal" class="modal">
-                        <div class="modal-content modal-small">
-                            <div class="modal-header">
-                                <h2>Callback Details</h2>
-                                <button class="modal-close" onclick="closeModal('callbackDetailsModal')">&times;</button>
-                            </div>
-                            <div id="callbackDetailsContent">
-                                <!-- Populated by JavaScript -->
-                            </div>
-                            <div class="form-actions">
-                                <button type="button" class="btn btn-secondary" onclick="closeModal('callbackDetailsModal')">Close</button>
-                                <button type="button" class="btn btn-primary" id="editCallbackBtn">Edit Callback</button>
-                            </div>
+                </div>
+                </form>
+                </div>
+                </div>
+                
+                <!-- Callback Details Modal -->
+                <div id="callbackDetailsModal" class="modal">
+                    <div class="modal-content modal-small">
+                        <div class="modal-header">
+                            <h2>Callback Details</h2>
+                            <button class="modal-close" onclick="closeModal('callbackDetailsModal')">&times;</button>
+                        </div>
+                        <div id="callbackDetailsContent">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('callbackDetailsModal')">Close</button>
+                            <button type="button" class="btn btn-primary" id="editCallbackBtn">Edit Callback</button>
                         </div>
                     </div>
-                    
-                    <!-- Callback Modal -->
+                </div>
+                
+                <!-- Callback Modal -->
     <div id="callbackModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">

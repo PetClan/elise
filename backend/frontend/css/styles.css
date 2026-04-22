@@ -2152,6 +2152,12 @@ img {
 /* Allow dropdown to overflow the table cell */
 .data-table td.actions {
     overflow: visible !important;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.data-table th:last-child {
+    text-align: center;
 }
 
 /* Override the column-flex stacking inside the contact view tables */
@@ -2159,4 +2165,49 @@ img {
     display: table-cell !important;
     width: 60px !important;
     text-align: center;
+}
+/* ========================================
+   PAGINATION
+   ======================================== */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    margin-top: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.pagination-btn {
+    min-width: 36px;
+    height: 36px;
+    padding: 0 10px;
+    border: 1px solid var(--gray-light);
+    background: var(--white);
+    color: var(--dark);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.875rem;
+}
+
+.pagination-btn:hover:not(:disabled):not(.active) {
+    background: var(--light);
+}
+
+.pagination-btn.active {
+    background: var(--primary);
+    color: var(--white);
+    border-color: var(--primary);
+    font-weight: 600;
+}
+
+.pagination-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.pagination-ellipsis {
+    padding: 0 6px;
+    color: var(--gray);
+    user-select: none;
 }

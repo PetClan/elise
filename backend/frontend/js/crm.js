@@ -11,6 +11,15 @@ let contacts = [];
 let currentCallbackTab = 'awaiting';
 let deleteTarget = { type: null, id: null };
 
+// Pagination state
+const PAGE_SIZE = 10;
+let contactsPage = 1;
+let callbacksPage = 1;
+let bookingsPage = 1;
+let allCallbacks = [];
+let allBookings = [];
+let filteredContacts = null;
+
 // ========================================
 // ACTION DROPDOWN
 // ========================================
@@ -34,6 +43,73 @@ document.addEventListener('click', function (e) {
     }
 });
 
+// ========================================
+// PAGINATION
+// ========================================
+
+function paginate(items, page, pageSize = PAGE_SIZE) {
+    const start = (page - 1) * pageSize;
+    return items.slice(start, start + pageSize);
+}
+
+function renderPagination(containerId, totalItems, currentPage, onPageChange, pageSize = PAGE_SIZE) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    const totalPages = Math.ceil(totalItems / pageSize);
+
+    if (totalPages <= 1) {
+        container.innerHTML = '';
+        return;
+    }
+
+    let html = '';
+
+    // Previous button
+    html += `<button class="pagination-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="${onPageChange}(${currentPage - 1})">&laquo; Prev</button>`;
+
+    // Page numbers with ellipsis logic
+    const pages = [];
+    if (totalPages <= 7) {
+        for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+        pages.push(1);
+        if (currentPage > 3) pages.push('...');
+        const start = Math.max(2, currentPage - 1);
+        const end = Math.min(totalPages - 1, currentPage + 1);
+        for (let i = start; i <= end; i++) pages.push(i);
+        if (currentPage < totalPages - 2) pages.push('...');
+        pages.push(totalPages);
+    }
+
+    pages.forEach(p => {
+        if (p === '...') {
+            html += `<span class="pagination-ellipsis">...</span>`;
+        } else {
+            html += `<button class="pagination-btn ${p === currentPage ? 'active' : ''}" onclick="${onPageChange}(${p})">${p}</button>`;
+        }
+    });
+
+    // Next button
+    html += `<button class="pagination-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="${onPageChange}(${currentPage + 1})">Next &raquo;</button>`;
+
+    container.innerHTML = html;
+}
+
+function goToContactsPage(page) {
+    contactsPage = page;
+    renderContactsTable(filteredContacts);
+}
+
+function goToCallbacksPage(page) {
+    callbacksPage = page;
+    renderCallbacksTable(allCallbacks);
+}
+
+function goToBookingsPage(page) {
+    bookingsPage = page;
+    renderBookingsTable(allBookings);
+}
 // ========================================
 // INITIALIZATION
 // ========================================
@@ -90,12 +166,16 @@ function setupEventListeners() {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
             currentCallbackTab = this.dataset.tab;
+            callbacksPage = 1;
             loadCallbacks();
         });
     });
 
     const bookingStatusFilter = document.getElementById('bookingStatusFilter');
-    if (bookingStatusFilter) bookingStatusFilter.addEventListener('change', loadBookings);
+    if (bookingStatusFilter) bookingStatusFilter.addEventListener('change', () => {
+        bookingsPage = 1;
+        loadBookings();
+    });
 
     const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
     if (confirmDeleteBtn) confirmDeleteBtn.addEventListener('click', confirmDelete);
@@ -268,23 +348,34 @@ async function loadContacts() {
     }
 }
 
-function renderContactsTable(filteredContacts = null) {
+function renderContactsTable(filtered = null) {
     const tbody = document.getElementById('contactsTable');
-    const displayContacts = filteredContacts || contacts;
+    filteredContacts = filtered;
+    const displayContacts = (filtered || contacts)
+        .slice()
+        .sort((a, b) => (a.care_home_name || '').localeCompare(b.care_home_name || ''));
 
     if (displayContacts.length === 0) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="5" class="empty-state">
                     <div class="empty-state-icon">ðŸ‘¥</div>
-                    <p>${filteredContacts ? 'No contacts match your search.' : 'No contacts yet. Add your first contact!'}</p>
+                    <p>${filtered ? 'No contacts match your search.' : 'No contacts yet. Add your first contact!'}</p>
                 </td>
             </tr>
         `;
+        document.getElementById('contactsPagination').innerHTML = '';
         return;
     }
 
-    tbody.innerHTML = displayContacts.map(contact => `
+    // Ensure current page is in range
+    const totalPages = Math.ceil(displayContacts.length / PAGE_SIZE);
+    if (contactsPage > totalPages) contactsPage = totalPages;
+    if (contactsPage < 1) contactsPage = 1;
+
+    const pageContacts = paginate(displayContacts, contactsPage);
+
+    tbody.innerHTML = pageContacts.map(contact => `
         <tr>
             <td data-label="Care Home">${escapeHtml(contact.care_home_name)}</td>
             <td data-label="Contact Person">${escapeHtml(contact.contact_person || '-')}</td>
@@ -297,10 +388,13 @@ function renderContactsTable(filteredContacts = null) {
             </td>
         </tr>
     `).join('');
+
+    renderPagination('contactsPagination', displayContacts.length, contactsPage, 'goToContactsPage');
 }
 
 function filterContacts() {
     const searchTerm = document.getElementById('contactSearch').value.toLowerCase();
+    contactsPage = 1;
     if (!searchTerm) {
         renderContactsTable();
         return;
@@ -452,6 +546,8 @@ async function loadCallbacks() {
 
 function renderCallbacksTable(callbacks) {
     const tbody = document.getElementById('callbacksTable');
+    allCallbacks = callbacks;
+
     if (callbacks.length === 0) {
         tbody.innerHTML = `
             <tr>
@@ -461,10 +557,18 @@ function renderCallbacksTable(callbacks) {
                 </td>
             </tr>
         `;
+        document.getElementById('callbacksPagination').innerHTML = '';
         return;
     }
 
-    tbody.innerHTML = callbacks.map(cb => `
+    // Ensure current page is in range
+    const totalPages = Math.ceil(callbacks.length / PAGE_SIZE);
+    if (callbacksPage > totalPages) callbacksPage = totalPages;
+    if (callbacksPage < 1) callbacksPage = 1;
+
+    const pageCallbacks = paginate(callbacks, callbacksPage);
+
+    tbody.innerHTML = pageCallbacks.map(cb => `
         <tr>
             <td>${escapeHtml(cb.contact?.care_home_name || 'Unknown')}</td>
             <td>${formatDateTime(cb.original_call_datetime)}</td>
@@ -482,6 +586,8 @@ function renderCallbacksTable(callbacks) {
             </td>
         </tr>
     `).join('');
+
+    renderPagination('callbacksPagination', callbacks.length, callbacksPage, 'goToCallbacksPage');
 }
 
 async function handleCallbackSubmit(e) {
@@ -842,6 +948,8 @@ async function loadBookings() {
 
 function renderBookingsTable(bookings) {
     const tbody = document.getElementById('bookingsTable');
+    allBookings = bookings;
+
     if (bookings.length === 0) {
         tbody.innerHTML = `
             <tr>
@@ -851,10 +959,18 @@ function renderBookingsTable(bookings) {
                 </td>
             </tr>
         `;
+        document.getElementById('bookingsPagination').innerHTML = '';
         return;
     }
 
-    tbody.innerHTML = bookings.map(booking => `
+    // Ensure current page is in range
+    const totalPages = Math.ceil(bookings.length / PAGE_SIZE);
+    if (bookingsPage > totalPages) bookingsPage = totalPages;
+    if (bookingsPage < 1) bookingsPage = 1;
+
+    const pageBookings = paginate(bookings, bookingsPage);
+
+    tbody.innerHTML = pageBookings.map(booking => `
         <tr>
             <td>${formatDateTime(booking.booking_from)} - ${formatDateTime(booking.booking_to)}</td>
             <td>${escapeHtml(booking.contact?.care_home_name || 'Unknown')}</td>
@@ -875,6 +991,8 @@ function renderBookingsTable(bookings) {
             </td>
         </tr>
     `).join('');
+
+    renderPagination('bookingsPagination', bookings.length, bookingsPage, 'goToBookingsPage');
 }
 
 async function handleBookingSubmit(e) {
