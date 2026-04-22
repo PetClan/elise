@@ -1037,14 +1037,14 @@ function renderBookingsTable(bookings) {
             rowClass = isPast ? 'booking-row-overdue' : 'booking-row-future';
         }
         return `
-        <tr class="${rowClass}">
+        <tr class="${rowClass} clickable-row" onclick="showBookingDetails(${booking.id})">
             <td>${formatBookingDateRange(booking.booking_from, booking.booking_to)}</td>
             <td>${escapeHtml(booking.contact?.care_home_name || 'Unknown')}</td>
             <td>${escapeHtml(booking.booking_type || '-')}</td>
             <td>£${booking.fee_agreed ? parseFloat(booking.fee_agreed).toFixed(2) : '0.00'}</td>
             <td style="text-align: center; font-size: 1.2rem;">${booking.fee_status === 'Paid' || booking.fee_status === 'Invoiced' ? '<span style="color: #2e7d32;">✓</span>' : '<span style="color: #c62828;">✗</span>'}</td>
             <td><span class="status-badge status-${booking.fee_status === 'Invoiced' ? 'unpaid' : booking.fee_status.toLowerCase()}">${booking.fee_status === 'Invoiced' ? 'Unpaid' : booking.fee_status}</span></td>
-            <td class="actions">
+            <td class="actions" onclick="event.stopPropagation()">
                 <div class="action-dropdown">
                     <button class="action-dropdown-toggle" onclick="toggleActionDropdown(event, this)" title="Actions">⋮</button>
                     <div class="action-dropdown-menu">
@@ -2123,7 +2123,7 @@ function showBookingDetails(bookingId) {
                 <p><strong>Date:</strong> ${formatBookingDateRange(booking.booking_from, booking.booking_to)}</p>
                 <p><strong>Type:</strong> ${escapeHtml(booking.booking_type || 'Not specified')}</p>
                 <p><strong>Fee Agreed:</strong> £${booking.fee_agreed ? parseFloat(booking.fee_agreed).toFixed(2) : '0.00'}</p>
-                <p><strong>Status:</strong> <span class="status-badge status-${booking.fee_status.toLowerCase()}">${booking.fee_status}</span></p>
+                <p><strong>Status:</strong> <span class="status-badge status-${booking.fee_status === 'Invoiced' ? 'unpaid' : booking.fee_status.toLowerCase()}">${booking.fee_status === 'Invoiced' ? 'Unpaid' : booking.fee_status}</span></p>
                 <div class="booking-actions-row" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
                     <button type="button" class="btn btn-small btn-invoice" id="invoiceBookingBtn">Create Invoice</button>
                     <button type="button" class="btn btn-small btn-overdue" id="overdueBookingBtn">Overdue</button>

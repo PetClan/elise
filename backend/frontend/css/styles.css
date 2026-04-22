@@ -2311,3 +2311,6 @@ img {
 .booking-row-future:hover {
     background: #c8e6c9;
 }
+.clickable-row {
+    cursor: pointer;
+}
