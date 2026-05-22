@@ -2039,14 +2039,20 @@ img {
         margin-right: var(--spacing-md);
     }
 
-    .data-table td.actions {
-        justify-content: center;
-        gap: var(--spacing-sm);
-    }
-
-    .data-table td.actions::before {
-        display: none;
-    }
+        .data-table td.actions {
+            justify-content: flex-end !important;
+            width: auto !important;
+            gap: var(--spacing-sm);
+            padding-top: var(--spacing-sm);
+        }
+    
+        .data-table td.actions::before {
+            display: none;
+        }
+    
+        .action-dropdown-menu {
+            min-width: 160px;
+        }
 
     /* Empty state styling */
     .data-table td.empty-state {
