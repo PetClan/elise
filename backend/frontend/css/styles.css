@@ -1996,14 +1996,24 @@ img {
         border: 1px solid var(--gray-light);
     }
 
-    .data-table td {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: var(--spacing-xs) 0;
-        border-bottom: 1px solid var(--light);
-        font-size: 0.9rem;
-    }
+        .data-table td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-xs) 0;
+            border-bottom: 1px solid var(--light);
+            font-size: 0.9rem;
+            white-space: normal;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+    
+        .data-table td>* {
+            min-width: 0;
+            max-width: 100%;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
 
     .data-table td:last-child {
         border-bottom: none;
