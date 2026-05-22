@@ -679,9 +679,9 @@ function renderTargetsTable(filtered = null) {
 
     tbody.innerHTML = pageTargets.map(target => `
         <tr>
-            <td>${escapeHtml(target.care_home_name)}</td>
-            <td>${target.telephone ? `<a href="tel:${target.telephone}" class="phone-link">${escapeHtml(target.telephone)}</a>` : '-'}</td>
-            <td>${escapeHtml(target.notes || '-')}</td>
+            <td data-label="Care Home">${escapeHtml(target.care_home_name)}</td>
+            <td data-label="Telephone">${target.telephone ? `<a href="tel:${target.telephone}" class="phone-link">${escapeHtml(target.telephone)}</a>` : '-'}</td>
+            <td data-label="Notes">${escapeHtml(target.notes || '-')}</td>
             <td class="actions">
                 <div class="action-dropdown">
                     <button class="action-dropdown-toggle" onclick="toggleActionDropdown(event, this)" title="Actions">⋮</button>
@@ -832,10 +832,10 @@ function renderCallbacksTable(callbacks) {
 
     tbody.innerHTML = pageCallbacks.map(cb => `
         <tr>
-            <td>${escapeHtml(cb.contact?.care_home_name || 'Unknown')}</td>
-            <td>${formatDateTime(cb.original_call_datetime)}</td>
-            <td>${formatDateTime(cb.callback_datetime)}</td>
-            <td>${escapeHtml(cb.notes || '-')}</td>
+            <td data-label="Contact">${escapeHtml(cb.contact?.care_home_name || 'Unknown')}</td>
+            <td data-label="Original Call">${formatDateTime(cb.original_call_datetime)}</td>
+            <td data-label="Callback Date">${formatDateTime(cb.callback_datetime)}</td>
+            <td data-label="Notes">${escapeHtml(cb.notes || '-')}</td>
             <td class="actions">
                 <div class="action-dropdown">
                     <button class="action-dropdown-toggle" onclick="toggleActionDropdown(event, this)" title="Actions">⋮</button>
@@ -1328,12 +1328,12 @@ function renderBookingsTable(bookings) {
         }
         return `
         <tr class="${rowClass} clickable-row" onclick="showBookingDetails(${booking.id})">
-            <td>${formatBookingDateRange(booking.booking_from, booking.booking_to)}</td>
-            <td>${escapeHtml(booking.contact?.care_home_name || 'Unknown')}</td>
-            <td>${escapeHtml(booking.booking_type || '-')}</td>
-            <td>£${booking.fee_agreed ? parseFloat(booking.fee_agreed).toFixed(2) : '0.00'}</td>
-            <td style="text-align: center; font-size: 1.2rem;">${booking.fee_status === 'Paid' || booking.fee_status === 'Invoiced' ? '<span style="color: #2e7d32;">✓</span>' : '<span style="color: #c62828;">✗</span>'}</td>
-            <td><span class="status-badge status-${booking.fee_status === 'Invoiced' ? 'unpaid' : booking.fee_status.toLowerCase()}">${booking.fee_status === 'Invoiced' ? 'Unpaid' : booking.fee_status}</span></td>
+            <td data-label="Date/Time">${formatBookingDateRange(booking.booking_from, booking.booking_to)}</td>
+            <td data-label="Venue">${escapeHtml(booking.contact?.care_home_name || 'Unknown')}</td>
+            <td data-label="Type">${escapeHtml(booking.booking_type || '-')}</td>
+            <td data-label="Fee Agreed">£${booking.fee_agreed ? parseFloat(booking.fee_agreed).toFixed(2) : '0.00'}</td>
+            <td data-label="Invoiced" style="text-align: center; font-size: 1.2rem;">${booking.fee_status === 'Paid' || booking.fee_status === 'Invoiced' ? '<span style="color: #2e7d32;">✓</span>' : '<span style="color: #c62828;">✗</span>'}</td>
+            <td data-label="Status"><span class="status-badge status-${booking.fee_status === 'Invoiced' ? 'unpaid' : booking.fee_status.toLowerCase()}">${booking.fee_status === 'Invoiced' ? 'Unpaid' : booking.fee_status}</span></td>
             <td class="actions" onclick="event.stopPropagation()">
                 <div class="action-dropdown">
                     <button class="action-dropdown-toggle" onclick="toggleActionDropdown(event, this)" title="Actions">⋮</button>

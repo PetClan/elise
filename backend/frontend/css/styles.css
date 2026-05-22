@@ -1725,12 +1725,15 @@ img {
 ======================================== */
 @media (max-width: 767px) {
 
-    /* Make tables scroll horizontally */
-    .table-container {
-        margin: 0 -var(--spacing-md);
-        padding: 0 var(--spacing-md);
-        border-radius: 0;
-    }
+    /* On mobile we use card layout — allow dropdown menus to overflow */
+        .table-container {
+            margin: 0;
+            padding: 0;
+            border-radius: 0;
+            overflow: visible;
+            background: transparent;
+            box-shadow: none;
+        }
 
     .data-table {
         min-width: 500px;
@@ -1760,9 +1763,18 @@ img {
         align-items: stretch;
     }
 
-    .section-header .btn {
-        width: 100%;
-    }
+        .section-header .btn {
+            width: 100%;
+        }
+    
+        .header-buttons {
+            flex-direction: column;
+            width: 100%;
+        }
+    
+        .header-buttons .btn {
+            width: 100%;
+        }
 
     /* Filter bar improvements */
     .filter-bar {
