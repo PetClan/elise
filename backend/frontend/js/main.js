@@ -27,7 +27,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-document.addEventListener('DOMContentLoaded', function () {/ ========================================
+document.addEventListener('DOMContentLoaded', function () {
+    // Mobile Navigation Toggleocument.addEventListener('DOMContentLoaded', function () {/ ========================================
 // PUBLIC PAGE - MAIN.JS
 // ========================================
 
