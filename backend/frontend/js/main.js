@@ -2,6 +2,35 @@
 // PUBLIC PAGE - MAIN.JS
 // ========================================
 
+// ============================================================
+// REVIEWS — edit this list to update what's shown on the page.
+// To ADD a review:    copy a line and change the text.
+// To REMOVE a review: delete its line.
+// Keep each line in the format:  { text: "...", author: "..." },
+// Don't put quote marks inside text — they're added automatically.
+// ============================================================
+const reviews = [
+    { text: "Residents were treated to a fabulous afternoon of  ABBA classics with the amazing Elise, who had everyone singing, dancing in their seats and soaking up every minute of the music", author: "Activities Coordinator, Carrondale Care Home" },
+    { text: "A wonderful dementia-friendly session that connected beautifully with everyone.", author: "Manager, [Care Home Name]" },
+    { text: "Professional, warm and full of energy. We can't wait to have Elise back.", author: "Family Member, Glasgow" }
+];
+
+document.addEventListener('DOMContentLoaded', function () {
+    const reviewsGrid = document.getElementById('reviewsGrid');
+    if (reviewsGrid) {
+        reviewsGrid.innerHTML = reviews.map(function (review) {
+            return '<article class="review-card">' +
+                '<p class="review-text">"' + review.text + '"</p>' +
+                '<p class="review-author">— ' + review.author + '</p>' +
+                '</article>';
+        }).join('');
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function () {/ ========================================
+// PUBLIC PAGE - MAIN.JS
+// ========================================
+
 document.addEventListener('DOMContentLoaded', function() {
     // Mobile Navigation Toggle
     const navToggle = document.querySelector('.nav-toggle');
