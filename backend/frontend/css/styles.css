@@ -979,6 +979,7 @@ img {
     overflow-x: auto;
     overflow-y: visible;
     -webkit-overflow-scrolling: touch;
+    min-height: 60vh;
 }
 
 .data-table {
@@ -1733,6 +1734,7 @@ img {
             overflow: visible;
             background: transparent;
             box-shadow: none;
+            min-height: 0;
         }
 
     .data-table {
