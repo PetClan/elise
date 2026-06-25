@@ -2379,7 +2379,7 @@ img {
 
 /* ===== Reviews Section ===== */
 .reviews {
-    background: var(--light);
+    background: linear-gradient(180deg, #fff0f7 0%, #fbe4ef 100%);
 }
 
 .reviews-grid {
