@@ -10,9 +10,8 @@
 // Don't put quote marks inside text — they're added automatically.
 // ============================================================
 const reviews = [
-    { text: "Residents were treated to a fabulous afternoon of  ABBA classics with the amazing Elise, who had everyone singing, dancing in their seats and soaking up every minute of the music", author: "Activities Coordinator, Carrondale Care Home" },
-    { text: "A wonderful dementia-friendly session that connected beautifully with everyone.", author: "Manager, [Care Home Name]" },
-    { text: "Professional, warm and full of energy. We can't wait to have Elise back.", author: "Family Member, Glasgow" }
+    { text: "Residents were treated to a fabulous afternoon of ABBA classics with the amazing Elise, who had everyone singing, dancing in their seats and soaking up every minute of the music", author: "Activities Coordinator, Carrondale Care Home" },
+    { text: "Omg elise you are absolutly outstanding and have an unbelievable future ahead! ", author: "Activities Coordinator, Milngavie Manor Care Home" }
 ];
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -28,12 +27,8 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
-    // Mobile Navigation Toggleocument.addEventListener('DOMContentLoaded', function () {/ ========================================
-// PUBLIC PAGE - MAIN.JS
-// ========================================
-
-document.addEventListener('DOMContentLoaded', function() {
     // Mobile Navigation Toggle
+    const navToggle = document.querySelector('.nav-toggle');
     const navToggle = document.querySelector('.nav-toggle');
     const navLinks = document.querySelector('.nav-links');
 
