@@ -2376,3 +2376,73 @@ img {
     color: var(--dark);
     font-size: 0.9rem;
 }
+
+/* ===== Reviews Section ===== */
+.reviews {
+    background: var(--light);
+}
+
+.reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xxl);
+}
+
+.review-card {
+    background: var(--white);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.review-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+}
+
+.review-text {
+    color: var(--gray-dark);
+    font-size: 1rem;
+    font-style: italic;
+    line-height: 1.6;
+    margin-bottom: var(--spacing-md);
+}
+
+.review-author {
+    color: var(--primary-dark);
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-top: auto;
+}
+
+.reviews-cta {
+    text-align: center;
+    background: var(--white);
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.reviews-cta h3 {
+    font-size: 1.4rem;
+    color: var(--dark);
+    margin-bottom: var(--spacing-sm);
+}
+
+.reviews-cta p {
+    color: var(--gray-dark);
+    margin-bottom: var(--spacing-lg);
+}
+
+.reviews-cta-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    justify-content: center;
+}
