@@ -571,6 +571,7 @@ function viewContact(id) {
             <p><strong>Address:</strong> ${escapeHtml(contact.address || '-')}</p>
             <p><strong>Postcode:</strong> ${escapeHtml(contact.postcode || '-')}</p>
             <p><strong>Website:</strong> ${contact.website ? `<a href="${contact.website}" target="_blank">${escapeHtml(contact.website)}</a>` : '-'}</p>
+            <p><strong>Review Requested:</strong> ${contact.review_requested_at ? new Date(contact.review_requested_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Not yet requested'}</p>
         </div>
 
         <hr style="margin: 20px 0;">
