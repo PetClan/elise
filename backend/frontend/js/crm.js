@@ -442,12 +442,14 @@ function renderContactsTable(filtered = null) {
             <td data-label="Contact Person">${escapeHtml(contact.contact_person || '-')}</td>
             <td data-label="Telephone">${contact.telephone ? `<a href="tel:${contact.telephone}" class="phone-link">${escapeHtml(contact.telephone)}</a>` : '-'}</td>
             <td data-label="Email">${escapeHtml(contact.email || '-')}</td>
+            <td data-label="Review Requested">${contact.review_requested_at ? new Date(contact.review_requested_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}</td>
             <td class="actions">
                 <div class="action-dropdown">
                     <button class="action-dropdown-toggle" onclick="toggleActionDropdown(event, this)" title="Actions">⋮</button>
                     <div class="action-dropdown-menu">
                         <button class="action-dropdown-item" onclick="viewContact(${contact.id})">View</button>
                         <button class="action-dropdown-item" onclick="editContact(${contact.id})">Edit</button>
+                        <button class="action-dropdown-item" onclick="requestReview(${contact.id})">Request Review</button>
                         <button class="action-dropdown-item danger" onclick="deleteItem('contact', ${contact.id})">Delete</button>
                     </div>
                 </div>
@@ -1017,6 +1019,55 @@ function deleteCallbackFromContact(callbackId, contactId) {
 }
 
 // ========================================
+// REVIEW REQUEST
+// ========================================
+
+async function requestReview(contactId) {
+    try {
+        // Look up the care home's details
+        const res = await fetch(`${API_URL}/contacts/${contactId}`, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        if (!res.ok) {
+            showToast('Could not load that contact', 'error');
+            return;
+        }
+        const contact = await res.json();
+
+        // Build the pre-written review request email
+        const subject = 'A small favour — would you leave a review?';
+        const body =
+            `Dear ${contact.care_home_name || 'there'},\n\n` +
+            `Thank you so much for having me perform — I had a wonderful time and I hope your residents enjoyed it too.\n\n` +
+            `If you have a spare moment, I'd be hugely grateful if you could leave a short review — whichever way is easiest:\n\n` +
+            `• On Facebook: https://www.facebook.com/elisethecarehomesinger\n` +
+            `• By email: just reply to this message with a few words\n` +
+            `• Or both — even better!\n\n` +
+            `Many thanks — it means the world.\n` +
+            `Elise`;
+
+        // Open Elise's mail app with the message ready to send
+        const mailto = `mailto:${contact.email || ''}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        window.location.href = mailto;
+
+        // Log the request date against the care home
+        const logRes = await fetch(`${API_URL}/contacts/${contactId}/request-review`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        if (logRes.ok) {
+            showToast('Review request logged', 'success');
+            loadContacts();
+        } else {
+            showToast('Email opened, but logging the date failed', 'error');
+        }
+    } catch (error) {
+        console.error('Request review error:', error);
+        showToast('Something went wrong requesting a review', 'error');
+    }
+}
+
+// ========================================
 // BOOKINGS
 // ========================================
 
@@ -1342,6 +1393,7 @@ function renderBookingsTable(bookings) {
                         <button class="action-dropdown-item" onclick="generateInvoice(${booking.id})">Invoice</button>
                         <button class="action-dropdown-item" onclick="generateOverdueInvoice(${booking.id})">Overdue</button>
                         <button class="action-dropdown-item" onclick="openReceiptModal(${booking.id})">Receipt</button>
+                        <button class="action-dropdown-item" onclick="requestReview(${booking.contact?.id})">Request Review</button>
                         <button class="action-dropdown-item" onclick="editBooking(${booking.id})">Edit</button>
                         <button class="action-dropdown-item danger" onclick="deleteItem('booking', ${booking.id})">Delete</button>
                     </div>

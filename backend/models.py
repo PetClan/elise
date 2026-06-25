@@ -26,6 +26,7 @@ class Contact(Base):
     address = Column(Text, nullable=True)
     postcode = Column(String(20), nullable=True)
     website = Column(String(255), nullable=True)
+    review_requested_at = Column(DateTime, nullable=True)
 
     # Relationships
     call_logs = relationship("CallLog", back_populates="contact", cascade="all, delete-orphan")

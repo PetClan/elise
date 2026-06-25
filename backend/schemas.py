@@ -43,6 +43,7 @@ class ContactUpdate(BaseModel):
 
 class ContactResponse(ContactBase):
     id: int
+    review_requested_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True

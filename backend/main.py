@@ -36,6 +36,8 @@ def startup():
         db.execute(text("ALTER TABLE contacts ADD COLUMN IF NOT EXISTS postcode VARCHAR(20)"))
         # Add website column to contacts if it doesn't exist
         db.execute(text("ALTER TABLE contacts ADD COLUMN IF NOT EXISTS website VARCHAR(255)"))
+        # Add review_requested_at column to contacts if it doesn't exist
+        db.execute(text("ALTER TABLE contacts ADD COLUMN IF NOT EXISTS review_requested_at TIMESTAMP"))
         # Add contact_id column to bookings if it doesn't exist
         db.execute(text("ALTER TABLE bookings ADD COLUMN IF NOT EXISTS contact_id INTEGER REFERENCES contacts(id)"))
         # Add booking_from column to bookings if it doesn't exist
@@ -180,6 +182,24 @@ def delete_contact(
     db.delete(db_contact)
     db.commit()
     return {"success": True, "message": "Contact deleted"}
+
+
+@app.post("/api/contacts/{contact_id}/request-review", response_model=ContactResponse)
+def request_contact_review(
+    contact_id: int,
+    db: Session = Depends(get_db),
+    token: str = Depends(get_current_session)
+):
+    """Record that a review has been requested from this care home"""
+    from datetime import datetime
+    db_contact = db.query(Contact).filter(Contact.id == contact_id).first()
+    if not db_contact:
+        raise HTTPException(status_code=404, detail="Contact not found")
+
+    db_contact.review_requested_at = datetime.utcnow()
+    db.commit()
+    db.refresh(db_contact)
+    return db_contact
 
 
 # ============== Call Logs ==============
