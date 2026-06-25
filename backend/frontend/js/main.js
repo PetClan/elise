@@ -11,7 +11,7 @@
 // ============================================================
 const reviews = [
     { text: "Residents were treated to a fabulous afternoon of ABBA classics with the amazing Elise, who had everyone singing, dancing in their seats and soaking up every minute of the music", author: "Activities Coordinator, Carrondale Care Home" },
-    { text: "Omg elise you are absolutly outstanding and have an unbelievable future ahead! ", author: "Activities Coordinator, Milngavie Manor Care Home" }
+    { text: "Omg elise you are absolutely outstanding and have an unbelievable future ahead! ", author: "Activities Coordinator, Milngavie Manor Care Home" }
 ];
 
 document.addEventListener('DOMContentLoaded', function () {
