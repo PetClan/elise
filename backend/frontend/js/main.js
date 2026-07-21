@@ -11,7 +11,8 @@
 // ============================================================
 const reviews = [
     { text: "Residents were treated to a fabulous afternoon of ABBA classics with the amazing Elise, who had everyone singing, dancing in their seats and soaking up every minute of the music", author: "Activities Coordinator, Carrondale Care Home" },
-    { text: "Omg elise you are absolutely outstanding and have an unbelievable future ahead! ", author: "Activities Coordinator, Milngavie Manor Care Home" }
+    { text: "Omg elise you are absolutely outstanding and have an unbelievable future ahead! ", author: "Activities Coordinator, Milngavie Manor Care Home" },
+    { text: "I'm very grateful to Elise for the fantastic show she performed from my mum's 80th Birthday. Her voice is beautiful and her choice of songs were perfect. It was a joyous afternoon for all. Highly recommended!", author: "Susan" }
 ];
 
 document.addEventListener('DOMContentLoaded', function () {
