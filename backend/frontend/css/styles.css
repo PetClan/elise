@@ -2384,11 +2384,62 @@ img {
     background: linear-gradient(180deg, #fff0f7 0%, #fbe4ef 100%);
 }
 
-.reviews-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: var(--spacing-lg);
+.reviews-carousel {
     margin-bottom: var(--spacing-xxl);
+}
+
+.reviews-viewport {
+    overflow: hidden;
+    padding: var(--spacing-sm) 0;
+}
+
+.reviews-track {
+    display: flex;
+    gap: var(--spacing-lg);
+    transition: transform 0.5s ease;
+}
+
+.reviews-track .review-card {
+    flex: 0 0 100%;
+}
+
+@media (min-width: 992px) {
+    .reviews-track .review-card {
+        flex: 0 0 calc((100% - (2 * var(--spacing-lg))) / 3);
+    }
+}
+
+.reviews-dots {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-lg);
+}
+
+.reviews-dot {
+    width: 12px;
+    height: 12px;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-full);
+    background: var(--gray-light);
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.reviews-dot:hover {
+    background: var(--primary-light);
+}
+
+.reviews-dot.active {
+    background: var(--primary);
+    transform: scale(1.2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .reviews-track {
+        transition: none;
+    }
 }
 
 .review-card {
