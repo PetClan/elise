@@ -25,6 +25,12 @@ class ContactBase(BaseModel):
     address: Optional[str] = None
     postcode: Optional[str] = None
     website: Optional[str] = None
+    billing_name: Optional[str] = None
+    billing_contact_person: Optional[str] = None
+    billing_address: Optional[str] = None
+    billing_postcode: Optional[str] = None
+    billing_email: Optional[str] = None
+    billing_reference: Optional[str] = None
 
 
 class ContactCreate(ContactBase):
@@ -39,6 +45,12 @@ class ContactUpdate(BaseModel):
     address: Optional[str] = None
     postcode: Optional[str] = None
     website: Optional[str] = None
+    billing_name: Optional[str] = None
+    billing_contact_person: Optional[str] = None
+    billing_address: Optional[str] = None
+    billing_postcode: Optional[str] = None
+    billing_email: Optional[str] = None
+    billing_reference: Optional[str] = None
 
 
 class ContactResponse(ContactBase):

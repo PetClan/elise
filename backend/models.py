@@ -28,6 +28,15 @@ class Contact(Base):
     website = Column(String(255), nullable=True)
     review_requested_at = Column(DateTime, nullable=True)
 
+    # Billing details - all optional. A blank field falls back to the
+    # matching contact field above when a document is generated.
+    billing_name = Column(String(255), nullable=True)
+    billing_contact_person = Column(String(255), nullable=True)
+    billing_address = Column(Text, nullable=True)
+    billing_postcode = Column(String(20), nullable=True)
+    billing_email = Column(String(255), nullable=True)
+    billing_reference = Column(String(100), nullable=True)
+
     # Relationships
     call_logs = relationship("CallLog", back_populates="contact", cascade="all, delete-orphan")
     callbacks = relationship("Callback", back_populates="contact", cascade="all, delete-orphan")

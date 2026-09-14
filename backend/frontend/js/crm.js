@@ -499,7 +499,13 @@ async function handleContactSubmit(e) {
         email: document.getElementById('contactEmail').value,
         address: document.getElementById('contactAddress').value,
         postcode: document.getElementById('contactPostcode').value,
-        website: document.getElementById('contactWebsite').value
+        website: document.getElementById('contactWebsite').value,
+        billing_name: document.getElementById('billingName').value,
+        billing_contact_person: document.getElementById('billingContactPerson').value,
+        billing_address: document.getElementById('billingAddress').value,
+        billing_postcode: document.getElementById('billingPostcode').value,
+        billing_email: document.getElementById('billingEmail').value,
+        billing_reference: document.getElementById('billingReference').value
     };
 
     // If promoting a target, use the promote endpoint instead
@@ -620,8 +626,29 @@ function editContact(id) {
     document.getElementById('contactAddress').value = contact.address || '';
     document.getElementById('contactPostcode').value = contact.postcode || '';
     document.getElementById('contactWebsite').value = contact.website || '';
+    document.getElementById('billingName').value = contact.billing_name || '';
+    document.getElementById('billingContactPerson').value = contact.billing_contact_person || '';
+    document.getElementById('billingAddress').value = contact.billing_address || '';
+    document.getElementById('billingPostcode').value = contact.billing_postcode || '';
+    document.getElementById('billingEmail').value = contact.billing_email || '';
+    document.getElementById('billingReference').value = contact.billing_reference || '';
 
     document.getElementById('contactModal').classList.add('active');
+}
+
+// Copies the contact details into the billing fields, so you can tweak
+// one line rather than retyping the whole address.
+function copyContactToBilling() {
+    document.getElementById('billingName').value =
+        document.getElementById('careHomeName').value || '';
+    document.getElementById('billingContactPerson').value =
+        document.getElementById('contactPerson').value || '';
+    document.getElementById('billingAddress').value =
+        document.getElementById('contactAddress').value || '';
+    document.getElementById('billingPostcode').value =
+        document.getElementById('contactPostcode').value || '';
+    document.getElementById('billingEmail').value =
+        document.getElementById('contactEmail').value || '';
 }
 
 // ========================================
@@ -786,6 +813,12 @@ function promoteTarget(id) {
     document.getElementById('contactAddress').value = '';
     document.getElementById('contactPostcode').value = '';
     document.getElementById('contactWebsite').value = '';
+    document.getElementById('billingName').value = '';
+    document.getElementById('billingContactPerson').value = '';
+    document.getElementById('billingAddress').value = '';
+    document.getElementById('billingPostcode').value = '';
+    document.getElementById('billingEmail').value = '';
+    document.getElementById('billingReference').value = '';
 
     document.getElementById('contactModal').classList.add('active');
 }
@@ -1562,6 +1595,12 @@ function openModal(modalId) {
         document.getElementById('contactAddress').value = '';
         document.getElementById('contactPostcode').value = '';
         document.getElementById('contactWebsite').value = '';
+        document.getElementById('billingName').value = '';
+        document.getElementById('billingContactPerson').value = '';
+        document.getElementById('billingAddress').value = '';
+        document.getElementById('billingPostcode').value = '';
+        document.getElementById('billingEmail').value = '';
+        document.getElementById('billingReference').value = '';
     } else if (modalId === 'callbackModal') {
         document.getElementById('callbackModalTitle').textContent = 'Add Callback';
         document.getElementById('callbackId').value = '';
@@ -1732,6 +1771,24 @@ function downloadCSV(headers, rows, filename) {
     URL.revokeObjectURL(link.href);
 }
 
+// Works out who a document should be addressed to. Each billing field is
+// used when filled in, and falls back to the matching contact field when
+// blank. Used by the invoice, the overdue invoice and the receipt.
+function billingDetailsFor(contact) {
+    if (!contact) {
+        return { name: 'Unknown', contactPerson: '', address: '', postcode: '', email: '', telephone: '', reference: '' };
+    }
+    return {
+        name: contact.billing_name || contact.care_home_name || 'Unknown',
+        contactPerson: contact.billing_contact_person || '',
+        address: contact.billing_address || contact.address || '',
+        postcode: contact.billing_postcode || contact.postcode || '',
+        email: contact.billing_email || contact.email || '',
+        telephone: contact.telephone || '',
+        reference: contact.billing_reference || ''
+    };
+}
+
 // ========================================
 // INVOICE GENERATION
 // ========================================
@@ -1746,6 +1803,7 @@ async function generateInvoice(bookingId) {
             return;
         }
         const booking = await response.json();
+        const bill = billingDetailsFor(booking.contact);
 
         // If not already invoiced or paid, ask whether to mark as invoiced
         if (booking.fee_status === 'Unpaid') {
@@ -1836,11 +1894,12 @@ async function generateInvoice(bookingId) {
     <div class="invoice-details">
         <div class="bill-to">
             <h3>Bill To</h3>
-            <p><strong>${booking.contact?.care_home_name || 'Unknown'}</strong></p>
-            <p>${booking.contact?.address || ''}</p>
-            <p>${booking.contact?.postcode || ''}</p>
-            <p>${booking.contact?.email || ''}</p>
-            <p>${booking.contact?.telephone || ''}</p>
+            <p><strong>${bill.name}</strong></p>
+            ${bill.contactPerson ? `<p>${bill.contactPerson}</p>` : ''}
+            <p>${bill.address}</p>
+            <p>${bill.postcode}</p>
+            <p>${bill.email}</p>
+            <p>${bill.telephone}</p>
         </div>
         <div class="invoice-info">
             <h3>Invoice Details</h3>
@@ -2015,6 +2074,7 @@ async function generateOverdueInvoice(bookingId) {
             <p><strong>Invoice Date:</strong> ${invoiceDate}</p>
             <p><strong>Status:</strong> <span style="color: #f44336; font-weight: bold;">OVERDUE</span></p>
             <p><strong>Performance Date:</strong> ${bookingDate}</p>
+            ${bill.reference ? `<p><strong>Reference:</strong> ${bill.reference}</p>` : ''}
         </div>
     </div>
     

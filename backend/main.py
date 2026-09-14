@@ -38,6 +38,13 @@ def startup():
         db.execute(text("ALTER TABLE contacts ADD COLUMN IF NOT EXISTS website VARCHAR(255)"))
         # Add review_requested_at column to contacts if it doesn't exist
         db.execute(text("ALTER TABLE contacts ADD COLUMN IF NOT EXISTS review_requested_at TIMESTAMP"))
+        # Add billing detail columns to contacts if they don't exist
+        db.execute(text("ALTER TABLE contacts ADD COLUMN IF NOT EXISTS billing_name VARCHAR(255)"))
+        db.execute(text("ALTER TABLE contacts ADD COLUMN IF NOT EXISTS billing_contact_person VARCHAR(255)"))
+        db.execute(text("ALTER TABLE contacts ADD COLUMN IF NOT EXISTS billing_address TEXT"))
+        db.execute(text("ALTER TABLE contacts ADD COLUMN IF NOT EXISTS billing_postcode VARCHAR(20)"))
+        db.execute(text("ALTER TABLE contacts ADD COLUMN IF NOT EXISTS billing_email VARCHAR(255)"))
+        db.execute(text("ALTER TABLE contacts ADD COLUMN IF NOT EXISTS billing_reference VARCHAR(100)"))
         # Add contact_id column to bookings if it doesn't exist
         db.execute(text("ALTER TABLE bookings ADD COLUMN IF NOT EXISTS contact_id INTEGER REFERENCES contacts(id)"))
         # Add booking_from column to bookings if it doesn't exist
