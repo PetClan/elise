@@ -10,9 +10,13 @@
 // Don't put quote marks inside text — they're added automatically.
 // ============================================================
 const reviews = [
+    { text: "A huge thank you to Elise for bringing so much fun and energy to Highgate. Our residents loved singing along to Scottish songs and singalong favourites, with plenty of smiles and toe-tapping all afternoon", author: "Highgate Care Home, Glasgow" },
     { text: "Alex has had a lovely birthday, everyone enjoyed your choice of songs and your singing. Thanks again", author: "Bield Housing, Linlithgow" },
+    { text: "Thank you so much for today, you were fantastic and the residents loved you", author: "Cumbernauld Care Home" },
     { text: "Elise sang a range of songs including ABBA songs, the residents had a great time singing and dancing along to the music", author: "Hatton Lea Care Home, Bellshill" },
+    { text: "We had such great feedback from your visit last week. Your shows are such a favourite here, we're already asking about St Andrew's Day and Burns Night!", author: "Wheatlands Care Home, Bonnybridge" },
     { text: "Residents were treated to a fabulous afternoon of ABBA classics with the amazing Elise, who had everyone singing, dancing in their seats and soaking up every minute of the music", author: "Activities Coordinator, Carrondale Care Home" },
+    { text: "The resident and staff feedback was that you are amazing and they want you back to do what you do best for our Christmas party", author: "Cumbernauld Care Home" },
     { text: "Omg elise you are absolutely outstanding and have an unbelievable future ahead! ", author: "Activities Coordinator, Milngavie Manor Care Home" },
     { text: "I'm very grateful to Elise for the fantastic show she performed from my mum's 80th Birthday. Her voice is beautiful and her choice of songs were perfect. It was a joyous afternoon for all. Highly recommended!", author: "Susan" }
 ];
