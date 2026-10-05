@@ -666,6 +666,12 @@ def serve_terms():
     return FileResponse(os.path.join(FRONTEND_DIR, "terms.html"))
 
 
+@app.get("/gallery")
+def serve_gallery():
+    """Serve the Gallery page"""
+    return FileResponse(os.path.join(FRONTEND_DIR, "gallery.html"))
+
+
 # Mount static files (CSS, JS, Images)
 app.mount("/css", StaticFiles(directory=os.path.join(FRONTEND_DIR, "css")), name="css")
 app.mount("/js", StaticFiles(directory=os.path.join(FRONTEND_DIR, "js")), name="js")
